@@ -1,0 +1,28 @@
+body{
+    margin: 0;
+    padding: 0;
+
+}
+
+.cardContainer{
+    display: grid;
+    grid-template-columns: repeat(4, 2fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 10px;
+    position: relative;
+    background-color: hsl(0, 67%, 49%);
+    width: 100%;
+    height: 40vh;
+    
+}
+
+
+.card {
+    width: 150px;
+    height: 70px;
+    background: black;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+    margin: 10px;
+    display: flex;
+    position: relative;
+}
