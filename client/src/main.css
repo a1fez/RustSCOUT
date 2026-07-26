@@ -1,0 +1,11 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+
+body{
+    margin: 0;
+    padding: 0;
+    font-family: 'Fredoka One Cyrillic Regular', sans-serif;
+    font-weight: 900;
+}
