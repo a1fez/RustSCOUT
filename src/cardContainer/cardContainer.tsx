@@ -47,7 +47,7 @@ const CardContainer = ({ steamId }: CardContainerProps) => { // Стим айд�
                         
                         <button className='' onClick={() => setSelectedSteamId(null)}>X</button>
                         <h1>Игрок со стим айди: {selectedSteamId}</h1>
-                        
+                        { /* WWW */ }
                     </div>
                 </div>
                 
