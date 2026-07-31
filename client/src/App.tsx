@@ -8,12 +8,22 @@ import { useState } from "react";
 
 const App = () => {
   
+
+    
   const [currentId, setCurrentId] = useState('');
+
+  const handleSearch = (id:string) => {
+    setCurrentId(id);
+      setTimeout(() =>{
+        setCurrentId('');
+
+      }, 100);
+  }
   
   return (
     <>
       <Navbar />
-      <Search onSearch={(id) => setCurrentId(id)} />
+      <Search onSearch={handleSearch} />
       <CardContainer steamId={currentId} />
       <h1>Hello!</h1>
     </>

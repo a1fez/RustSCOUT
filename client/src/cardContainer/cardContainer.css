@@ -54,14 +54,18 @@
     width: 60px;
     height: 60px;
     object-fit: cover; /* Чтобы фото не растягивалось */
-    border-radius: 50%; /* Сделаем круглым (если нужно квадратное со скруглением — поставь 8px) */
+    border-radius: 10px; /* Сделаем круглым (если нужно квадратное со скруглением — поставь 8px) */
     flex-shrink: 0;     /* Запрещаем сжимать аватарку */
-    border: 2px solid #e63946; /* Акцентная рамка вокруг аватарки */
+    border: 2px solid #3b3b3b; /* Акцентная рамка вокруг аватарки */
 }
 
 .cardInfo{
     position: relative;
     display: flex;
     margin-left: 5px;
+}
+
+.deleteCard{
+    
 }
 

@@ -1,76 +1,66 @@
-.search{
+.search {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 20vh;
+    background-color: #acacac;
+    margin: 0;
+    padding: 0;
+}
+
+.searchContainer {
     position: relative;
     width: 100%;
-    height: 20vh;
-    justify-content: center;
+    max-width: 400px; 
+    display: grid;
+    grid-auto-rows: 45px;
     align-items: center;
-    background-color: #acacac;
 }
 
-.searchInput{
-    width: 80%;
-    height: 25px;
+.searchInput {
+    width: 100%;
+    height: 35px;
     border: none;
     border-radius: 20px;
-    padding: 5px 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    padding: 5px 40px 5px 15px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     background-color: #fffefe;
-    
-    
+    font-size: 14px;
 }
 
-.searchInput:focus{
+.searchInput:focus {
     outline: none;
-    
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
-
-.searchContainer{
-    position: relative;
-    width: 50%;
-    max-width: 600px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.searchButton {
+    position: absolute;
+    right: -1px;
     
-
-}
-
-.searchButton{
-    position: relative;
-    right: 23px;
     border: none;
-    border-radius: 30px;
-    height: 20px;
-    width: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    outline: 1px solid black;
+    height: 80px;
+    width: 38px;
+    display: flex;
     align-items: center;
     justify-content: center;
     background-color: #ffffff;
-    border: 1px solid black;
-    padding: 2px;
-    cursor: pointer;
     
-    transition: transform 0.2s ease-in-out;
-}
-
-.searchContainer:focus-within .searchButton {
-    transform: scale(2);
-    border: 1px solid black;
-    padding: 3px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, background-color 0.2s;
 }
 
 .searchButton:hover {
-    transform: scale(2);
-    border: 1px solid black;
-    padding: 3px;
+    transform: scale(1.1);
+    background-color: #f0f0f0;
 }
 
-.searchIcon{
-    width: 12px;
-    display: flex;
-    position: relative;
-    height: 12px;
+.searchIcon {
+    width: 20px;
+    height: 15px;
+    color: #333;
     
 }

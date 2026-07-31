@@ -1,47 +1,52 @@
-import { FaSearch } from 'react-icons/fa';
 import { useState } from 'react';
-
+import { HiArrowNarrowRight } from "react-icons/hi";
 import './search.css';
+import { BiFontSize } from 'react-icons/bi';
 
 interface SearchProps {
     onSearch: (text: string) => void;
 }
 
 const Search = ({ onSearch }: SearchProps) => {
-
     const [text, setText] = useState('');
 
     const handleSubmit = () => {
-        if (text.trim() === '') return;
+        const trimmed = text.trim();
         
-      /*  if (text.length < 17 || text.length > 17) {
-            alert('Это не SteamID_64. Он начинается c 7... Пример: 76561198000000000 ');
+        // Валидация SteamID64
+        if (trimmed.length !== 17 || !trimmed.startsWith('7')) {
+            alert('Это не SteamID_64. Он должен состоять из 17 цифр и начинаться с 7... Пример: 76561198000000000');
             return;
-        } */
+        }
 
-        onSearch(text.trim());
-        
+        onSearch(trimmed);
         setText('');
-    }
-
+    };
 
     return (
         <div className="search">
             <div className="searchContainer">
+                <input 
+                    value={text}
+                    onChange={(e) => setText(e.target.value.replace(/\D/g, ''))} // Разрешаем только цифры
+                    type="text" 
+                    className="searchInput" 
+                    placeholder="Введите SteamID..." 
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); }} 
+                />
 
-                <input value={text} 
-                onChange={(e) => setText(e.target.value)} 
-                type="text" className="searchInput" 
-                placeholder="Введите SteamID..." 
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); }} />
-
-                <button className="searchButton" onClick={handleSubmit}>
-                    <FaSearch className="searchIcon" />
+                <button type="button" className="searchButton" onClick={handleSubmit}>
+                    <HiArrowNarrowRight className="searchIcon"/>
                 </button>
+
+                <input
+                    className='searchInput'
+                    placeholder='Выберите сервер...'
+                    
+                ></input>
             </div>
-           
         </div>
-    )
-} 
+    );
+};
 
 export default Search;

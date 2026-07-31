@@ -8,108 +8,138 @@ interface CardContainerProps {
 }
 
 const CardContainer = ({ steamId }: CardContainerProps) => {
-  // Массив сохраненных SteamID
-  const [cards, setCards] = useState<string[]>([]);
+// Храним МАССИВ ОБЪЕКТОВ игроков (PlayerData[])
+  const [cards, setCards] = useState<PlayerData[]>([]);
 
-  // Открытый SteamID для модального окна
-  const [selectedSteamId, setSelectedSteamId] = useState<string | null>(null);
+// Храним ВЕСЬ объект выбранного игрока для модалки, а не только ID
+  const [selectedPlayer, setSelectedPlayer] = useState<PlayerData | null>(null);
 
-  // Единый объект данных игрока (Steam + BattleMetrics)
-  const [player, setPlayer] = useState<PlayerData | null>(null);
+  // Состояние загрузки новой карточки
+const [isAddingCard, setIsAddingCard] = useState<boolean>(false);
 
-  // Состояние загрузки данных с бэкенда
-  const [loading, setLoading] = useState<boolean>(false);
 
-  // 1. Добавление нового SteamID в список карточек
+
+
+// Загружаем данные игрока СРАЗУ при получении steamId из поиска
   useEffect(() => {
-    if (steamId && !cards.includes(steamId)) {
-      setCards((prevCards) => [...prevCards, steamId]);
-    }
-  }, [steamId]);
+    if (!steamId) return;
 
-  // 2. Получение данных игрока с бэкенда при открытии модального окна
-  useEffect(() => {
-    if (!selectedSteamId) {
-      setPlayer(null); // Очищаем данные при закрытии модалки
-      return;
-    }
+    // Проверяем: если игрок с таким ID уже есть в списке — ничего не делаем
+    const isAlreadyAdded = cards.some((card) => card.steamId === steamId);
+    if (isAlreadyAdded) return;
 
-    setLoading(true);
+    setIsAddingCard(true);
 
-    fetch(`http://localhost:5001/api/player/${selectedSteamId}`)
+    // Запрос к бэкенду за полными данными игрока
+    fetch(`http://localhost:5001/api/player/${steamId}`)
       .then((res) => {
-        if (!res.ok) throw new Error('Ошибка загрузки данных');
+        if (!res.ok) throw new Error('Не удалось загрузить данные');
         return res.json();
       })
-      .then((data: PlayerData) => {
-        setPlayer(data);
-        setLoading(false);
+      .then((playerData: PlayerData) => {
+        // Добавляем полностью загруженный объект игрока в массив cards
+        setCards((prevCards) => [...prevCards, playerData]);
+        setIsAddingCard(false);
       })
       .catch((err) => {
-        console.error('Ошибка при запросе игрока:', err);
-        setLoading(false);
+        console.error('Ошибка добавления карточки:', err);
+        setIsAddingCard(false);
       });
-  }, [selectedSteamId]);
-
+  }, [steamId]);
+  
+  const handleDeleteCard = (steamIdToDelete: string) => {
+  setCards((prevCards) => prevCards.filter((card) => card.steamId !== steamIdToDelete));
+}
+  
   return (
     <>
       <div className='cardWrapper'>
         <div className="cardContainer">
-          {cards.map((id) => (
+          {/* Если идет запрос новой карточки — покажем надпись */}
+          {isAddingCard && <p style={{ color: '#aaa' }}>Поиск игрока...</p>}
+
+          {/* Бегаем по массиву ОБЪЕКТОВ карточек */}
+          {cards.map((player) => (
             <div 
-              key={id} 
+              key={player.steamId} 
               className="card" 
-              onClick={() => setSelectedSteamId(id)}
+              onClick={() => setSelectedPlayer(player)} // Передаем весь объект игрока при клике
             >
-              <div className="cardImage"></div>
+              <div className="cardImage">
+                {/* Если есть аватарка — выводим ее, иначе серая заглушка */}
+                {player.steam?.avatarfull ? (
+                  <img 
+                    src={player.steam.avatarfull} 
+                    alt={player.steam.personaname} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: "8px" }} 
+                  />
+                ) : (
+                  <div style={{ background: '#2a2a2a', width: '100%', height: '100%' }} />
+                )}
+              </div>
+              
               <div className="cardInfo">
-                <h3 style={{ color: 'white' }}>SteamID: {id}</h3>
+                <h3 style={{ color: 'white' }}>
+                  {player.steam?.personaname || `ID: ${player.steamId}`}
+                </h3>
+
+                <div>
+                  <span 
+                    className='statusDot'
+                    style={{ 
+                      backgroundColor: player.steam?.personastate === 1 ? '#4caf50' : '#888' 
+                    }}
+                  ></span>
+                  <span className='statusLabel'>
+                    {player.steam?.personastate === 1 ? 'В сети' : 'Не в сети'}
+                  </span>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Модальное окно */}
-      {selectedSteamId && (
-        <div className='modalOverlay' onClick={() => setSelectedSteamId(null)}>
+      {/* Модальное окно (открывается мгновенно, т.к. данные уже есть в selectedPlayer) */}
+      {selectedPlayer && (
+        <div className='modalOverlay' onClick={() => setSelectedPlayer(null)}>
           <div
             className='modalMenu'
             onClick={(e) => e.stopPropagation()}
           >
-            <button className='exitButton' onClick={() => setSelectedSteamId(null)}>✕</button>
+            <button className='exitButton' onClick={() => setSelectedPlayer(null)}>✕</button>
 
             {/* Блок Steam */}
             <div className='steamInfo'>
               <div className='playerImg'>
-                {player?.steam?.avatarfull && (
-                <img 
-                  src={player.steam.avatarfull} 
-                  alt={player.steam.personaname} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                />
-              )}
+                {selectedPlayer.steam?.avatarfull && (
+                  <img 
+                    src={selectedPlayer.steam.avatarfull} 
+                    alt={selectedPlayer.steam.personaname} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', }} 
+                  />
+                )}
               </div>
               <div>
                 <p className='playerName'>
-                  {loading ? 'Загрузка...' : player?.steam?.personaname || 'Игрок не найден'}
+                  {selectedPlayer.steam?.personaname || 'Профиль не найден'}
                 </p>
                 <div>
                   <span 
                     className='statusDot'
                     style={{ 
-                      backgroundColor: player?.steam?.personastate === 1 ? '#4caf50' : '#888' 
+                      backgroundColor: selectedPlayer.steam?.personastate === 1 ? '#4caf50' : '#888' 
                     }}
                   ></span>
                   <span className='statusLabel'>
-                    {player?.steam?.personastate === 1 ? 'В сети' : 'Не в сети'}
+                    {selectedPlayer.steam?.personastate === 1 ? 'В сети' : 'Не в сети'}
                   </span>
                 </div>
                 <div className='playerSteamId'>
-                  <code>{selectedSteamId}</code>
+                  <code>{selectedPlayer.steamId}</code>
                   <button 
                     className='copyBtn' 
-                    onClick={() => navigator.clipboard.writeText(selectedSteamId)} 
+                    onClick={() => navigator.clipboard.writeText(selectedPlayer.steamId)} 
                     title="Копировать"
                   >
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -129,28 +159,28 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
                   <div className='statTile'>
                     <p className='label'>Наиграно</p>
                     <p className='value'>
-                      {player?.battleMetrics?.playtime ? `${player.battleMetrics.playtime} ч.` : '-'}
+                      {selectedPlayer.battleMetrics?.playtime ? `${selectedPlayer.battleMetrics.playtime} ч.` : '-'}
                     </p>
                   </div>
                   <div className='statTile'>
                     <p className='label'>Сессий</p>
-                    <p className='value'>{player?.battleMetrics?.sessions ?? '-'}</p>
+                    <p className='value'>{selectedPlayer.battleMetrics?.sessions ?? '-'}</p>
                   </div>
                   <div className='statTile'>
                     <p className='label'>Первый визит</p>
-                    <p className='value'>{player?.battleMetrics?.firstSeen ?? '-'}</p>
+                    <p className='value'>{selectedPlayer.battleMetrics?.firstSeen ?? '-'}</p>
                   </div>
                   <div className='statTile warn'>
                     <p className='label'>Репутация</p>
-                    <p className='value'>{player?.battleMetrics?.reputation ?? '-'}</p>
+                    <p className='value'>{selectedPlayer.battleMetrics?.reputation ?? '-'}</p>
                   </div>
                   <div className='statTile'>
                     <p className='label'>Последний визит</p>
-                    <p className='value'>{player?.battleMetrics?.lastSeen ?? '-'}</p>
+                    <p className='value'>{selectedPlayer.battleMetrics?.lastSeen ?? '-'}</p>
                   </div>
                   <div className='statTile danger'>
                     <p className='label'>Баны</p>
-                    <p className='value'>{player?.battleMetrics?.bansCount ?? '-'}</p>
+                    <p className='value'>{selectedPlayer.battleMetrics?.bansCount ?? '-'}</p>
                   </div>
                 </div>
               </div>
@@ -158,7 +188,7 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
               <div className='actions'>
                 <a 
                   className='actionBtn primary' 
-                  href={player?.steam?.profileurl || `https://steamcommunity.com/profiles/${selectedSteamId}`} 
+                  href={selectedPlayer.steam?.profileurl || `https://steamcommunity.com/profiles/${selectedPlayer.steamId}`} 
                   target="_blank" 
                   rel="noreferrer"
                 >
@@ -166,12 +196,21 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
                 </a>
                 <a 
                   className='actionBtn' 
-                  href={`https://www.battlemetrics.com/rcon/players?filter[search]=${selectedSteamId}`} 
+                  href={`https://www.battlemetrics.com/rcon/players?filter[search]=${selectedPlayer.steamId}`} 
                   target="_blank" 
                   rel="noreferrer"
                 >
                   BattleMetrics ↗
                 </a>
+
+                <button className='deleteCard' 
+                  onClick={ (e) => {
+                    e.stopPropagation();
+                    handleDeleteCard((selectedPlayer.steamId));
+                    setSelectedPlayer(null);
+                  }}
+                > 
+                Удалить карточку</button>
               </div>
             </div>
           </div>
