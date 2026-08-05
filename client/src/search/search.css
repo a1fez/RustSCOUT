@@ -4,6 +4,7 @@
     align-items: center;
     width: 100%;
     padding: 20px 0;
+    background-color: #000000;
 }
 
 /* Общая плашка (карточка) с закругленными углами */
@@ -28,17 +29,18 @@
     height: 38px;
     border: none;
     border-radius: 19px;
-    background-color: #ffffff;
+    background-color: #1a1a1a;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     padding: 0 16px;
     box-sizing: border-box;
     font-size: 14px;
-    color: #333;
+    color: #929292;
     display: flex;
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
     transition: all 0.2s ease;
+
 }
 
 .searchInput:focus {
@@ -73,7 +75,7 @@
     top: calc(100% + 6px);
     left: 0;
     width: 100%;
-    background-color: #ffffff;
+    background-color: #1a1a1a;
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     padding: 6px;
@@ -81,6 +83,7 @@
     max-height: 180px;
     overflow-y: auto;
     animation: fadeIn 0.2s ease-in-out;
+    
 }
 
 .dropdownItem {
@@ -90,6 +93,9 @@
     color: #333;
     cursor: pointer;
     transition: background-color 0.15s ease;
+    font-family: 'Fredoka One Cyrillic Regular', sans-serif;
+    color: #686868;
+    font-weight: 200;
 }
 
 .dropdownItem:hover {
@@ -105,12 +111,14 @@
 .searchSubmitButton {
     position: absolute;
     right: 0;
-    top: 0;
+    top: 0px;
     bottom: 0;
-    width: 48px;
+    left: auto;
+    width: 40px;
+    margin-right: 5px;
     border: none;
-    border-radius: 0 22px 22px 0;
-    background-color: #ffffff;
+    border-radius: 22px;
+    background-color: #1a1a1a;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15);
     display: flex;
     align-items: center;

@@ -104,7 +104,7 @@ const Search = ({
 
                 {/* Общая кнопка отправки */}
                 <button type="button" className="searchSubmitButton" onClick={handleSubmit}>
-                    <HiArrowNarrowRight className="searchIcon"/>
+                    <HiArrowNarrowRight className="searchIcon"  style ={{ color: '#929292' }}/>
                 </button>
             </div>
         </div>
