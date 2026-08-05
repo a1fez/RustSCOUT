@@ -3,17 +3,31 @@
     position: relative;
     width: 100%;
     height: 60px;
-    background-color: #bebebe;
+    background-color: #000000;
     align-items: center;
     justify-content: space-between;
+    color: #ffffff;
+    border-bottom: 1px solid #dddddd62;
+
 }
 
 .logo {
-    width: 120px;
-    height: 100%;
+    width: 340px;
+    height: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    left: -50px;
+    
+    
+}
+
+.logo img {
+    
+    width: 100%;
+    height: 50px;
+    object-fit: contain;
     
 }
 
