@@ -3,9 +3,14 @@ const cors = require('cors');
 const axios = require('axios');
 require('dotenv').config();
 
+// Services 
+const { getCachedServers } = require('./service/battlemetrics');
+
 const app = express();
 const PORT = process.env.PORT || 5001; 
 
+// Настройка CORS
+app.use(cors());
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -18,6 +23,22 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
+// ------------------------------------------------------------------
+// 1. BattleMetrics Servers Service (ОТДЕЛЬНЫЙ РОУТ)
+// ------------------------------------------------------------------
+app.get('/api/servers', (req, res) => {
+  try {
+    const cachedData = getCachedServers();
+    return res.json(cachedData);
+  } catch (error) {
+    console.error('❌ Ошибка при получении данных серверов:', error.message);
+    return res.status(500).json({ error: 'Не удалось получить данные с BattleMetrics API' });
+  }
+});
+
+// ------------------------------------------------------------------
+// 2. Steam API Service (ОТДЕЛЬНЫЙ РОУТ)
+// ------------------------------------------------------------------
 app.get('/api/player/:steamId', async (req, res) => {
   const { steamId } = req.params;
   const apiKey = process.env.steamApiKey;   
@@ -68,6 +89,7 @@ app.get('/api/player/:steamId', async (req, res) => {
   }
 });
 
+// Запуск сервера
 app.listen(PORT, () => {
   console.log(`🚀 Сервер запущен на http://localhost:${PORT}`);
 });

@@ -3,64 +3,175 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    min-height: 20vh;
-    background-color: #acacac;
-    margin: 0;
-    padding: 0;
+    padding: 20px 0;
 }
 
-.searchContainer {
+/* Общая плашка (карточка) с закругленными углами */
+.searchFormCard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 520px;
+    padding-right: 50px; /* Оставляем место под общую кнопку */
+}
+
+.inputRow {
     position: relative;
     width: 100%;
-    max-width: 400px; 
-    display: grid;
-    grid-auto-rows: 45px;
-    align-items: center;
 }
 
-.searchInput {
+/* Единый стиль для инпута и селекта */
+.searchInput, 
+.customSelect {
     width: 100%;
-    height: 35px;
+    height: 38px;
     border: none;
-    border-radius: 20px;
-    padding: 5px 40px 5px 15px; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    background-color: #fffefe;
+    border-radius: 19px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    padding: 0 16px;
+    box-sizing: border-box;
     font-size: 14px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .searchInput:focus {
     outline: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
 
-.searchButton {
+/* Стили плейсхолдера кастомного селекта */
+.selectPlaceholder {
+    color: #8e8e8e;
+}
+
+.selectValue {
+    color: #222;
+    font-weight: 500;
+}
+
+/* Иконка стрелочки */
+.chevronIcon {
+    font-size: 16px;
+    color: #555;
+    transition: transform 0.3s ease;
+}
+
+.chevronIcon.rotate {
+    transform: rotate(180deg);
+}
+
+/* --- ВЫПАДАЮЩИЙ СПИСОК (Dropdown) --- */
+.dropdownMenu {
     position: absolute;
-    right: -1px;
-    
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    padding: 6px;
+    z-index: 100;
+    max-height: 180px;
+    overflow-y: auto;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+.dropdownItem {
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.dropdownItem:hover {
+    background-color: #f2f2f2;
+}
+
+.dropdownItem.selected {
+    background-color: #e8e8e8;
+    font-weight: 600;
+}
+
+/* Правая кнопка поиска */
+.searchSubmitButton {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 48px;
     border: none;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    height: 80px;
-    width: 38px;
+    border-radius: 0 22px 22px 0;
+    background-color: #ffffff;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #ffffff;
-    
     cursor: pointer;
-    transition: transform 0.2s ease-in-out, background-color 0.2s;
+    transition: background-color 0.2s ease, transform 0.1s;
 }
 
-.searchButton:hover {
-    transform: scale(1.1);
-    background-color: #f0f0f0;
+.searchSubmitButton:hover {
+    background-color: #f7f7f7;
+}
+
+.searchSubmitButton:active {
+    transform: scale(0.96);
 }
 
 .searchIcon {
-    width: 20px;
-    height: 15px;
-    color: #333;
-    
+    font-size: 20px;
+    color: #222;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.selectInputWrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.selectInputWrapper .searchInput {
+    padding-right: 35px; /* Освобождаем место для стрелочки справа */
+}
+
+/* Позиционирование стрелочки кликабельным образом поверх инпута */
+.selectInputWrapper .chevronIcon {
+    position: absolute;
+    right: 14px;
+    font-size: 16px;
+    color: #777;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.chevronIcon.rotate {
+    transform: rotate(180deg);
+}
+
+/* Текст, если ничего не найдено */
+.dropdownNoResults {
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #888;
+    font-style: italic;
 }

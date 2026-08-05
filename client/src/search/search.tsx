@@ -1,74 +1,111 @@
-import { useState } from 'react';
-import { HiArrowNarrowRight } from "react-icons/hi";
+import { useState, useRef, useEffect } from 'react';
+import { HiArrowNarrowRight } from 'react-icons/hi';
+import { IoChevronDown } from 'react-icons/io5';
 import './search.css';
-import { BiFontSize } from 'react-icons/bi';
 
 interface SearchProps {
-    onSearch: (text: string) => void;
+    onSearch: (steamId: string, server: string) => void;
+    servers?: string[];
 }
 
-const Search = ({ onSearch }: SearchProps) => {
+const Search = ({ 
+    onSearch, 
+    servers = ['Server #1', 'Server #2', 'Server #3', 'RUST Main', 'RUST Monday', 'CS2 Official'] 
+}: SearchProps) => {
     const [text, setText] = useState('');
     const [server, setServer] = useState('');
+    const [isOpen, setIsOpen] = useState(false);
     
-    const servers = [
-  'Rustoria.eu - Main',
-  'Rustoria.eu - Medium',
-  'Rustafied.com - Main',
-  'Rustafied.com - US Medium',
-  'Bloo Lagoon 1.5x',
-  'Stealther 2x',
-  'Vital Rust 10x'
-];
-    
-    
-    
-    const handleSubmit = () => {
-        const trimmed = text.trim();
-        
-        // Валидация SteamID64
-        if (trimmed.length !== 17 || !trimmed.startsWith('7')) {
-            alert('Это не SteamID_64. Он должен состоять из 17 цифр и начинаться с 7... Пример: 76561198000000000');
-            return;
-        }
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-        onSearch(trimmed);
-        setText('');
+    // Фильтрация серверов по введённому тексту (без учёта регистра)
+    const filteredServers = servers.filter((srv) =>
+        srv.toLowerCase().includes(server.toLowerCase())
+    );
+
+    // Закрываем меню при клике вне компонента
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleSubmit = () => {
+        if (!text.trim()) return;
+        onSearch(text.trim(), server);
+    };
+
+    const handleSelectServer = (srv: string) => {
+        setServer(srv);
+        setIsOpen(false); // Закрываем список после выбора
     };
 
     return (
         <div className="search">
-            <div className="searchContainer">
-                <input 
-                    value={text}
-                    onChange={(e) => setText(e.target.value.replace(/\D/g, ''))} // Разрешаем только цифры
-                    type="text" 
-                    className="searchInput" 
-                    placeholder="Введите SteamID..." 
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); }} 
-                />
+            <div className="searchFormCard">
+                {/* Инпут SteamID */}
+                <div className="inputRow">
+                    <input 
+                        value={text}
+                        onChange={(e) => setText(e.target.value.replace(/\D/g, ''))} 
+                        type="text" 
+                        className="searchInput" 
+                        placeholder="Введите SteamID..." 
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); }} 
+                    />
+                </div>
 
-                <button type="button" className="searchButton" 
-                onClick={handleSubmit}
-                
-                
-                >
+                {/* Инпут с поиском и автодополнением для сервера */}
+                <div className="inputRow" ref={dropdownRef}>
+                    <div className="selectInputWrapper">
+                        <input
+                            type="text"
+                            className="searchInput"
+                            placeholder="Выберите или введите сервер..."
+                            value={server}
+                            onFocus={() => setIsOpen(true)} // Открываем при фокусе
+                            onChange={(e) => {
+                                setServer(e.target.value);
+                                setIsOpen(true); // Открываем список при вводе
+                            }}
+                            onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); }}
+                        />
+                        <IoChevronDown 
+                            className={`chevronIcon ${isOpen ? 'rotate' : ''}`}
+                            onClick={() => setIsOpen(!isOpen)} 
+                        />
+                    </div>
+
+                    {/* Выпадающий список с фильтрованными значениями */}
+                    {isOpen && (
+                        <div className="dropdownMenu">
+                            {filteredServers.length > 0 ? (
+                                filteredServers.map((srv, index) => (
+                                    <div 
+                                        key={index} 
+                                        className={`dropdownItem ${server === srv ? 'selected' : ''}`}
+                                        onClick={() => handleSelectServer(srv)}
+                                    >
+                                        {srv}
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="dropdownNoResults">
+                                    Сервер не найден (можно продолжить ввод)
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+                {/* Общая кнопка отправки */}
+                <button type="button" className="searchSubmitButton" onClick={handleSubmit}>
                     <HiArrowNarrowRight className="searchIcon"/>
                 </button>
-
-                <input
-                    className='searchInput'
-                    placeholder='Выберите сервер...'
-                    value={server}
-                    onChange={(e) => {setServer(e.target.value)}}
-                    list='server-list'
-                    
-                ></input>
-                <datalist id="server-list">
-                    {servers.map((srv,index) => (
-                        <option key={index} value={srv}/>
-                    ))}
-                </datalist>
             </div>
         </div>
     );
