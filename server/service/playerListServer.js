@@ -6,7 +6,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 
 const token = process.env.battleMetricsKey;
-const MIRAGE_SERVER_ID = '38483750';
+const MIRAGE_SERVER_ID = '26217238';
 
 
 async function getPlayerList(serverId) {
@@ -30,6 +30,10 @@ async function getPlayerList(serverId) {
     console.log(`👥 Игроков онлайн: ${serverData.attributes.players}/${serverData.attributes.maxPlayers}`);
     console.log(`📋 Найдено записей игроков в API: ${players.length}\n`);
 
+    console.log(response.headers['x-ratelimit-limit']);     // Всего разрешено запросов
+    console.log(response.headers['x-ratelimit-remaining']); // Сколько осталось в текущем окне
+    console.log(response.headers['retry-after']);
+
     if (players.length > 0) {
       console.log('--- СНИСОК ИГРОКОВ ---');
       players.forEach((player, index) => {
@@ -51,5 +55,12 @@ async function getPlayerList(serverId) {
 
 // Подставь сюда реальный ID нужного сервера Mirage Rust из BattleMetrics
 // Например, заменяем 12345678 на твой ID:
-
 getPlayerList(MIRAGE_SERVER_ID);
+
+
+setInterval(() => {
+    getPlayerList(MIRAGE_SERVER_ID);
+}, 60 * 1000);
+
+
+
