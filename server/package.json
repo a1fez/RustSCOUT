@@ -16,6 +16,11 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "gamedig": "^5.3.3"
+    "gamedig": "^5.3.3",
+    "ioredis": "^6.0.0",
+    "pg": "^8.22.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.9.1"
   }
 }
