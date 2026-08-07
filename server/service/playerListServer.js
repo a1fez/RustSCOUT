@@ -6,7 +6,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 
 const token = process.env.battleMetricsKey;
-const MIRAGE_SERVER_ID = '26217238';
+const MIRAGE_SERVER_ID = '26375548'; // ID сервера 
 
 
 async function getPlayerList(serverId) {

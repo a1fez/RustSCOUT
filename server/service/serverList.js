@@ -20,7 +20,7 @@ async function getServers() {
       params: {
         'filter[game]': 'rust',
         'sort': '-players',
-        'page[size]': '15'
+        'page[size]': '100'
       },
       headers: {
         'Accept': 'application/json',
@@ -39,7 +39,7 @@ async function getServers() {
       }));
 
       lastUpdated = new Date();
-      console.log(`✅ [Cache Updated] Топ-15 серверов обновлены в ${lastUpdated.toLocaleTimeString()}`);
+      console.log(`✅ [Cache Updated] Топ-200 серверов обновлены в ${lastUpdated.toLocaleTimeString()}`);
       console.table(cacheServers);
     }
   } catch (error) {
