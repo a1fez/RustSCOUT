@@ -4,7 +4,7 @@ const axios = require('axios');
 require('dotenv').config();
 
 // Services 
-const { getCachedServers } = require('./service/battlemetrics');
+const { getCachedServers } = require('./service/serverList.js');
 
 const app = express();
 const PORT = process.env.PORT || 5001; 

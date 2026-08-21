@@ -4,7 +4,7 @@ const axios = require('axios');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const token = process.env.battleMetricsKey;
-const playerId = '1166495779'; // Замени на нужный BM ID игрока
+const playerId = '1164501611'; // Замени на нужный BM ID игрока
 
 const BROWSER_USER_AGENTS = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',

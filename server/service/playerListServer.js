@@ -6,7 +6,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 
 const token = process.env.battleMetricsKey;
-const MIRAGE_SERVER_ID = '15079350'; // ID сервера 
+const MIRAGE_SERVER_ID = '32291406'; // ID сервера 
 
 
 async function getPlayerList(serverId) {
@@ -25,6 +25,9 @@ async function getPlayerList(serverId) {
 
     // Фильтруем объекты из included, оставляя только игроков
     const players = included.filter(item => item.type === 'player');
+    const targetPlayer = players.find(p => p.attributes.name === '^mari');
+    console.log(targetPlayer );
+
 
     console.log(`\n🏰 Сервер: ${serverData.attributes.name}`);
     console.log(`👥 Игроков онлайн: ${serverData.attributes.players}/${serverData.attributes.maxPlayers}`);
@@ -33,7 +36,7 @@ async function getPlayerList(serverId) {
     console.log(response.headers['x-ratelimit-limit']);     // Всего разрешено запросов
     console.log(response.headers['x-ratelimit-remaining']); // Сколько осталось в текущем окне
     console.log(response.headers['retry-after']);
-
+    
     if (players.length > 0) {
       console.log('--- СНИСОК ИГРОКОВ ---');
       players.forEach((player, index) => {
@@ -43,6 +46,8 @@ async function getPlayerList(serverId) {
     } else {
       console.log('⚠️ Сервер не отдаёт публичный список игроков (или он отключен в настройках сервера).');
     }
+
+   
 
   } catch (error) {
     if (error.response) {

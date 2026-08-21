@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./server        # Где брать файлы для бэкенда
+      dockerfile: Dockerfile   # Какой Dockerfile использовать
+    restart: unless-stopped    # Перезапускать бэкенд, если он упадет с ошибкой
+    ports:
+      - "5000:5000"            # Проброс портов: [порт на пк и порт внутри  контейнера]
+    env_file:
+      - ./server/.env          # Подтягивает переменные окружения из .env бэкенда
+    networks:
+      - rustscout-network      # Подключает к общей внутренней сети
+
+  client:
+    build:
+      context: ./client        # Путь к фронтенду
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"                # Сайт откроется в браузере на обычном http://localhost
+    depends_on:
+      - server                 # Запускает бэкенд раньше, чем клиент
+    networks:
+      - rustscout-network
+
+networks:
+  rustscout-network:
+    driver: bridge             # Создает изолированную внутреннюю сеть между контейнерами
