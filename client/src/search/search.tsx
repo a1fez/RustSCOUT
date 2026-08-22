@@ -1,12 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
 import { HiArrowNarrowRight } from 'react-icons/hi';
+
+
 import { IoChevronDown } from 'react-icons/io5';
+
+
+
 import './search.css';
 
 interface SearchProps {
     onSearch: (steamId: string, server: string) => void;
     servers?: string[];
 }
+
+
 
 const Search = ({ 
     onSearch, 
@@ -16,6 +23,8 @@ const Search = ({
     const [server, setServer] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     
+
+    const [showError, setShowError] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Фильтрация серверов по введённому тексту (без учёта регистра)
@@ -35,42 +44,61 @@ const Search = ({
     }, []);
 
     const handleSubmit = () => {
-        if (!text.trim()) return;
-        onSearch(text.trim(), server);
+        if (isSteamEmpty || isServerEmpty) {
+            setShowError(true);
+            return;
+        }
+        setShowError(false);
+
+        onSearch(text.trim(), server.trim());
     };
 
     const handleSelectServer = (srv: string) => {
         setServer(srv);
         setIsOpen(false); // Закрываем список после выбора
+        if (showError) {
+            setShowError(false); // Скрываем ошибку, если SteamID уже введён
+        }
     };
+
+    const isSteamEmpty = !text.trim();
+    const isServerEmpty = !server.trim();
+
 
     return (
         <div className="search">
             <div className="searchFormCard">
                 {/* Инпут SteamID */}
-                <div className="inputRow">
+                <div className={`inputRow ${showError && isSteamEmpty ? 'inputError' : ''}`}>
                     <input 
                         value={text}
-                        onChange={(e) => setText(e.target.value.replace(/\D/g, ''))} 
+                        onChange={(e) => {
+                            setText(e.target.value.replace(/\D/g, ''));
+                            if (showError) setShowError(false);
+                        }} 
                         type="text" 
                         className="searchInput" 
-                        placeholder="Введите SteamID..." 
+                        placeholder={"Введите SteamID..."} 
                         onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); }} 
                     />
                 </div>
 
-                {/* Инпут с поиском и автодополнением для сервера */}
-                <div className="inputRow" ref={dropdownRef}>
+                {/* Инпут Сервера */}
+                <div 
+                    className={`inputRow ${showError && isServerEmpty ? 'inputError' : ''}`} 
+                    ref={dropdownRef}
+                >
                     <div className="selectInputWrapper">
                         <input
                             type="text"
                             className="searchInput"
-                            placeholder="Выберите или введите сервер..."
+                            placeholder={"Выберите или введите сервер..."}
                             value={server}
-                            onFocus={() => setIsOpen(true)} // Открываем при фокусе
+                            onFocus={() => setIsOpen(true)}
                             onChange={(e) => {
                                 setServer(e.target.value);
-                                setIsOpen(true); // Открываем список при вводе
+                                setIsOpen(true);
+                                if (showError) setShowError(false);
                             }}
                             onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); }}
                         />
@@ -78,9 +106,14 @@ const Search = ({
                             className={`chevronIcon ${isOpen ? 'rotate' : ''}`}
                             onClick={() => setIsOpen(!isOpen)} 
                         />
-                    </div>
 
-                    {/* Выпадающий список с фильтрованными значениями */}
+                    </div>
+                    
+                    {showError && (
+                    <div className="errorText" style={{ color: 'red', marginTop: '10px' }}>
+                    <p>Пожалуйста, заполните все поля</p>
+                    </div>
+                    )}
                     {isOpen && (
                         <div className="dropdownMenu">
                             {filteredServers.length > 0 ? (
@@ -102,11 +135,17 @@ const Search = ({
                     )}
                 </div>
 
-                {/* Общая кнопка отправки */}
-                <button type="button" className="searchSubmitButton" onClick={handleSubmit}>
-                    <HiArrowNarrowRight className="searchIcon"  style ={{ color: '#929292' }}/>
+                {/* Кнопка отправки */}
+                <button 
+                    type="button" 
+                    className="searchSubmitButton" 
+                    onClick={handleSubmit}
+                >
+                    <HiArrowNarrowRight className="searchIcon" style={{ color: '#929292' }} />
                 </button>
+                
             </div>
+            
         </div>
     );
 };
