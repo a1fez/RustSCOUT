@@ -1,30 +1,71 @@
-version: '3.8'
-
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: rustscout-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-rustscout}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - rustscout-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: rustscout-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    networks:
+      - rustscout-network
+
   server:
     build:
-      context: ./server        # Где брать файлы для бэкенда
-      dockerfile: Dockerfile   # Какой Dockerfile использовать
-    restart: unless-stopped    # Перезапускать бэкенд, если он упадет с ошибкой
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: rustscout-server
+    restart: unless-stopped
     ports:
-      - "5000:5000"            # Проброс портов: [порт на пк и порт внутри  контейнера]
+      - "5000:5000"
+    volumes:
+      - ./server:/app                  # Пробрасывает код сервера на лету
+      - /app/node_modules              # Защищает контейнерные зависимости от перезаписи
     env_file:
-      - ./server/.env          # Подтягивает переменные окружения из .env бэкенда
+      - ./server/.env
+    depends_on:
+      - postgres
+      - redis
     networks:
-      - rustscout-network      # Подключает к общей внутренней сети
+      - rustscout-network
 
   client:
     build:
-      context: ./client        # Путь к фронтенду
-      dockerfile: Dockerfile
+      context: ./client
+      dockerfile: Dockerfile.dev       # Используем dev-образ
+    container_name: rustscout-client
     restart: unless-stopped
     ports:
-      - "80:80"                # Сайт откроется в браузере на обычном http://localhost
+      - "5173:5173"                    # Порт Vite dev-сервера
+    volumes:
+      - ./client:/app                  # Пробрасывает код фронта на лету
+      - /app/node_modules              # Сохраняет контейнерные node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true       # Нужно для стабильного отслеживания файлов на Windows
     depends_on:
-      - server                 # Запускает бэкенд раньше, чем клиент
+      - server
     networks:
       - rustscout-network
 
 networks:
   rustscout-network:
-    driver: bridge             # Создает изолированную внутреннюю сеть между контейнерами
+    driver: bridge
+
+volumes:
+  pgdata:
+  redisdata:
