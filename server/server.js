@@ -3,38 +3,20 @@ const cors = require('cors');
 const axios = require('axios');
 require('dotenv').config();
 
-// Services 
-const { getCachedServers } = require('./service/serverList.js');
+// Подключаем роут с БД
+const serverRoutes = require('./routes/serverRoute.js');
 
 const app = express();
 const PORT = process.env.PORT || 5001; 
 
 // Настройка CORS
 app.use(cors());
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  next();
-});
-
 app.use(express.json());
 
 // ------------------------------------------------------------------
-// 1. BattleMetrics Servers Service (ОТДЕЛЬНЫЙ РОУТ)
+// 1. Роуты серверов (БД PostgreSQL + Prisma)
 // ------------------------------------------------------------------
-app.get('/api/servers', (req, res) => {
-  try {
-    const cachedData = getCachedServers();
-    return res.json(cachedData);
-  } catch (error) {
-    console.error('❌ Ошибка при получении данных серверов:', error.message);
-    return res.status(500).json({ error: 'Не удалось получить данные с BattleMetrics API' });
-  }
-});
+app.use('/api', serverRoutes); // Роут /api/servers теперь идет через Prisma из serverRoute.js
 
 // ------------------------------------------------------------------
 // 2. Steam API Service (ОТДЕЛЬНЫЙ РОУТ)

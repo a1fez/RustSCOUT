@@ -19,7 +19,7 @@ services:
     container_name: rustscout-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
       - redisdata:/data
     networks:
@@ -32,8 +32,8 @@ services:
     container_name: rustscout-server
     restart: unless-stopped
     ports:
-      - "5000:5000"
-      - "5555:5555"
+      - "5001:5001"
+      - "5002:5002"
     volumes:
       - ./server:/app                  # Пробрасывает код сервера на лету
       - /app/node_modules              # Защищает контейнерные зависимости от перезаписи
@@ -63,6 +63,25 @@ services:
     networks:
       - rustscout-network
 
+  prisma-studio:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: rustscout-prisma-studio
+    restart: unless-stopped
+    command: ["npx", "prisma", "studio", "--port", "5555", "--browser", "none"]
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      - DATABASE_URL=postgresql://postgres:123456@postgres:5432/rustscout?schema=public
+    depends_on:
+      - postgres
+    networks:
+      - rustscout-network
+
 networks:
   rustscout-network:
     driver: bridge
@@ -70,3 +89,5 @@ networks:
 volumes:
   pgdata:
   redisdata:
+
+  

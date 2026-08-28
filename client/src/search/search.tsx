@@ -1,153 +1,185 @@
 import { useState, useRef, useEffect } from 'react';
 import { HiArrowNarrowRight } from 'react-icons/hi';
-
-
 import { IoChevronDown } from 'react-icons/io5';
-
-
-
 import './search.css';
 
-interface SearchProps {
-    onSearch: (steamId: string, server: string) => void;
-    servers?: string[];
+interface ServerItem {
+  id: string;
+  name: string;
+  players?: number;
+  maxPlayers?: number;
+  ip?: string;
+  port?: number;
 }
 
+interface SearchProps {
+  onSearch: (steamId: string, serverIdOrName: string) => void;
+  initialServers?: ServerItem[];
+}
 
+const Search = ({ onSearch, initialServers = [] }: SearchProps) => {
+  const [text, setText] = useState('');
+  const [server, setServer] = useState('');
+  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
+  
+  const [serverList, setServerList] = useState<ServerItem[]>(initialServers);
+  const [isLoadingServers, setIsLoadingServers] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [showError, setShowError] = useState(false);
+  
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-const Search = ({ 
-    onSearch, 
-    servers = ['Server #1', 'Server #2', 'Server #3', 'RUST Main', 'RUST Monday', 'CS2 Official'] 
-}: SearchProps) => {
-    const [text, setText] = useState('');
-    const [server, setServer] = useState('');
-    const [isOpen, setIsOpen] = useState(false);
-    
+  // Загрузка серверов из базы данных
+  useEffect(() => {
+    async function fetchServers() {
+      setIsLoadingServers(true);
+      try {
+        const response = await fetch('http://localhost:5001/api/servers');
+        const result = await response.json();
 
-    const [showError, setShowError] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
-    // Фильтрация серверов по введённому тексту (без учёта регистра)
-    const filteredServers = servers.filter((srv) =>
-        srv.toLowerCase().includes(server.toLowerCase())
-    );
-
-    // Закрываем меню при клике вне компонента
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const handleSubmit = () => {
-        if (isSteamEmpty || isServerEmpty) {
-            setShowError(true);
-            return;
+        if (result.success && Array.isArray(result.data)) {
+          setServerList(result.data);
         }
-        setShowError(false);
+      } catch (error) {
+        console.error('Ошибка загрузки серверов из БД:', error);
+      } finally {
+        setIsLoadingServers(false);
+      }
+    }
 
-        onSearch(text.trim(), server.trim());
+    fetchServers();
+  }, []);
+
+  // Фильтрация серверов по поисковому запросу
+  const filteredServers = serverList.filter((srv) =>
+    srv.name.toLowerCase().includes(server.toLowerCase())
+  );
+
+  // Закрытие выпадающего списка при клике вне компонента
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
     };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-    const handleSelectServer = (srv: string) => {
-        setServer(srv);
-        setIsOpen(false); // Закрываем список после выбора
-        if (showError) {
-            setShowError(false); // Скрываем ошибку, если SteamID уже введён
-        }
-    };
+  const handleSubmit = () => {
+    if (isSteamEmpty || isServerEmpty) {
+      setShowError(true);
+      return;
+    }
+    setShowError(false);
 
-    const isSteamEmpty = !text.trim();
-    const isServerEmpty = !server.trim();
+    // Передаем либо выбранный ID, либо введенное вручную название
+    onSearch(text.trim(), selectedServerId || server.trim());
+  };
 
+  const handleSelectServer = (srv: ServerItem) => {
+    setServer(srv.name);
+    setSelectedServerId(srv.id);
+    setIsOpen(false);
+    if (showError) setShowError(false);
+  };
 
-    return (
-        <div className="search">
-            <div className="searchFormCard">
-                {/* Инпут SteamID */}
-                <div className={`inputRow ${showError && isSteamEmpty ? 'inputError' : ''}`}>
-                    <input 
-                        value={text}
-                        onChange={(e) => {
-                            setText(e.target.value.replace(/\D/g, ''));
-                            if (showError) setShowError(false);
-                        }} 
-                        type="text" 
-                        className="searchInput" 
-                        placeholder={"Введите SteamID..."} 
-                        onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); }} 
-                    />
-                </div>
+  const isSteamEmpty = !text.trim();
+  const isServerEmpty = !server.trim();
 
-                {/* Инпут Сервера */}
-                <div 
-                    className={`inputRow ${showError && isServerEmpty ? 'inputError' : ''}`} 
-                    ref={dropdownRef}
-                >
-                    <div className="selectInputWrapper">
-                        <input
-                            type="text"
-                            className="searchInput"
-                            placeholder={"Выберите или введите сервер..."}
-                            value={server}
-                            onFocus={() => setIsOpen(true)}
-                            onChange={(e) => {
-                                setServer(e.target.value);
-                                setIsOpen(true);
-                                if (showError) setShowError(false);
-                            }}
-                            onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); }}
-                        />
-                        <IoChevronDown 
-                            className={`chevronIcon ${isOpen ? 'rotate' : ''}`}
-                            onClick={() => setIsOpen(!isOpen)} 
-                        />
-
-                    </div>
-                    
-                    {showError && (
-                    <div className="errorText" style={{ color: 'red', marginTop: '10px' }}>
-                    <p>Пожалуйста, заполните все поля</p>
-                    </div>
-                    )}
-                    {isOpen && (
-                        <div className="dropdownMenu">
-                            {filteredServers.length > 0 ? (
-                                filteredServers.map((srv, index) => (
-                                    <div 
-                                        key={index} 
-                                        className={`dropdownItem ${server === srv ? 'selected' : ''}`}
-                                        onClick={() => handleSelectServer(srv)}
-                                    >
-                                        {srv}
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="dropdownNoResults">
-                                    Сервер не найден (можно продолжить ввод)
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-
-                {/* Кнопка отправки */}
-                <button 
-                    type="button" 
-                    className="searchSubmitButton" 
-                    onClick={handleSubmit}
-                >
-                    <HiArrowNarrowRight className="searchIcon" style={{ color: '#929292' }} />
-                </button>
-                
-            </div>
-            
+  return (
+    <div className="search">
+      <div className="searchFormCard">
+        {/* Инпут SteamID */}
+        <div className={`inputRow ${showError && isSteamEmpty ? 'inputError' : ''}`}>
+          <input
+            value={text}
+            onChange={(e) => {
+              setText(e.target.value.replace(/\D/g, ''));
+              if (showError) setShowError(false);
+            }}
+            type="text"
+            className="searchInput"
+            placeholder="Введите SteamID..."
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSubmit();
+            }}
+          />
         </div>
-    );
+
+        {/* Инпут Сервера */}
+        <div
+          className={`inputRow ${showError && isServerEmpty ? 'inputError' : ''}`}
+          ref={dropdownRef}
+        >
+          <div className="selectInputWrapper">
+            <input
+              type="text"
+              className="searchInput"
+              placeholder={isLoadingServers ? 'Загрузка серверов...' : 'Выберите или введите сервер...'}
+              value={server}
+              onFocus={() => setIsOpen(true)}
+              onChange={(e) => {
+                setServer(e.target.value);
+                setSelectedServerId(null);
+                setIsOpen(true);
+                if (showError) setShowError(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSubmit();
+              }}
+            />
+            <IoChevronDown
+              className={`chevronIcon ${isOpen ? 'rotate' : ''}`}
+              onClick={() => setIsOpen(!isOpen)}
+            />
+          </div>
+
+          {showError && (
+            <div className="errorText" style={{ color: 'red', marginTop: '10px' }}>
+              <p>Пожалуйста, заполните все поля</p>
+            </div>
+          )}
+
+          {isOpen && (
+            <div className="dropdownMenu">
+              {isLoadingServers ? (
+                <div className="dropdownNoResults">Загрузка данных из БД...</div>
+              ) : filteredServers.length > 0 ? (
+                filteredServers.map((srv) => (
+                  <div
+                    key={srv.id}
+                    className={`dropdownItem ${server === srv.name ? 'selected' : ''}`}
+                    onClick={() => handleSelectServer(srv)}
+                  >
+                    <span>{srv.name}</span>
+                    {typeof srv.players === 'number' && (
+                      <span style={{ opacity: 0.6, fontSize: '0.85em', marginLeft: '8px' }}>
+                        ({srv.players}/{srv.maxPlayers ?? '?'})
+                      </span>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="dropdownNoResults">
+                  Сервер не найден (можно продолжить ввод)
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Кнопка отправки */}
+        <button
+          type="button"
+          className="searchSubmitButton"
+          onClick={handleSubmit}
+        >
+          <HiArrowNarrowRight className="searchIcon" style={{ color: '#929292' }} />
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default Search;
