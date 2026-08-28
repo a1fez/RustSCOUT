@@ -1,11 +1,43 @@
 const path = require('path');
 const axios = require('axios');
+const prisma = require('../prisma.js');
 
-// Загружаем переменные из .env файла
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+
 
 let cacheServers = [];
 let lastUpdated = null;
+
+// Функция сохранения и обновления в БД
+async function saveServersToDatabase(serversList) {
+  if (!serversList || serversList.length === 0) return;
+
+  try {
+    const operations = serversList.map(server =>
+      prisma.server.upsert({
+        where: { id: String(server.id) },
+        update: {
+          name: server.name,
+          players: server.players,
+          maxPlayers: server.maxPlayers,
+          status: server.status
+        },
+        create: {
+          id: String(server.id),
+          name: server.name,
+          players: server.players,
+          maxPlayers: server.maxPlayers,
+          status: server.status
+        }
+      })
+    );
+
+    await prisma.$transaction(operations);
+    console.log(`✅ [DB Synced] Синхронизировано ${serversList.length} серверов в БД`);
+  } catch (error) {
+    console.error('❌ Ошибка при сохранении серверов в БД:', error);
+  }
+}
 
 async function getServers() {
   const token = process.env.battleMetricsKey;
@@ -31,7 +63,7 @@ async function getServers() {
 
     if (response.data && response.data.data) {
       cacheServers = response.data.data.map(server => ({
-        id: server.id,
+        id: String(server.id),
         name: server.attributes.name,
         players: server.attributes.players,
         maxPlayers: server.attributes.maxPlayers,
@@ -39,8 +71,10 @@ async function getServers() {
       }));
 
       lastUpdated = new Date();
-      console.log(`✅ [Cache Updated] Топ-200 серверов обновлены в ${lastUpdated.toLocaleTimeString()}`);
-      console.table(cacheServers);
+      console.log(`✅ [Cache Updated] Получено ${cacheServers.length} серверов в ${lastUpdated.toLocaleTimeString()}`);
+
+      // Сохраняем в базу данных
+      await saveServersToDatabase(cacheServers);
     }
   } catch (error) {
     if (error.response) {
@@ -51,7 +85,7 @@ async function getServers() {
   }
 }
 
-// Запускаем сразу при старте
+// Запуск сразу при старте
 getServers();
 
 // Периодическое обновление каждые 3 минуты
@@ -64,4 +98,7 @@ function getCachedServers() {
   };
 }
 
-module.exports = { getCachedServers };
+module.exports = { 
+  getCachedServers,
+  saveServersToDatabase 
+};

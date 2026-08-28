@@ -6,7 +6,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// Модели оставишь без изменений...
 model Player {
   id              String         @id
   steamId         String?        @unique
@@ -23,11 +22,16 @@ model Player {
 }
 
 model Server {
-  id            String         @id
-  name          String
-  ip            String
-  port          Int
-  updatedAt     DateTime       @updatedAt
+  id         String         @id
+  name       String
+  ip         String?
+  port       Int?
+  players    Int            @default(0)
+  maxPlayers Int            @default(0)
+  status     String         @default("offline")
+  isOnline   Boolean        @default(true)
+  updatedAt  DateTime       @updatedAt
+  createdAt  DateTime       @default(now())
 
   playerServers PlayerServer[]
 

@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-123456}
       POSTGRES_DB: ${POSTGRES_DB:-rustscout}
     ports:
       - "5433:5432"
@@ -33,6 +33,7 @@ services:
     restart: unless-stopped
     ports:
       - "5000:5000"
+      - "5555:5555"
     volumes:
       - ./server:/app                  # Пробрасывает код сервера на лету
       - /app/node_modules              # Защищает контейнерные зависимости от перезаписи
