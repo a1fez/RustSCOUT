@@ -1,24 +1,21 @@
 const express = require('express');
-const prisma = require('../prisma.js');
+const db = require('../db.js');
 
 const router = express.Router();
 
 router.get('/servers', async (req, res) => {
   try {
-    const servers = await prisma.server.findMany({
-      orderBy: {
-        players: 'desc',
-      },
-      take: 100,
-    });
+    const result = await db.query(
+      'SELECT * FROM "Server" ORDER BY players DESC LIMIT 200;'
+    );
 
     return res.status(200).json({
       success: true,
-      count: servers.length,
-      data: servers,
+      count: result.rows.length,
+      data: result.rows,
     });
   } catch (error) {
-    console.error('❌ Ошибка получения серверов из БД:', error);
+    console.error('❌ Ошибка получения серверов из БД:', error.message);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',

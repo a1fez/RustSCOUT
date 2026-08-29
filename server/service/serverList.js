@@ -1,41 +1,47 @@
 const path = require('path');
-const axios = require('axios');
-const prisma = require('../prisma.js');
-
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
+const axios = require('axios');
+const db = require('../db.js');
 
 let cacheServers = [];
 let lastUpdated = null;
 
-// Функция сохранения и обновления в БД
+// Сохранение серверов в БД
 async function saveServersToDatabase(serversList) {
   if (!serversList || serversList.length === 0) return;
 
+  const client = await db.connect();
   try {
-    const operations = serversList.map(server =>
-      prisma.server.upsert({
-        where: { id: String(server.id) },
-        update: {
-          name: server.name,
-          players: server.players,
-          maxPlayers: server.maxPlayers,
-          status: server.status
-        },
-        create: {
-          id: String(server.id),
-          name: server.name,
-          players: server.players,
-          maxPlayers: server.maxPlayers,
-          status: server.status
-        }
-      })
-    );
+    await client.query('BEGIN');
 
-    await prisma.$transaction(operations);
-    console.log(`✅ [DB Synced] Синхронизировано ${serversList.length} серверов в БД`);
+    for (const server of serversList) {
+      await client.query(
+        `INSERT INTO "Server" (id, name, players, "maxPlayers", status, "updatedAt")
+         VALUES ($1, $2, $3, $4, $5, NOW())
+         ON CONFLICT (id) DO UPDATE SET
+           name = EXCLUDED.name,
+           players = EXCLUDED.players,
+           "maxPlayers" = EXCLUDED."maxPlayers",
+           status = EXCLUDED.status,
+           "updatedAt" = NOW();`,
+        [
+          String(server.id),
+          server.name,
+          server.players ?? 0,
+          server.maxPlayers ?? 0,
+          server.status || 'online',
+        ]
+      );
+    }
+
+    await client.query('COMMIT');
+    console.log(`✅ [DB Synced] Синхронизировано ${serversList.length} серверов в PostgreSQL`);
   } catch (error) {
-    console.error('❌ Ошибка при сохранении серверов в БД:', error);
+    await client.query('ROLLBACK');
+    console.error('❌ Ошибка сохранения серверов в PostgreSQL:', error.message);
+  } finally {
+    client.release();
   }
 }
 
@@ -47,22 +53,40 @@ async function getServers() {
     return;
   }
 
+  const headers = {
+    Accept: 'application/json',
+    Authorization: `Bearer ${token.trim()}`,
+    'User-Agent': 'RustScout/1.0 (contact@rustscout.local)',
+  };
+
   try {
-    const response = await axios.get('https://api.battlemetrics.com/servers', {
+    let allServers = [];
+
+    // 1. Первая страница (100 серверов)
+    const page1Res = await axios.get('https://api.battlemetrics.com/servers', {
       params: {
         'filter[game]': 'rust',
         'sort': '-players',
-        'page[size]': '100'
+        'page[size]': '100',
       },
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token.trim()}`,
-        'User-Agent': 'RustScout/1.0 (contact@rustscout.local)'
-      }
+      headers,
     });
 
-    if (response.data && response.data.data) {
-      cacheServers = response.data.data.map(server => ({
+    if (page1Res.data && page1Res.data.data) {
+      allServers.push(...page1Res.data.data);
+    }
+
+    // 2. Вторая страница по ссылке links.next от BattleMetrics (еще 100 серверов)
+    const nextUrl = page1Res.data?.links?.next;
+    if (nextUrl) {
+      const page2Res = await axios.get(nextUrl, { headers });
+      if (page2Res.data && page2Res.data.data) {
+        allServers.push(...page2Res.data.data);
+      }
+    }
+
+    if (allServers.length > 0) {
+      cacheServers = allServers.map((server) => ({
         id: String(server.id),
         name: server.attributes.name,
         players: server.attributes.players,
@@ -73,7 +97,6 @@ async function getServers() {
       lastUpdated = new Date();
       console.log(`✅ [Cache Updated] Получено ${cacheServers.length} серверов в ${lastUpdated.toLocaleTimeString()}`);
 
-      // Сохраняем в базу данных
       await saveServersToDatabase(cacheServers);
     }
   } catch (error) {
@@ -85,20 +108,19 @@ async function getServers() {
   }
 }
 
-// Запуск сразу при старте
+// Запуск сразу и каждые 3 минуты
 getServers();
-
-// Периодическое обновление каждые 3 минуты
 setInterval(getServers, 3 * 60 * 1000);
 
 function getCachedServers() {
   return {
     servers: cacheServers,
-    lastUpdated
+    lastUpdated,
   };
 }
 
-module.exports = { 
+module.exports = {
+  getServers,
   getCachedServers,
-  saveServersToDatabase 
+  saveServersToDatabase,
 };

@@ -1,25 +1,29 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-require('dotenv').config();
+const path = require('path');
 
-// Подключаем роут с БД
+// Загрузка .env и запуск фонового сервиса обновления серверов
+require('dotenv').config({ path: path.resolve(__dirname, './.env') });
+require('./service/serverList.js');
+
+// Подключаем роуты серверов (PostgreSQL)
 const serverRoutes = require('./routes/serverRoute.js');
 
 const app = express();
 const PORT = process.env.PORT || 5001; 
 
-// Настройка CORS
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
 // ------------------------------------------------------------------
-// 1. Роуты серверов (БД PostgreSQL + Prisma)
+// 1. Роуты серверов (PostgreSQL pg pool)
 // ------------------------------------------------------------------
-app.use('/api', serverRoutes); // Роут /api/servers теперь идет через Prisma из serverRoute.js
+app.use('/api', serverRoutes); // Роут /api/servers
 
 // ------------------------------------------------------------------
-// 2. Steam API Service (ОТДЕЛЬНЫЙ РОУТ)
+// 2. Steam API Service
 // ------------------------------------------------------------------
 app.get('/api/player/:steamId', async (req, res) => {
   const { steamId } = req.params;
@@ -38,7 +42,7 @@ app.get('/api/player/:steamId', async (req, res) => {
       `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/`,
       {
         params: {
-          key: apiKey,
+          key: apiKey.trim(),
           steamids: steamId,
         },
       }
