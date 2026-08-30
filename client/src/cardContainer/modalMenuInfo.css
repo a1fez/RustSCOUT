@@ -1,201 +1,426 @@
-:root{
-  --bg-void: #0b0b0d;
-  --surface: rgb(19,19,19);
-  --surface-raised: #1d1d20;
-  --border: #2a2a2d;
-  --text: #f2f2f0;
-  --text-dim: #8c8c92;
-  --accent-amber: #e8a33d;
-  --accent-teal: #4fd1c5;
-  --accent-red: #e6604f;
+/* Затемнение фона */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-@keyframes dropDown{
-  from{ opacity:0; transform: translateY(-16px) scale(0.98); }
-  to{ opacity:1; transform: translateY(0) scale(1); }
-}
-@keyframes pulse{
-  0%,100%{ opacity:1; }
-  50%{ opacity:0.35; }
-}
-
-.modalOverlay{
-  position:fixed; inset:0;
-  background: rgba(5,5,6,0.7);
-  backdrop-filter: blur(6px);
-  display:flex; align-items:center; justify-content:center;
-  z-index: 100;
-}
-
-.modalMenu{
-  width: 460px;
-  max-width: 90vw;
-  background: var(--surface);
+/* Модальное окно */
+.modalMenu {
   position: relative;
-  border-radius: 14px;
-  color: var(--text);
-  animation: dropDown 0.32s cubic-bezier(.2,.8,.2,1);
+  background: #17181c;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  color: #ffffff;
+  box-sizing: border-box;
+  border-left: 3px solid #1c8b0eb7;
+}
+
+/* Кнопка закрытия */
+.exitButton {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: #23252b;
+  border: 1px solid #32353d;
+  border-radius: 6px;
+  color: #9ca3af;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.exitButton:hover {
+  background: #32353d;
+  color: #ffffff;
+}
+
+/* Шапка Steam */
+.steamInfo {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.playerImg {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #23252b;
+  flex-shrink: 0;
+}
+
+.avatarPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+.playerDetails {
+  flex: 1;
+  min-width: 0;
+}
+
+.playerName {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.statusLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  letter-spacing: 0.5px;
+}
+
+.playerSteamId {
+  display: inline-flex;
+  align-items: center;
+  background: #23252b;
+  border: 1px solid #2f323a;
+  border-radius: 6px;
+  padding: 3px 8px;
+  gap: 6px;
+}
+
+.playerSteamId code {
+  font-family: monospace;
+  font-size: 12px;
+  color: #d1d5db;
+}
+
+.copyBtn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.copyBtn:hover {
+  color: #ffffff;
+}
+
+.copySuccess {
+  font-size: 11px;
+  color: #4caf50;
+}
+
+/* Баннер сервера */
+.currentServerBanner {
+  background: #1e293b;
+  border-left: 3px solid #2bff00b7;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+}
+
+.bannerLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: #2dd4bf;
+  margin: 0 0 2px 0;
+  letter-spacing: 0.5px;
+}
+
+.bannerServerName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f8fafc;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bannerServerIp {
+  font-size: 11px;
+  font-family: monospace;
+  color: #94a3b8;
+  margin: 2px 0 0 0;
+}
+
+/* Табы */
+.modalTabs {
+  display: flex;
+  background: #101114;
+  border-radius: 8px;
+  padding: 3px;
+  margin-bottom: 16px;
+  gap: 4px;
+}
+
+.tabBtn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 7px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tabBtn:hover {
+  color: #d1d5db;
+}
+
+.tabBtn.active {
+  background: #23252b;
+  color: #2bff00b7;
+}
+
+/* ФИКСИРОВАННАЯ ВЫСОТА КОНТЕНТА: предотвращает прыжки модалки */
+.tabContentWrapper {
+  height: 295px;
+  position: relative;
+}
+
+.tabPane {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border);
-  overflow: hidden;
-  box-shadow: 0 20px 60px -12px rgba(0,0,0,0.6);
 }
 
-/* цветная полоса-индикатор статуса игрока (bans/online/clean) */
-.modalMenu::before{
-  content:"";
-  position:absolute;
-  left:0; top:0; bottom:0;
-  width:4px;
-  background: var(--status-color, var(--accent-teal));
-  z-index: 5;
-}
-
-.exitButton{
-  position:absolute;
-  top:12px; right:12px;
-  background: var(--surface-raised);
-  width: 28px; height:28px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  font-size: 14px;
-  cursor:pointer;
-  line-height:1;
-  display:flex; align-items:center; justify-content:center;
-  z-index: 10;
-  transition: all .15s ease;
-}
-.exitButton:hover{
-  color: var(--text);
-  border-color: var(--accent-amber);
-  background: #232326;
-}
-
-.steamInfo{
-  position:relative;
-  width:100%;
-  padding: 22px 20px 18px 24px;
-  display:flex;
-  align-items:center;
-  gap:16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.playerImg{
-  width: 64px; height:64px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #2b2b2f, #1a1a1c);
-  border: 1px solid var(--border);
-  flex-shrink:0;
-  overflow:hidden;
-}
-
-.playerName{
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 18px;
-  margin: 0 0 4px 0;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.statusDot{
-  display:inline-block;
-  width:7px; height:7px;
-  border-radius:50%;
-  background: var(--status-color, var(--accent-teal));
-  margin-right:6px;
-  animation: pulse 2.2s ease-in-out infinite;
-}
-.statusLabel{
-  font-size: 11px;
-  color: var(--text-dim);
-  text-transform:uppercase;
-  letter-spacing: 0.06em;
-}
-
-.playerSteamId{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin: 8px 0 0 0;
-}
-.playerSteamId code{
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12.5px;
-  color: var(--text-dim);
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
-  padding: 3px 8px;
-  border-radius: 5px;
-}
-.copyBtn{
-  background:none;
-  border:none;
-  color: var(--text-dim);
-  cursor:pointer;
-  padding: 2px;
-  display:flex;
-  transition: color .15s ease;
-}
-.copyBtn:hover{ color: var(--accent-amber); }
-
-.battleMetricsInfo{
-  padding: 18px 24px 22px 24px;
-  display:flex;
-  flex-direction:column;
-  gap: 14px;
-}
-
-.sectionLabel{
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.12em;
-  text-transform:uppercase;
-  color: var(--text-dim);
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.sectionLabel::after{
-  content:"";
-  flex:1;
-  height:1px;
-  background: var(--border);
-}
-
-.statGrid{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
+/* Статистика */
+.sectionHeader {
+  display: flex;
+  align-items: center;
   gap: 10px;
-  margin-top: 10px;
+  margin-bottom: 10px;
 }
-.statTile{
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
-}
-.statTile .label{ font-size: 11px; color: var(--text-dim); margin: 0 0 4px 0; }
-.statTile .value{ font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 500; margin: 0; }
-.statTile.warn .value{ color: var(--accent-amber); }
-.statTile.danger .value{ color: var(--accent-red); }
 
-.actions{ display:flex; gap:8px; margin-top: 4px; }
-.actionBtn{
-  flex:1;
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 9px 0;
-  border-radius: 7px;
-  border: 1px solid var(--border);
-  background: var(--surface-raised);
-  color: var(--text);
-  cursor:pointer;
-  transition: all .15s ease;
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 0.8px;
 }
-.actionBtn.primary{ background: var(--accent-amber); color: #1a1206; border-color: var(--accent-amber); }
-.actionBtn:hover{ filter: brightness(1.12); }
+
+.sectionDivider {
+  flex: 1;
+  height: 1px;
+  background: #23252b;
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: auto;
+}
+
+.statTile {
+  background: #202227;
+  border: 1px solid #2b2e36;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.statTile .label {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0 0 4px 0;
+  font-weight: 500;
+}
+
+.statTile .value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.statTile .value.warning {
+  color: #fbbf24;
+}
+
+.statTile .value.danger {
+  color: #f87171;
+}
+
+/* Кнопки действий */
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.actionBtn {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  padding: 9px 0;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 8px;
+  transition: opacity 0.15s ease;
+  box-sizing: border-box;
+}
+
+.actionBtn.primary {
+  background: #e5983b;
+  color: #000000;
+}
+
+.actionBtn.secondary {
+  background: #23252b;
+  border: 1px solid #32353d;
+  color: #ffffff;
+}
+
+.actionBtn:hover {
+  opacity: 0.9;
+}
+
+.deleteCard {
+  background: transparent;
+  border: 1px solid #ef444433;
+  color: #ef4444;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.deleteCard:hover {
+  background: #ef44441a;
+  border-color: #ef4444;
+}
+
+/* Списки с прокруткой */
+.tabContentList {
+  overflow-y: auto;
+  gap: 6px;
+  padding-right: 4px;
+}
+
+.tabContentList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.tabContentList::-webkit-scrollbar-thumb {
+  background: #32353d;
+  border-radius: 4px;
+}
+
+.listItem {
+  background: #202227;
+  border: 1px solid #2b2e36;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.listItemTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listItemSub {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.nameSearchInput {
+  width: 100%;
+  background: #202227;
+  border: 1px solid #2b2e36;
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: #ffffff;
+  font-size: 12px;
+  box-sizing: border-box;
+  outline: none;
+  margin-bottom: 8px;
+}
+
+.nameSearchInput:focus {
+  border-color: #ff0000b7;
+}
+
+.namesScrollContainer {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-content: flex-start;
+}
+
+.namesScrollContainer::-webkit-scrollbar {
+  width: 4px;
+}
+
+.namesScrollContainer::-webkit-scrollbar-thumb {
+  background: #32353d;
+  border-radius: 4px;
+}
+
+.nameChip {
+  background: #202227;
+  border: 1px solid #2b2e36;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #d1d5db;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.emptyText {
+  text-align: center;
+  color: #6b7280;
+  font-size: 12px;
+  padding: 40px 0;
+  margin: 0;
+}

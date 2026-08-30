@@ -8,7 +8,7 @@ const redisClient = require('../redis.js');
 
 const BATCH_SIZE = 5;      // 5 одновременных запросов
 const DELAY_MS = 2500;     // Пауза 2.5 сек между пачками
-const TTL_SECONDS = 600;   // Время жизни кэша 10 минут
+const TTL_SECONDS = 240;   // Время жизни кэша 10 минут
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

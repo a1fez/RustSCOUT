@@ -22,50 +22,217 @@
 }
 
 
-.card {
-    /* Фиксированная или гибкая ширина — зависит от сетки */
-    width: 100%; 
-    max-width: 320px;
-    height: 90px;
-    background: #0f0f11;
-    border: 1px solid #2a2a2e; /* Легкая рамка добавляет объема */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    border-radius: 12px;
-    position: relative;
-    z-index: 2;
-    display: flex;
-    align-items: center; /* Центрируем контент по вертикали */
-    padding: 0 12px;     /* Внутренние отступы вместо justify-content: center */
-    box-sizing: border-box;
-    gap: 20px;           /* Автоматический отступ между аватаркой и инфой */
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-   
+.cardWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
 
-    
-    
-    
+.cardContainer {
+  display: grid;
+  width: 100%;
+  max-width: 1200px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+/* Сама карточка в стиле модального окна */
+.card {
+  width: 100%;
+  height: 80px;
+  background: #17181c;
+  border: 1px solid #23252b;
+  border-left: 3px solid #ffffff; /* Фирменная бирюзовая полоска как у модалки */
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 14px;
+  box-sizing: border-box;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
-}
-.cardImage {
-    width: 60px;
-    height: 60px;
-    object-fit: cover; /* Чтобы фото не растягивалось */
-    border-radius: 10px; /* Сделаем круглым (если нужно квадратное со скруглением — поставь 8px) */
-    flex-shrink: 0;     /* Запрещаем сжимать аватарку */
-    border: 2px solid #3b3b3b; /* Акцентная рамка вокруг аватарки */
+  transform: translateY(-2px);
+  border-color: #32353d;
+  border-left-color: #2bff00b7;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
-.cardInfo{
-    position: relative;
-    display: flex;
-    margin-left: 5px;
+/* Аватарка */
+.cardImage {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #23252b;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Блок текста: выравниваем никнейм и статус четко друг под другом */
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cardPlayerName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardStatusRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cardStatusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cardStatusLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  letter-spacing: 0.4px;
+  margin: 0;
+}
+
+/* Скелетон в точно таких же габаритах */
+.skeletonCard {
+  border-left-color: #23252b !important;
+  cursor: default !important;
+  pointer-events: none;
+}
+
+.skeletonImage {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+}
+
+.skeletonInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.skeletonLine {
+  border-radius: 4px;
+}
+
+.skeletonName {
+  width: 70%;
+  height: 14px;
+}
+
+.skeletonStatus {
+  width: 45%;
+  height: 10px;
+}
+
+.skeletonShimmer {
+  background: linear-gradient(
+    90deg,
+    #1b1d24 0%,
+    #2a2e38 50%,
+    #1b1d24 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .deleteCard{
     
+}
+
+/* Стили анимации переливающегося скелетона */
+.skeletonCard {
+  border-color: #23252b !important;
+  cursor: default !important;
+  pointer-events: none;
+}
+
+.skeletonImage {
+  border-radius: 8px;
+}
+
+.skeletonInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.skeletonLine {
+  border-radius: 4px;
+}
+
+.skeletonName {
+  width: 65%;
+  height: 16px;
+}
+
+.skeletonStatus {
+  width: 40%;
+  height: 12px;
+}
+
+/* Анимация Shimmer (серый перелив) */
+.skeletonShimmer {
+  background: linear-gradient(
+    90deg,
+    #1b1d24 0%,
+    #2a2e38 50%,
+    #1b1d24 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
