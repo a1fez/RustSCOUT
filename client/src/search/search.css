@@ -70,42 +70,58 @@
     transform: rotate(180deg);
 }
 
+
+/* --- ВЫПАДАЮЩИЙ СПИСОК (Dropdown) --- */
 /* --- ВЫПАДАЮЩИЙ СПИСОК (Dropdown) --- */
 .dropdownMenu {
     position: absolute;
     top: calc(100% + 6px);
     left: 0;
     width: 100%;
+    box-sizing: border-box;       /* Фиксирует ширину строго по родителю */
     background-color: #1a1a1a;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     padding: 6px;
     z-index: 100;
     max-height: 180px;
-    overflow-y: auto;
+    overflow-y: auto;             /* Только вертикальный скролл */
+    overflow-x: hidden;           /* Убирает нижний горизонтальный скролл */
     animation: fadeIn 0.2s ease-in-out;
     
+    scrollbar-width: thin;
+    scrollbar-color: #333333 transparent;
 }
 
+/* Скроллбар WebKit */
+
+/* Элемент списка: обрезает слишком длинные названия с троеточием (...) */
 .dropdownItem {
     padding: 8px 14px;
     border-radius: 10px;
     font-size: 14px;
-    color: #333;
     cursor: pointer;
     transition: background-color 0.15s ease;
     font-family: 'Fredoka One Cyrillic Regular', sans-serif;
-    color: #686868;
+    color: #8e8e8e;
     font-weight: 200;
+    
+    /* Предотвращает появление горизонтального скролла */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
 }
 
 .dropdownItem:hover {
-    background-color: #f2f2f2;
+    background-color: #262626;
+    color: #ffffff;
 }
 
 .dropdownItem.selected {
-    background-color: #e8e8e8;
+    background-color: #303030;
     font-weight: 600;
+    color: #ffffff8a;
 }
 
 /* Правая кнопка поиска */
