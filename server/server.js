@@ -6,6 +6,8 @@ const path = require('path');
 // Загрузка .env и запуск фонового сервиса обновления серверов
 require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 require('./service/serverList.js');
+require('./service/serverList.js');   // обновление топ-200 серверов в PostgreSQL
+require('./service/playerScraper.js'); // обновление игроков в Redis каждые 3 минуты
 
 // Подключаем роуты серверов (PostgreSQL)
 const serverRoutes = require('./routes/serverRoute.js');
