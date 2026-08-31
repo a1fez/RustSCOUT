@@ -125,6 +125,55 @@
   margin: 0;
 }
 
+/* Позиционирование кругового таймера справа на карточке */
+.cardCircularTimer {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: auto; /* Прижимает круг к правому краю карточки */
+}
+
+/* Векторный круг */
+.cardTimerSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* Начало анимации с 12 часов */
+}
+
+/* Фоновая серая подложка */
+.cardCircleBg {
+  fill: none;
+  stroke: #23252b;
+  stroke-width: 3;
+}
+
+/* Зеленый прогресс-бар */
+.cardCircleProgress {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 3;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.5));
+  transition: stroke-dashoffset 1s linear;
+}
+
+/* Текст времени внутри круга */
+.cardTimerText {
+  position: relative;
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #4ade80;
+  letter-spacing: -0.5px;
+  user-select: none;
+}
+
 /* Скелетон в точно таких же габаритах */
 .skeletonCard {
   border-left-color: #23252b !important;

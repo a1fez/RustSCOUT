@@ -1,4 +1,3 @@
-/* Затемнение фона */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -10,7 +9,6 @@
   z-index: 1000;
 }
 
-/* Модальное окно */
 .modalMenu {
   position: relative;
   background: #17181c;
@@ -21,10 +19,9 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
   color: #ffffff;
   box-sizing: border-box;
-  border-left: 3px solid #1c8b0eb7;
+  border-left: 3px solid #2dd4bf;
 }
 
-/* Кнопка закрытия */
 .exitButton {
   position: absolute;
   top: 14px;
@@ -47,7 +44,6 @@
   color: #ffffff;
 }
 
-/* Шапка Steam */
 .steamInfo {
   display: flex;
   gap: 16px;
@@ -62,6 +58,12 @@
   overflow: hidden;
   background: #23252b;
   flex-shrink: 0;
+}
+
+.playerImg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .avatarPlaceholder {
@@ -143,10 +145,9 @@
   color: #4caf50;
 }
 
-/* Баннер сервера */
 .currentServerBanner {
   background: #1e293b;
-  border-left: 3px solid #2bff00b7;
+  border-left: 3px solid #2dd4bf;
   border-radius: 6px;
   padding: 8px 12px;
   margin-bottom: 14px;
@@ -177,7 +178,6 @@
   margin: 2px 0 0 0;
 }
 
-/* Табы */
 .modalTabs {
   display: flex;
   background: #101114;
@@ -206,12 +206,11 @@
 
 .tabBtn.active {
   background: #23252b;
-  color: #2bff00b7;
+  color: #2dd4bf;
 }
 
-/* ФИКСИРОВАННАЯ ВЫСОТА КОНТЕНТА: предотвращает прыжки модалки */
 .tabContentWrapper {
-  height: 295px;
+  height: 240px;
   position: relative;
 }
 
@@ -221,12 +220,11 @@
   flex-direction: column;
 }
 
-/* Статистика */
 .sectionHeader {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .sectionLabel {
@@ -242,40 +240,125 @@
   background: #23252b;
 }
 
-.statGrid {
+/* Сетка для 2 плашек (Найграно и Первый визит) */
+.statGridTwo {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin-bottom: auto;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .statTile {
   background: #202227;
   border: 1px solid #2b2e36;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 12px 14px;
 }
 
 .statTile .label {
-  font-size: 11px;
+  font-size: 12px;
   color: #9ca3af;
-  margin: 0 0 4px 0;
+  margin: 0 0 6px 0;
   font-weight: 500;
 }
 
 .statTile .value {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   color: #ffffff;
   margin: 0;
 }
 
-.statTile .value.warning {
-  color: #fbbf24;
+/* Блок кнопки отслеживания с таймером */
+.trackContainer {
+  margin-bottom: auto;
 }
 
-.statTile .value.danger {
-  color: #f87171;
+.trackBtn {
+  width: 100%;
+  background: #1f2127;
+  border: 1px solid #2e323b;
+  border-radius: 8px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Распределяет точку слева, текст по центру, круг справа */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.trackBtn:hover {
+  background: #252830;
+  border-color: #3b404b;
+}
+
+.trackBtn.trackingActive {
+  background: #13241d;
+  border-color: #22c55e44;
+}
+
+/* Индикатор статуса слева */
+.trackDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #64748b;
+  transition: all 0.2s ease;
+}
+
+.trackDot.dotActive {
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+.trackText {
+  font-size: 12px;
+  font-weight: 700;
+  color: #d1d5db;
+  letter-spacing: 0.3px;
+}
+
+.trackBtn.trackingActive .trackText {
+  color: #4ade80;
+}
+
+/* Круговой индикатор таймера справа */
+.circularTimer {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timerSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* Поворот на 12 часов, чтобы заполнение начиналось сверху */
+}
+
+/* Фоновая серая обводка */
+.timerCircleBg {
+  fill: none;
+  stroke: #2b2e38;
+  stroke-width: 3.2;
+}
+
+/* Активная уменьшающаяся полоса */
+.timerCircleProgress {
+  fill: none;
+  stroke: #64748b;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke 0.3s ease;
+}
+
+.timerCircleProgress.progressActive {
+  stroke: #22c55e;
+  filter: drop-shadow(0 0 3px rgba(34, 197, 94, 0.6));
 }
 
 /* Кнопки действий */
@@ -289,7 +372,7 @@
   flex: 1;
   text-align: center;
   text-decoration: none;
-  padding: 9px 0;
+  padding: 10px 0;
   font-size: 12px;
   font-weight: 700;
   border-radius: 8px;
@@ -316,7 +399,7 @@
   background: transparent;
   border: 1px solid #ef444433;
   color: #ef4444;
-  padding: 9px 12px;
+  padding: 10px 14px;
   border-radius: 8px;
   font-size: 12px;
   font-weight: 600;
@@ -329,7 +412,7 @@
   border-color: #ef4444;
 }
 
-/* Списки с прокруткой */
+/* Списки скролла */
 .tabContentList {
   overflow-y: auto;
   gap: 6px;
@@ -383,7 +466,7 @@
 }
 
 .nameSearchInput:focus {
-  border-color: #ff0000b7;
+  border-color: #2dd4bf;
 }
 
 .namesScrollContainer {

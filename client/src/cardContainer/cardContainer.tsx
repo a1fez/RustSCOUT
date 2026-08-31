@@ -12,10 +12,54 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerData | null>(null);
   const [isAddingCard, setIsAddingCard] = useState<boolean>(false);
 
-  // Состояния для модального окна
+  // Состояния модалки
   const [activeTab, setActiveTab] = useState<'main' | 'servers' | 'names'>('main');
   const [copied, setCopied] = useState<boolean>(false);
   const [nameSearch, setNameSearch] = useState<string>('');
+
+  // Хранилище фоновых таймеров отслеживания: { [steamId]: оставшиеся_секунды }
+  const [trackingMap, setTrackingMap] = useState<Record<string, number>>({});
+
+  // Глобальный фоновый интервал (тикает всегда в фоне каждую секунду)
+  useEffect(() => {
+    const interval: number = window.setInterval(() => {
+      setTrackingMap((prevMap) => {
+        const hasActiveTimers = Object.values(prevMap).some((seconds) => seconds > 0);
+        if (!hasActiveTimers) return prevMap;
+
+        const updated: Record<string, number> = {};
+        for (const [id, seconds] of Object.entries(prevMap)) {
+          if (seconds > 1) {
+            updated[id] = seconds - 1;
+          }
+          // Когда секунды доходят до 0 — игрок автоматически убирается из отслеживания
+        }
+        return updated;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const toggleTracking = (targetSteamId: string) => {
+    if (!targetSteamId || targetSteamId === 'Не привязан') return;
+
+    setTrackingMap((prev) => {
+      const next = { ...prev };
+      if (next[targetSteamId]) {
+        delete next[targetSteamId]; // Выключаем отслеживание
+      } else {
+        next[targetSteamId] = 300; // Запускаем 5 минут (300 сек)
+      }
+      return next;
+    });
+  };
+
+  const formatTimer = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
 
   useEffect(() => {
     if (!steamId) return;
@@ -42,6 +86,12 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
 
   const handleDeleteCard = (steamIdToDelete: string) => {
     setCards((prevCards) => prevCards.filter((card) => card.steamId !== steamIdToDelete));
+    // Очищаем таймер при удалении
+    setTrackingMap((prev) => {
+      const next = { ...prev };
+      delete next[steamIdToDelete];
+      return next;
+    });
   };
 
   const handleCopySteamId = (id: string, e: React.MouseEvent) => {
@@ -57,11 +107,14 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
     name.toLowerCase().includes(nameSearch.toLowerCase())
   );
 
+  const selectedPlayerTimer = selectedPlayer ? trackingMap[selectedPlayer.steamId] || 0 : 0;
+  const isSelectedPlayerTracked = selectedPlayerTimer > 0;
+
   return (
     <>
       <div className="cardWrapper">
         <div className="cardContainer">
-          {/* Скелетон-заглушка во время загрузки новой карточки */}
+          {/* Скелетон загрузки */}
           {isAddingCard && (
             <div className="card skeletonCard">
               <div className="cardImage skeletonImage skeletonShimmer" />
@@ -72,55 +125,89 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
             </div>
           )}
 
-          {/* Список добавленных карточек */}
-          {cards.map((player) => (
-            <div
-  key={player.steamId}
-  className="card"
-  onClick={() => {
-    setSelectedPlayer(player);
-    setActiveTab('main');
-    setNameSearch('');
-  }}
->
-  <div className="cardImage">
-    {player.steam?.avatarfull ? (
-      <img
-        src={player.steam.avatarfull}
-        alt={player.steam.personaname}
-      />
-    ) : (
-      <div className="avatarPlaceholder">👤</div>
-    )}
-  </div>
+          {/* Список карточек */}
+          {cards.map((player) => {
+            const playerTimer = trackingMap[player.steamId] || 0;
+            const isTracked = playerTimer > 0;
 
-  <div className="cardInfo">
-    <p className="cardPlayerName">
-      {player.steam?.personaname || `ID: ${player.steamId}`}
-    </p>
+            return (
+              <div
+                key={player.steamId}
+                className="card"
+                onClick={() => {
+                  setSelectedPlayer(player);
+                  setActiveTab('main');
+                  setNameSearch('');
+                }}
+              >
+                <div className="cardImage">
+                  {player.steam?.avatarfull ? (
+                    <img
+                      src={player.steam.avatarfull}
+                      alt={player.steam.personaname}
+                    />
+                  ) : (
+                    <div className="avatarPlaceholder">👤</div>
+                  )}
+                </div>
 
-    <div className="cardStatusRow">
-      <span
-        className="cardStatusDot"
-        style={{
-          backgroundColor: player.isOnline
-            ? '#22c55e'
-            : player.steam?.personastate === 1
-            ? '#38bdf8'
-            : '#64748b',
-        }}
-      ></span>
-      <span className="cardStatusLabel">
-        {player.isOnline
-          ? 'В ИГРЕ (RUST)'
-          : player.steam?.personastate === 1
-          ? 'В СЕТИ (STEAM)'
-          : 'НЕ В СЕТИ'}
-      </span>
-    </div>
-  </div>
-</div>
-          ))}
+                <div className="cardInfo">
+                  <p className="cardPlayerName">
+                    {player.steam?.personaname || `ID: ${player.steamId}`}
+                  </p>
+
+                  <div className="cardStatusRow">
+                    <span
+                      className="cardStatusDot"
+                      style={{
+                        backgroundColor: player.isOnline
+                          ? '#22c55e'
+                          : player.steam?.personastate === 1
+                          ? '#38bdf8'
+                          : '#64748b',
+                      }}
+                    ></span>
+                    <span className="cardStatusLabel">
+                      {player.isOnline
+                        ? 'В ИГРЕ (RUST)'
+                        : player.steam?.personastate === 1
+                        ? 'В СЕТИ (STEAM)'
+                        : 'НЕ В СЕТИ'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Бейдж активного отслеживания на самой карточке */}
+                {/* Круговой таймер на карточке */}
+                {isTracked && (
+                  <div className="cardCircularTimer" title={`Отслеживание: ${formatTimer(playerTimer)}`}>
+                    <svg className="cardTimerSvg" viewBox="0 0 36 36">
+                      {/* Фоновый серый контур */}
+                      <circle
+                        className="cardCircleBg"
+                        cx="18"
+                        cy="18"
+                        r="15"
+                      />
+                      {/* Активный зеленый уменьшающийся контур */}
+                      <circle
+                        className="cardCircleProgress"
+                        cx="18"
+                        cy="18"
+                        r="15"
+                        style={{
+                          strokeDasharray: 94.25,
+                          strokeDashoffset: 94.25 * (1 - playerTimer / 300),
+                        }}
+                      />
+                    </svg>
+                    {/* Оставшееся время по центру круга */}
+                    <span className="cardTimerText">{formatTimer(playerTimer)}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -139,7 +226,6 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
                   <img
                     src={selectedPlayer.steam.avatarfull}
                     alt={selectedPlayer.steam.personaname}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 ) : (
                   <div className="avatarPlaceholder">👤</div>
@@ -162,10 +248,10 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
                   ></span>
                   <span className="statusLabel">
                     {selectedPlayer.isOnline
-                      ? 'В игре (Rust)'
+                      ? 'В ИГРЕ (RUST)'
                       : selectedPlayer.steam?.personastate === 1
-                      ? 'В сети (Steam)'
-                      : 'Не в сети'}
+                      ? 'В СЕТИ (STEAM)'
+                      : 'НЕ В СЕТИ'}
                   </span>
                 </div>
                 <div className="playerSteamId">
@@ -208,7 +294,7 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
               </div>
             )}
 
-            {/* Вкладки переключения контента */}
+            {/* Вкладки */}
             <div className="modalTabs">
               <button
                 className={`tabBtn ${activeTab === 'main' ? 'active' : ''}`}
@@ -230,7 +316,7 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
               </button>
             </div>
 
-            {/* Обертка с фиксированной высотой, чтобы окно не прыгало при переключении */}
+            {/* Контейнер с фиксированной высотой контента */}
             <div className="tabContentWrapper">
               {/* Вкладка 1: Обзор BattleMetrics */}
               {activeTab === 'main' && (
@@ -240,7 +326,8 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
                     <div className="sectionDivider"></div>
                   </div>
 
-                  <div className="statGrid">
+                  {/* 2 плашки статистики */}
+                  <div className="statGridTwo">
                     <div className="statTile">
                       <p className="label">Наиграно</p>
                       <p className="value">
@@ -250,31 +337,55 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
                       </p>
                     </div>
                     <div className="statTile">
-                      <p className="label">Сессий</p>
-                      <p className="value">{selectedPlayer.battleMetrics?.sessions ?? '-'}</p>
-                    </div>
-                    <div className="statTile">
                       <p className="label">Первый визит</p>
                       <p className="value">{selectedPlayer.battleMetrics?.firstSeen ?? '-'}</p>
                     </div>
-                    <div className="statTile">
-                      <p className="label">Репутация</p>
-                      <p className="value warning">
-                        {selectedPlayer.battleMetrics?.reputation ?? '-'}
-                      </p>
-                    </div>
-                    <div className="statTile">
-                      <p className="label">Последний визит</p>
-                      <p className="value">{selectedPlayer.battleMetrics?.lastSeen ?? '-'}</p>
-                    </div>
-                    <div className="statTile">
-                      <p className="label">Баны</p>
-                      <p className="value danger">
-                        {selectedPlayer.battleMetrics?.bansCount ?? '-'}
-                      </p>
-                    </div>
                   </div>
 
+                  {/* Кнопка отслеживания с таймером */}
+                  {/* Кнопка отслеживания с круговым SVG таймером справа */}
+                  <div className="trackContainer">
+                    <button
+                      className={`trackBtn ${isSelectedPlayerTracked ? 'trackingActive' : ''}`}
+                      onClick={() => toggleTracking(selectedPlayer.steamId)}
+                    >
+                      <span className={`trackDot ${isSelectedPlayerTracked ? 'dotActive' : ''}`}></span>
+                      <span className="trackText">
+                        {isSelectedPlayerTracked
+                          ? `Отслеживание: ${formatTimer(selectedPlayerTimer)}`
+                          : 'Отслеживать игрока (5 мин)'}
+                      </span>
+
+                      {/* Круговой индикатор таймера */}
+                      <div className="circularTimer">
+                        <svg className="timerSvg" viewBox="0 0 36 36">
+                          {/* Серый фоновый контур */}
+                          <circle
+                            className="timerCircleBg"
+                            cx="18"
+                            cy="18"
+                            r="15"
+                          />
+                          {/* Активный анимированный круг */}
+                          <circle
+                            className={`timerCircleProgress ${isSelectedPlayerTracked ? 'progressActive' : ''}`}
+                            cx="18"
+                            cy="18"
+                            r="15"
+                            style={{
+                              // Длина окружности = 2 * PI * r = 2 * 3.14159 * 15 ≈ 94.25
+                              strokeDasharray: 94.25,
+                              strokeDashoffset: isSelectedPlayerTracked
+                                ? 94.25 * (1 - selectedPlayerTimer / 300)
+                                : 94.25,
+                            }}
+                          />
+                        </svg>
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Действия */}
                   <div className="actions">
                     {selectedPlayer.steamId !== 'Не привязан' && (
                       <a
@@ -316,7 +427,7 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
                 </div>
               )}
 
-              {/* Вкладка 2: Последние сервера */}
+              {/* Вкладка 2: Сервера */}
               {activeTab === 'servers' && (
                 <div className="tabContentList tabPane">
                   {selectedPlayer.servers && selectedPlayer.servers.length > 0 ? (
