@@ -14,6 +14,8 @@ const { getFullPlayerStatus } = require('./service/playerReq.js');
 
 // Импорт роутов серверов (PostgreSQL)
 const serverRoutes = require('./routes/serverRoute.js');
+const playerRoutes = require('./routes/playerRoutes.js');
+
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -36,6 +38,9 @@ app.use(express.json());
 
 // Роуты серверов
 app.use('/api', serverRoutes);
+
+// Роуты игроков
+app.use('/api', playerRoutes(redisClient));
 
 // Роут поиска игрока
 app.get('/api/player/:steamId', async (req, res) => {
