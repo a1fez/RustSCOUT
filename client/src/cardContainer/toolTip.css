@@ -1,0 +1,45 @@
+.infoWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tooltipContainer {
+  position: absolute;
+  /* Поднимаем плашку над иконкой */
+  bottom: calc(-150%);
+  left: 50%;
+  transform: translateX(-105px);
+  pointer-events: none;
+  z-index: 50;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
+}
+
+.tooltipTail {
+  width: 230px;
+  height: 92px;
+  display: block;
+  filter:blur(0.3px)
+}
+
+.tooltipText {
+  color: #a0a6b5;
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 300;
+  line-height: 1.35;
+  letter-spacing: 0.02px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  
+  width: 100%;
+  height: 100%;
+  padding: 0 0px;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}

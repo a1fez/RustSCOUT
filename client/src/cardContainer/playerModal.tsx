@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import type { PlayerData } from "./player";
+import { LuInfo }  from "react-icons/lu";
+import { CustomTooltip } from "./customToolTip";
 import "./modalMenuInfo.css";
 
 
@@ -171,7 +173,14 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
               {/* 2 плашки статистики */}
               <div className="statGridTwo">
                 <div className="statTile">
-                  <p className="label">Наиграно</p>
+                  <p className="label">
+                    Наиграно
+                    
+                    <span className="infoWrapper">
+                      <LuInfo size={14} />
+                      <CustomTooltip text="Не учитывает сервера Facepunch, китайские и малопопулярные" />
+                    </span>
+                  </p>
                   <p className="value">
                     {player.battleMetrics?.playtime
                       ? `${player.battleMetrics.playtime} ч.`

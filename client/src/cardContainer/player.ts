@@ -12,8 +12,7 @@ export interface BattleMetricsInfo {
   sessions: number;       // Количество зафиксированных сессий
   firstSeen: string;      // Дата первого визита
   lastSeen: string;       // Дата последнего визита
-  reputation: number;     // Числовая репутация
-  bansCount: number;      // Количество банов
+  identifier: string[];
 }
 
 // Информация об отдельном сервере в истории игрока

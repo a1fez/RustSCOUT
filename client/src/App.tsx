@@ -1,33 +1,37 @@
+import { useState } from "react";
 import Navbar from "./navbar/navbar";
 import CardContainer from "./cardContainer/cardContainer";
-
 import Search from "./search/search";
 import './main.css';
-import { useState } from "react";
 
+export interface SearchData {
+  steamId: string;
+  serverId: string;
+  timestamp: number;
+}
 
 const App = () => {
-  
+  const [searchQuery, setSearchQuery] = useState<SearchData | null>(null);
 
-    
-  const [currentId, setCurrentId] = useState('');
+  // Принимаем оба аргумента из Search
+  const handleSearch = (steamId: string, serverIdOrName: string) => {
+    if (!steamId) return;
 
-  const handleSearch = (id:string) => {
-    setCurrentId(id);
-      setTimeout(() =>{
-        setCurrentId('');
+    setSearchQuery({
+      steamId: steamId.trim(),
+      serverId: serverIdOrName ? serverIdOrName.trim() : '',
+      timestamp: Date.now(), // чтобы поиск срабатывал даже при повторном клике
+    });
+  };
 
-      }, 100);
-  }
-  
   return (
     <>
       <Navbar />
       <Search onSearch={handleSearch} />
-      <CardContainer steamId={currentId} />
+      <CardContainer searchQuery={searchQuery} />
       <h1>Hello!</h1>
     </>
-  )
-}
+  );
+};
 
 export default App;

@@ -3,11 +3,23 @@ import type { PlayerData } from './player';
 import { PlayerModal } from './playerModal';
 import './cardContainer.css';
 
-interface CardContainerProps {
+// ==========================================
+// [МЕТКА 1]: Интерфейс объекта поискового запроса
+// ==========================================
+export interface SearchData {
   steamId: string;
+  serverId: string;
+  timestamp: number;
 }
 
-const CardContainer = ({ steamId }: CardContainerProps) => {
+// ==========================================
+// [МЕТКА 2]: Обновленный интерфейс пропсов компонента
+// ==========================================
+interface CardContainerProps {
+  searchQuery: SearchData | null;
+}
+
+const CardContainer = ({ searchQuery }: CardContainerProps) => {
   const [cards, setCards] = useState<PlayerData[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerData | null>(null);
   const [isAddingCard, setIsAddingCard] = useState<boolean>(false);
@@ -55,28 +67,43 @@ const CardContainer = ({ steamId }: CardContainerProps) => {
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
+  // =========================================================================
+  // [МЕТКА 3]: Запрос данных игрока с передачей SteamID и выбранного сервера
+  // =========================================================================
   useEffect(() => {
-    if (!steamId) return;
+    if (!searchQuery?.steamId) return;
 
-    const isAlreadyAdded = cards.some((card) => card.steamId === steamId);
-    if (isAlreadyAdded) return;
+    const { steamId, serverId } = searchQuery;
+
+    // Если игрок уже есть в списке — открываем его окно и не дублируем карточку
+    const existingPlayer = cards.find((card) => card.steamId === steamId);
+    if (existingPlayer) {
+      setSelectedPlayer(existingPlayer);
+      return;
+    }
 
     setIsAddingCard(true);
 
-    fetch(`http://localhost:5001/api/player/${steamId}`)
+    // Формируем URL с query-параметром выбранного сервера
+    const hasServer = serverId && serverId !== 'undefined' && serverId.trim() !== '';
+    const queryUrl = hasServer
+      ? `http://localhost:5001/api/player/${steamId}?server=${encodeURIComponent(serverId.trim())}`
+      : `http://localhost:5001/api/player/${steamId}`;
+
+    fetch(queryUrl)
       .then((res) => {
         if (!res.ok) throw new Error('Не удалось загрузить данные');
         return res.json();
       })
       .then((playerData: PlayerData) => {
-        setCards((prevCards) => [...prevCards, playerData]);
+        setCards((prevCards) => [playerData, ...prevCards]);
         setIsAddingCard(false);
       })
       .catch((err) => {
         console.error('Ошибка добавления карточки:', err);
         setIsAddingCard(false);
       });
-  }, [steamId, cards]);
+  }, [searchQuery]);
 
   const handleDeleteCard = (steamIdToDelete: string) => {
     setCards((prevCards) => prevCards.filter((card) => card.steamId !== steamIdToDelete));

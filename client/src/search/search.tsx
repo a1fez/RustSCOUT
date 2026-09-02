@@ -21,12 +21,12 @@ const Search = ({ onSearch, initialServers = [] }: SearchProps) => {
   const [text, setText] = useState('');
   const [server, setServer] = useState('');
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
-  
+
   const [serverList, setServerList] = useState<ServerItem[]>(initialServers);
   const [isLoadingServers, setIsLoadingServers] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showError, setShowError] = useState(false);
-  
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Загрузка серверов из базы данных
@@ -67,19 +67,33 @@ const Search = ({ onSearch, initialServers = [] }: SearchProps) => {
   }, []);
 
   const handleSubmit = () => {
-    if (isSteamEmpty || isServerEmpty) {
+    const cleanSteam = text.trim();
+    const cleanServer = server.trim();
+
+    if (!cleanSteam || !cleanServer) {
       setShowError(true);
       return;
     }
     setShowError(false);
 
-    // Передаем либо выбранный ID, либо введенное вручную название
-    onSearch(text.trim(), selectedServerId || server.trim());
+    // Если ID не сохранен напрямую, ищем сервер в списке по полному совпадению названия
+    let targetServerId = selectedServerId;
+    if (!targetServerId) {
+      const foundMatch = serverList.find(
+        (s) => s.name.toLowerCase() === cleanServer.toLowerCase()
+      );
+      if (foundMatch) {
+        targetServerId = String(foundMatch.id);
+      }
+    }
+
+    // Передаем точный числовой ID (или в крайнем случае имя)
+    onSearch(cleanSteam, targetServerId || cleanServer);
   };
 
   const handleSelectServer = (srv: ServerItem) => {
     setServer(srv.name);
-    setSelectedServerId(srv.id);
+    setSelectedServerId(String(srv.id));
     setIsOpen(false);
     if (showError) setShowError(false);
   };

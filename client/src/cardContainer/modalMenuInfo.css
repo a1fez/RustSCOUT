@@ -12,14 +12,27 @@
 .modalMenu {
   position: relative;
   background: #17181c;
-  border-radius: 12px;
+  border-radius: 14px;
   width: 100%;
   max-width: 440px;
   padding: 24px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
   color: #ffffff;
   box-sizing: border-box;
-  border-left: 3px solid #2dd4bf;
+  border: 2px solid #9ebba7;
+}
+.modalMenu::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  left: -5px;
+  right: -5px;
+  border-radius: 16px; /* чуть больше радиуса родителя, чтобы скругления совпадали */
+  background: #696969;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .exitButton {
@@ -82,7 +95,7 @@
 
 .playerName {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   margin: 0 0 4px 0;
   color: #ffffff;
   white-space: nowrap;
@@ -105,7 +118,7 @@
 
 .statusLabel {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   color: #9ca3af;
   letter-spacing: 0.5px;
 }
@@ -147,7 +160,7 @@
 
 .currentServerBanner {
   background: #1e293b;
-  border-left: 3px solid #2dd4bf;
+  border-left: 3px solid #009e15c0;
   border-radius: 6px;
   padding: 8px 12px;
   margin-bottom: 14px;
@@ -193,7 +206,7 @@
   border: none;
   color: #6b7280;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 7px 0;
   border-radius: 6px;
   cursor: pointer;
@@ -229,7 +242,7 @@
 
 .sectionLabel {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   color: #6b7280;
   letter-spacing: 0.8px;
 }
@@ -264,9 +277,54 @@
 
 .statTile .value {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   color: #ffffff;
   margin: 0;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Отступ между текстом и значком */
+  font-size: 13px;
+  color: #8c9099;
+}
+
+.infoIcon {
+  cursor: pointer;
+  color: #5c626e;
+  transition: color 0.2s ease;
+}
+
+.infoIcon:hover {
+  color: #a0a6b5;
+}
+
+.infoWrapper {
+  display: inline-flex;
+  align-items: center;
+  position: relative; /* Важно для позиционирования тултипа внутри */
+  cursor: pointer;
+  color: #5c626e;
+  transition: color 0.2s ease;
+}
+
+/* Изменение цвета иконки при наведении */
+.infoWrapper:hover {
+  color: #a0a6b5;
+}
+
+/* Стилизация контейнера тултипа по умолчанию (скрыт) */
+.infoWrapper .tooltipContainer {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* Отображение тултипа при наведении на .infoWrapper (благодаря классу group) */
+.infoWrapper:hover .tooltipContainer {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Блок кнопки отслеживания с таймером */
@@ -315,7 +373,7 @@
 
 .trackText {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: #d1d5db;
   letter-spacing: 0.3px;
 }
@@ -374,7 +432,7 @@
   text-decoration: none;
   padding: 10px 0;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   border-radius: 8px;
   transition: opacity 0.15s ease;
   box-sizing: border-box;
@@ -448,8 +506,9 @@
 }
 
 .listItemSub {
-  font-size: 10px;
-  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+  color: #07e42c9a;
 }
 
 .nameSearchInput {
@@ -492,7 +551,8 @@
   border: 1px solid #2b2e36;
   border-radius: 6px;
   padding: 4px 8px;
-  font-size: 11px;
+  font-size: 16px;
+  font-weight: 600;
   color: #d1d5db;
   white-space: nowrap;
   max-width: 100%;
