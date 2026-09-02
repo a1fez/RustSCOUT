@@ -120,8 +120,8 @@
 
 .dropdownItem.selected {
     background-color: #303030;
-    font-weight: 600;
-    color: #ffffff8a;
+    font-weight: 500;
+    color: #ffffff93;
 }
 
 /* Правая кнопка поиска */
@@ -198,7 +198,8 @@
     padding: 10px 14px;
     font-size: 13px;
     color: #888;
-    font-style: italic;
+    
+    font-weight: 700;
 }
 
 
