@@ -47,7 +47,7 @@ const Navbar = ({ onOpenRoadmap }: { onOpenRoadmap?: () => void }) => {
         <button className="roadMapButton" onClick={onOpenRoadmap} type="button">
           <span className="roadMapBeacon beaconLeft" />
          
-          <span className="roadMapText">В РАЗРАБОТКЕ</span>
+          <span className="roadMapText">ПЛАН РАЗРАБОТКИ</span>
           <span className="roadMapBeacon beaconRight" />
         </button>
 
