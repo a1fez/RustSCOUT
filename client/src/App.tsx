@@ -12,7 +12,7 @@ export interface SearchData {
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState<SearchData | null>(null);
-
+  const [currentPage, setCurrentPage] = useState<'search' | 'roadmap'>('search');
   // Принимаем оба аргумента из Search
   const handleSearch = (steamId: string, serverIdOrName: string) => {
     if (!steamId) return;
@@ -26,10 +26,15 @@ const App = () => {
 
   return (
     <>
-      <Navbar />
-      <Search onSearch={handleSearch} />
-      <CardContainer searchQuery={searchQuery} />
-      <h1>Hello!</h1>
+      <Navbar onOpenRoadmap={() => setCurrentPage('roadmap')} onSelectTab={(tab) => setCurrentPage(tab === 'ПОИСК' ? 'search' : 'roadmap')} />
+      
+      {currentPage === 'search' && (
+        <>
+          <Search onSearch={handleSearch} />
+          <CardContainer searchQuery={searchQuery} />
+          <h1>Hello!</h1>
+        </>
+      )}
     </>
   );
 };

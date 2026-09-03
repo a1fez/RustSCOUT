@@ -145,7 +145,7 @@
 }
 
 .searchSubmitButton:hover {
-    background-color: #f7f7f7;
+    background-color: #f7f7f72d;
 }
 
 .searchSubmitButton:active {
@@ -216,9 +216,9 @@
     align-items: center;
     position: absolute;
     bottom: -35px; 
-    left: 5px;
+    left: 1px;
     right: 0;
     font-weight: 500;
     background-color: #be424252;
-    border-radius: 8px;
+    border-radius: 4px;
 }

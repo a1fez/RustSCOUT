@@ -60,7 +60,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  color: #22c55e; /* Цвет stroke="currentColor" */
+  color: #10c41f; /* Цвет stroke="currentColor" */
 }
 
 /* Базовый угол */
@@ -245,4 +245,132 @@
 
 .settings .icon:active {
   transform: scale(0.9);
+}
+
+.notification {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.notificationBadge{
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ff0000; /* Красный цвет */
+  visibility: hidden; /* Скрыт по умолчанию */
+}
+
+
+.notificationDropdown {
+  position: absolute;
+  top: calc(100% + 18px);
+  right: -6px;            /* Небольшой сдвиг, чтобы окно аккуратно встало под шестеренку и архив */
+  width: 320px;
+  background: #09090b;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 1px rgba(255, 255, 255, 0.1);
+  z-index: 100;
+  overflow: hidden;
+  cursor: default;       /* Возвращаем дефолтный курсор для контента списка */
+  animation: dropDownAnim 0.15s ease-out;
+}
+
+@keyframes dropDownAnim {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notifHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #121215;
+  border-bottom: 1px solid #27272a;
+}
+
+.notifTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #a1a1aa;
+}
+
+.notifClearBtn {
+  background: transparent;
+  border: none;
+  font-size: 0.7rem;
+  color: #71717a;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.notifClearBtn:hover {
+  color: #e4e4e7;
+}
+
+.notifList {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.notifItem {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #18181b;
+  transition: background 0.15s;
+}
+
+.notifItem:hover {
+  background: #141417;
+}
+
+/* Индикатор статуса: красный = оффлайн, зеленый = зашел */
+.notifIndicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.notifItem.offline .notifIndicator {
+  background: #ef4444;
+  box-shadow: 0 0 5px #ef4444;
+}
+
+.notifContent {
+  flex-grow: 1;
+}
+
+.notifMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.notifPlayer {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #f4f4f5;
+}
+
+.notifTime {
+  font-size: 0.68rem;
+  color: #52525b;
+}
+
+.notifMsg {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #a1a1aa;
+  line-height: 1.3;
 }
