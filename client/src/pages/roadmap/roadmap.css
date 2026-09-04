@@ -1,0 +1,422 @@
+/* 1. Плавное проявление всей страницы */
+.roadmapView {
+  animation: pageFadeIn 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pageFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 2. Эффект прочерчивания линии слева направо */
+.trackLine {
+  transform-origin: left;
+  animation: lineDraw 2s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+@keyframes lineDraw {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* 3. Каскадное появление 5 колонок этапов */
+.nodeCol {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: nodeCardPop 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Задержки для каждой колонки по очереди (Stagger effect) */
+.nodeCol:nth-child(1) { animation-delay: 0.20s; }
+.nodeCol:nth-child(2) { animation-delay: 0.28s; }
+.nodeCol:nth-child(3) { animation-delay: 0.36s; }
+.nodeCol:nth-child(4) { animation-delay: 0.44s; }
+.nodeCol:nth-child(5) { animation-delay: 0.52s; }
+
+@keyframes nodeCardPop {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+
+.roadmapView {
+  min-height: calc(100vh - 60px);
+  background-color: #000000;
+  color: #f4f4f5;
+  padding: 60px 40px 80px 40px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+}
+
+.roadmapHeader {
+  position: relative;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 70px auto;
+}
+
+.roadmapBackBtn {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #09090b;
+  border: 1px solid #27272a;
+  color: #a1a1aa;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.roadmapBackBtn:hover {
+  border-color: #22c55e;
+  color: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+}
+
+.roadmapBadge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  letter-spacing: 0.15em;
+  color: #eab308;
+  background: rgba(234, 179, 8, 0.08);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  padding: 4px 12px;
+  margin-bottom: 16px;
+}
+
+.roadmapTitle {
+  font-size: 2.4rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin: 0 0 10px 0;
+  color: #ffffff;
+}
+
+.roadmapDesc {
+  color: #71717a;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+/* Линия-трек */
+.timelineSection {
+  position: relative;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+.trackLine {
+  position: absolute;
+  top: 30px;
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  background: #18181b;
+  z-index: 1;
+}
+
+/* Бегущий импульс от 1-й (0%) ко 2-й точке (25%) */
+.trackPulse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 25%;
+  height: 100%;
+  background: linear-gradient(90deg, #ffffff 0%, #facc15 75%, transparent 100%);
+  filter: drop-shadow(0 0 6px #facc15);
+  animation: pulseMove 1.8s infinite ease-in-out;
+}
+
+@keyframes pulseMove {
+  0% {
+    transform: scaleX(0);
+    transform-origin: left;
+    opacity: 0.2;
+  }
+  50% {
+    transform: scaleX(1);
+    transform-origin: left;
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: right;
+    opacity: 0;
+  }
+}
+
+/* Сетка узлов */
+.nodesGrid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+
+.nodeCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nodeMarkerWrap {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.nodeMarker {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+/* 1. Белоснежный завершенный узел */
+.nodeMarker.done {
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 16px rgba(251, 199, 42, 0.9), 0 0 32px rgba(255, 255, 255, 0.4);
+}
+
+.markerIcon {
+  font-weight: 900;
+}
+
+/* 2. Активный узел: принимает импульс и пульсирует */
+.nodeMarker.wip {
+  background: #09090b;
+  border: 2px solid #facc15;
+  animation: beaconPulse 1.8s infinite ease-in-out;
+}
+
+.markerPulseDot {
+  width: 10px;
+  height: 10px;
+  background: #facc15;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #facc15;
+}
+
+@keyframes beaconPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(251, 199, 42, 0.4);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 24px rgba(251, 199, 42, 0.95), 0 0 40px rgba(251, 199, 42, 0.5);
+  }
+}
+
+/* 3. Планируемые узлы */
+.nodeMarker.planned {
+  background: #09090b;
+  color: #52525b;
+  border: 2px solid #18181b;
+}
+
+/* Карточки */
+.nodeCard {
+  background: #09090b;
+  border: 1px solid #18181b;
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.nodeCol.wip .nodeCard {
+  border-color: rgba(197, 162, 34, 0.4);
+  box-shadow: 0 0 18px rgba(34, 197, 94, 0.08);
+}
+
+.nodeStage {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #52525b;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.nodeCol.wip .nodeStage {
+  color: #facc15;
+}
+
+.nodeTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #ffffff;
+}
+
+.nodeBody {
+  font-size: 0.82rem;
+  color: #a1a1aa;
+  line-height: 1.45;
+  margin: 0 0 18px 0;
+  flex-grow: 1;
+}
+
+.nodeStatus {
+  align-self: flex-start;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 4px 8px;
+  border-radius: 2px;
+}
+
+.nodeCol.done .nodeStatus {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.nodeCol.wip .nodeStatus {
+  background: rgba(251, 199, 42, 0.15);
+  color: #facc15;
+  border: 1px solid rgba(251, 199, 42, 0.35);
+}
+
+.nodeCol.planned .nodeStatus {
+  background: #18181b;
+  color: #52525b;
+}
+
+
+.roadmapView {
+  animation: powerGridOn 0.2s ease-out forwards;
+}
+
+@keyframes powerGridOn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ==========================================================
+   2. ШАПКА (Включается первой)
+   ========================================================== */
+.roadmapHeader {
+  opacity: 0;
+  transform: translateY(-6px);
+  animation: headerPowerUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes headerPowerUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================
+   3. СИЛОВОЙ КАБЕЛЬ (Прожигает путь слева направо)
+   ========================================================== */
+.trackLine {
+  transform-origin: left;
+  transform: scaleX(0);
+  animation: lineIgnition 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s forwards;
+}
+
+@keyframes lineIgnition {
+  0% {
+    transform: scaleX(0);
+    filter: brightness(3) drop-shadow(0 0 12px #22c55e);
+    opacity: 0.3;
+  }
+  70% {
+    transform: scaleX(1);
+    filter: brightness(2) drop-shadow(0 0 8px #22c55e);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    filter: brightness(1);
+    opacity: 1;
+  }
+}
+
+/* ==========================================================
+   4. КАСКАД УЗЛОВ (ЩЕЛЧОК РЕЛЕ ПО ЦЕПОЧКЕ)
+   ========================================================== */
+.nodeCol {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: relaySnap 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Тайминги включения каждого узла по ходу движения тока */
+.nodeCol:nth-child(1) { animation-delay: 0.2s; }
+.nodeCol:nth-child(2) { animation-delay: 0.3s; }
+.nodeCol:nth-child(3) { animation-delay: 0.4s; }
+.nodeCol:nth-child(4) { animation-delay: 0.5s; }
+.nodeCol:nth-child(5) { animation-delay: 0.6s; }
+
+@keyframes relaySnap {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+    filter: brightness(2.2); /* Вспышка в момент подачи напряжения */
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.02); /* Легкий отскок от импульса */
+    filter: brightness(1.4);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* Дополнительный микровсплеск на самих маркерах-кружках */
+.nodeCol .nodeMarker {
+  animation: markerShock 0.3s ease-out forwards;
+}
+
+@keyframes markerShock {
+  0% { transform: scale(0.6); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}

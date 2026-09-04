@@ -3,6 +3,7 @@ import Navbar from "./navbar/navbar";
 import CardContainer from "./cardContainer/cardContainer";
 import Search from "./search/search";
 import './main.css';
+import { Roadmap } from "./pages/roadmap/roadmap";
 
 export interface SearchData {
   steamId: string;
@@ -12,7 +13,7 @@ export interface SearchData {
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState<SearchData | null>(null);
-  const [currentPage, setCurrentPage] = useState<'search' | 'roadmap'>('search');
+  const [currentPage, setCurrentPage] = useState<string>('search');
   // Принимаем оба аргумента из Search
   const handleSearch = (steamId: string, serverIdOrName: string) => {
     if (!steamId) return;
@@ -26,7 +27,10 @@ const App = () => {
 
   return (
     <>
-      <Navbar onOpenRoadmap={() => setCurrentPage('roadmap')} onSelectTab={(tab) => setCurrentPage(tab === 'ПОИСК' ? 'search' : 'roadmap')} />
+      <Navbar 
+      onOpenRoadmap={() => setCurrentPage('roadmap')} 
+      onSelectTab={(tab) => setCurrentPage(tab.toLocaleLowerCase())} 
+      />
       
       {currentPage === 'search' && (
         <>
@@ -34,6 +38,24 @@ const App = () => {
           <CardContainer searchQuery={searchQuery} />
           <h1>Hello!</h1>
         </>
+      )}
+
+      {currentPage === 'roadmap' && (
+        <Roadmap onBack={() => setCurrentPage('search')} />
+      )}
+
+      {currentPage === 'info' && (
+        <div className="infoContainer">
+          <h1>ИНФОРМАЦИЯ</h1>
+          <p>Здесь будет отображаться информация о проекте.</p>
+        </div>
+      )}
+
+      {currentPage === 'main' && (
+        <div className="mainContainer">
+          <h1>ГЛАВНАЯ</h1>
+          <p>Здесь будет отображаться главная страница проекта.</p>
+        </div>
       )}
     </>
   );

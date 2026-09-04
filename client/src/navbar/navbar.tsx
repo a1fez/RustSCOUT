@@ -9,7 +9,7 @@ import { CornerSvg } from './cornerSvg';
 
 
 
-const MENU_ITEMS = ['ГЛАВНАЯ', 'ПОИСК', 'ИНФОРМАЦИЯ'];
+const MENU_ITEMS = ['main', 'search', 'info'];
 
 interface NavbarProps {
   onOpenRoadmap?: () => void;
@@ -17,7 +17,7 @@ interface NavbarProps {
 }
 
 const Navbar = ({ onOpenRoadmap, onSelectTab }: NavbarProps) => {
-  const [activeTab, setActiveTab] = useState('ПОИСК');
+  const [activeTab, setActiveTab] = useState('SEARCH');
   const [isNotifOpen, setNotifOpen] = useState(false);
   return (
     <div className="navbar">
