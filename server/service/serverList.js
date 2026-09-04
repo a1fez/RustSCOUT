@@ -84,7 +84,13 @@ async function getServers() {
         allServers.push(...page2Res.data.data);
       }
     }
-
+    const nextUrl2 = page1Res.data?.links?.next;
+    if (nextUrl2) {
+      const page3Res = await axios.get(nextUrl2, { headers });
+      if (page3Res.data && page3Res.data.data) {
+        allServers.push(...page3Res.data.data);
+      }
+    }
     if (allServers.length > 0) {
       cacheServers = allServers.map((server) => ({
         id: String(server.id),
@@ -108,9 +114,9 @@ async function getServers() {
   }
 }
 
-// Запуск сразу и каждые 3 минуты
+// Запуск сразу и затем каждые 60 секунд
 getServers();
-setInterval(getServers, 3 * 60 * 1000);
+setInterval(getServers, 60 * 1000);
 
 function getCachedServers() {
   return {

@@ -73,7 +73,7 @@ async function scrapePlayers() {
   const headers = {
     Accept: 'application/json',
     Authorization: `Bearer ${token.trim()}`,
-    'User-Agent': 'RustScout/1.0 (contact@rustscout.local)',
+    'User-Agent': 'localhost/127.0.1',
   };
 
   try {

@@ -5,6 +5,7 @@ import Search from "./search/search";
 import './main.css';
 import { Roadmap } from "./pages/roadmap/roadmap";
 import type { PlayerData } from "./cardContainer/player";
+import { MainPage } from "./pages/main/mainPage";
 
 export interface SearchData {
   steamId: string;
@@ -64,10 +65,7 @@ const App = () => {
       )}
 
       {currentPage === 'main' && (
-        <div className="mainContainer">
-          <h1>ГЛАВНАЯ</h1>
-          <p>Здесь будет отображаться главная страница проекта.</p>
-        </div>
+        <MainPage />
       )}
     </>
   );
