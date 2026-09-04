@@ -17,15 +17,20 @@ export interface SearchData {
 // ==========================================
 interface CardContainerProps {
   searchQuery: SearchData | null;
+  cards: PlayerData[];
+  setCards: React.Dispatch<React.SetStateAction<PlayerData[]>>;
+  trackingMap: Record<string, number>;
+  setTrackingMap: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+  setSearchQuery: React.Dispatch<React.SetStateAction<SearchData | null>>;
 }
 
-const CardContainer = ({ searchQuery }: CardContainerProps) => {
-  const [cards, setCards] = useState<PlayerData[]>([]);
+const CardContainer = ({ searchQuery, cards, setCards, trackingMap, setTrackingMap, setSearchQuery }: CardContainerProps) => {
+  
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerData | null>(null);
   const [isAddingCard, setIsAddingCard] = useState<boolean>(false);
 
   // Хранилище фоновых таймеров отслеживания: { [steamId]: оставшиеся_секунды }
-  const [trackingMap, setTrackingMap] = useState<Record<string, number>>({});
+
 
   // Глобальный фоновый таймер
   useEffect(() => {
@@ -79,6 +84,7 @@ const CardContainer = ({ searchQuery }: CardContainerProps) => {
     const existingPlayer = cards.find((card) => card.steamId === steamId);
     if (existingPlayer) {
       setSelectedPlayer(existingPlayer);
+      setSearchQuery(null);
       return;
     }
 
@@ -96,12 +102,15 @@ const CardContainer = ({ searchQuery }: CardContainerProps) => {
         return res.json();
       })
       .then((playerData: PlayerData) => {
+        
         setCards((prevCards) => [playerData, ...prevCards]);
         setIsAddingCard(false);
+        setSearchQuery(null); // Сбрасываем поисковый запрос после успешного добавления карточки
       })
       .catch((err) => {
         console.error('Ошибка добавления карточки:', err);
         setIsAddingCard(false);
+        setSearchQuery(null);
       });
   }, [searchQuery]);
 

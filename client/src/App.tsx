@@ -4,6 +4,7 @@ import CardContainer from "./cardContainer/cardContainer";
 import Search from "./search/search";
 import './main.css';
 import { Roadmap } from "./pages/roadmap/roadmap";
+import type { PlayerData } from "./cardContainer/player";
 
 export interface SearchData {
   steamId: string;
@@ -12,6 +13,11 @@ export interface SearchData {
 }
 
 const App = () => {
+  
+  const [cards, setCards] = useState<PlayerData[]>([]);
+  const [trackingMap, setTrackingMap] = useState<Record<string, number>>({});
+
+
   const [searchQuery, setSearchQuery] = useState<SearchData | null>(null);
   const [currentPage, setCurrentPage] = useState<string>('search');
   // Принимаем оба аргумента из Search
@@ -35,7 +41,13 @@ const App = () => {
       {currentPage === 'search' && (
         <>
           <Search onSearch={handleSearch} />
-          <CardContainer searchQuery={searchQuery} />
+          <CardContainer 
+          searchQuery={searchQuery} 
+          cards={cards} 
+          setCards={setCards} 
+          trackingMap={trackingMap} 
+          setTrackingMap={setTrackingMap} 
+          setSearchQuery={setSearchQuery} />
           <h1>Hello!</h1>
         </>
       )}

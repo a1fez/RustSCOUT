@@ -103,6 +103,7 @@ const Search = ({ onSearch, initialServers = [] }: SearchProps) => {
 
   return (
     <div className="search">
+      <div className="searchBackground" />
       <div className="searchFormCard">
         {/* Инпут SteamID */}
         <div className={`inputRow ${showError && isSteamEmpty ? 'inputError' : ''}`}>
