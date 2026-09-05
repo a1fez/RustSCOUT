@@ -1,14 +1,15 @@
 import React from 'react';
-import './MainPage.css';
+import './mainPage.css';
 import { 
-  BiRadar, 
-  BiShieldQuarter, 
-  BiTargetLock, 
-  BiNetworkChart, 
-  BiTerminal, 
-  BiTrendingUp,
-  BiGlobe
+  BiRadar, BiShieldQuarter, BiTargetLock, BiNetworkChart, 
+  BiTerminal, BiTrendingUp, BiGlobe,
+  BiGift, BiSync, BiRocket,
+  BiCurrentLocation, 
 } from 'react-icons/bi';
+
+ import { BiEnvelope } from 'react-icons/bi'; 
+ import { FaTelegramPlane, FaDiscord } 
+ from 'react-icons/fa'; 
 
 interface MainPageProps {
   onNavigateSearch?: () => void;
@@ -26,12 +27,11 @@ export const MainPage: React.FC<MainPageProps> = ({ onNavigateSearch, onOpenRoad
         </div>
 
         <h1 className="heroTitle">
-          ВЕБ-СЕРВИС МОНИТОРИНГА И РАЗВЕДКИ <span className="accentText">RUST</span>
+          ВЕБ-СЕРВИС МОНИТОРИНГА И АНАЛИЗА ИГРОКОВ <span className="accentText">RUST</span>
         </h1>
 
         <p className="heroSubtitle">
-          Онлайн-платформа внешней аналитики и трекинга игроков прямо в браузере.
-          Сервис фиксирует онлайн противников, вскрывает скрытые смурф-составы и строит графики активности без установки сторонних программ.
+          Сервис фиксирует онлайн игроков, пользуюясь публичными данными серверов и фильтрирует. Так вы получаете быстрый доступ к информации вместо траты кучу времени на ручной поиск. В будущем сервис будет предоставлять аналитику по игрокам и кланам, а также графики активности и взаимосвязей.
         </p>
 
         <div className="heroActions">
@@ -79,28 +79,29 @@ export const MainPage: React.FC<MainPageProps> = ({ onNavigateSearch, onOpenRoad
               <BiRadar className="cardIcon" />
               <span className="cardIndex">CORE_01</span>
             </div>
-            <h3 className="cardTitle">ДВУХУРОВНЕВЫЙ РАДАР СЕРВЕРОВ</h3>
+            <h3 className="cardTitle">СБОР ДАННЫХ</h3>
             <p className="cardDesc">
-              Фоновый сбор данных через распределенные очереди. Первые топ 100 серверов опрашиваются менее чем за 60 секунд, а остальные с позицией 101–200 обновляются каждые 2 минуты.
+              Фоновый сбор данных через распределенные очереди. Система опрашивает топ 300 серверов которые имеют свою тир систему и приоритетно собирает данные с наиболее популярных серверов.
             </p>
             <ul className="cardBulletList">
-              <li>Быстрое определение входа/выхода цели</li>
-              <li>Синхронизация данных прямо в веб-интерфейсе</li>
+              <li>Быстрое определение входа/выхода игрока</li>
+              <li>Анализ активности на серверах</li>
             </ul>
           </div>
 
           <div className="moduleCard highlighted">
             <div className="cardCorner" />
             <div className="cardIconWrap">
-              <BiNetworkChart className="cardIcon accent" />
+              <BiCurrentLocation className="cardIcon accent" />
               <span className="cardIndex accent">CORE_02</span>
             </div>
-            <h3 className="cardTitle">ДЕТЕКТОР СМУРФОВ И СВЯЗЕЙ</h3>
+            <h3 className="cardTitle">ОТСЛЕЖИВАНИЕ АКТИВНОСТИ</h3>
             <p className="cardDesc">
-              Построение графа связей на основе совпадения сессий, общих игровых серверов и истории смены никнеймов. Вскрывает основу клана, даже если они играют с чистых аккаунтов.
+              Спроектированная система дает возможность отслеживать активность игрока на разных серверах и определять его поведение и выбирать подходящий для вас момент. В будущем будут выстроины графики активности игроков, благодаря этому вы сможете определить наилучшее время для ваших действий.
+              
             </p>
             <ul className="cardBulletList">
-              <li>Поиск скрытых взаимосвязей SteamID</li>
+              <li>Поиск скрытых взаимосвязей</li>
               <li>История переходов и совместных сессий</li>
             </ul>
           </div>
@@ -108,12 +109,12 @@ export const MainPage: React.FC<MainPageProps> = ({ onNavigateSearch, onOpenRoad
           <div className="moduleCard">
             <div className="cardCorner" />
             <div className="cardIconWrap">
-              <BiTrendingUp className="cardIcon" />
+              <BiNetworkChart  className="cardIcon" />
               <span className="cardIndex">CORE_03</span>
             </div>
-            <h3 className="cardTitle">ПРЕДИКТОР ОФФЛАЙН-РЕЙДОВ</h3>
+            <h3 className="cardTitle">АНАЛИЗ ИСТОРИИ СЕРВЕРОВ</h3>
             <p className="cardDesc">
-              Аналитика суточных графиков сна и тепловые карты онлайна. Платформа рассчитывает вероятные окна глубокого оффлайна противника на базе собранной статистики.
+              Система показывает историю переходов игроков между серверами и строит граф связей. В будущем это позволит выявлять скрытые взаимосвязи между игроками и кланами, а также определять их активность на разных серверах.
             </p>
             <ul className="cardBulletList">
               <li>Определение часового пояса клана</li>
@@ -124,45 +125,79 @@ export const MainPage: React.FC<MainPageProps> = ({ onNavigateSearch, onOpenRoad
       </section>
 
       {/* 3. PIPELINE WORKFLOW (КАК РАБОТАЕТ ВЕБ-СЕРВИС) */}
-      <section className="pipelineSection">
-        <div className="sectionHeader">
-          <span className="sectionTag">PIPELINE WORKFLOW</span>
-          <h2 className="sectionTitle">КАК РАБОТАЕТ RUSTSCOUT</h2>
-        </div>
+      <section className="advantagesSection">
+      <div className="sectionHeader">
+        <span className="sectionTag">WHY RUSTSCOUT</span>
+        <h2 className="sectionTitle">ПОЧЕМУ RUSTSCOUT</h2>
+      </div>
 
-        <div className="stepsWorkflow">
-          <div className="workflowStep">
-            <div className="stepNumber">01</div>
-            <h4 className="stepTitle">ПОИСК В БРАУЗЕРЕ</h4>
-            <p className="stepText">Вводите SteamID64, ссылку на профиль или сервер в строке поиска на сайте.</p>
-          </div>
-          <div className="workflowArrow">&gt;&gt;</div>
-
-          <div className="workflowStep">
-            <div className="stepNumber">02</div>
-            <h4 className="stepTitle">БЫСТРЫЙ КЭШ</h4>
-            <p className="stepText">Серверный демон опрашивает 200 серверов пулами и отдает данные из Redis за доли миллисекунды.</p>
-          </div>
-          <div className="workflowArrow">&gt;&gt;</div>
-
-          <div className="workflowStep">
-            <div className="stepNumber">03</div>
-            <h4 className="stepTitle">ВЕБ-ТЕЛЕМЕТРИЯ</h4>
-            <p className="stepText">Получаете полную сводку: текущий статус цели, сервер, продолжительность сессии и алерты.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. БЕЗОПАСНОСТЬ И ЛЕГАЛЬНОСТЬ */}
-      <section className="securityNotice">
-        <BiGlobe className="securityIcon" />
-        <div className="securityTextWrap">
-          <h4 className="securityTitle">ПОЛНОСТЬЮ ОБЛАЧНЫЙ ВЕБ-СЕРВИС // 100% БЕЗОПАСНО</h4>
-          <p className="securityText">
-            RustScout работает исключительно в браузере как веб-сервис. Сайт не требует скачивания исполняемых файлов (.exe), не взаимодействует с процессами ОС и не внедряется в память игры. Вся аналитика строится на публичных метаданных серверов.
+      <div className="advantagesStrip">
+        <div className="advantageItem">
+          <span className="advantageIcon">
+            <BiGift />
+          </span>
+          <h3 className="advantageTitle">БЕСПЛАТНО</h3>
+          <p className="advantageDesc">
+            Полный доступ к поиску и мониторингу без подписок и скрытых платежей.
           </p>
         </div>
-      </section>
+
+        <div className="advantageDivider" />
+
+        <div className="advantageItem">
+          <span className="advantageIcon">
+            <BiSync />
+          </span>
+          <h3 className="advantageTitle">АКТУАЛЬНОСТЬ ДАННЫХ</h3>
+          <p className="advantageDesc">
+            Обновление каждые 60–120 секунд, без устаревших снимков.
+          </p>
+        </div>
+
+        <div className="advantageDivider" />
+
+        <div className="advantageItem">
+          <span className="advantageIcon">
+            <BiRocket />
+          </span>
+          <h3 className="advantageTitle">ВИДИМОЕ РАЗВИТИЕ ПРОЕКТА</h3>
+          <p className="advantageDesc">
+            Открытый план разработки, новые модули выходят регулярно.
+          </p>
+        </div>
+      </div>
+    </section>
+
+      {/* 4. БЕЗОПАСНОСТЬ И ЛЕГАЛЬНОСТЬ */}
+      <section className="contactsSection">
+      <div className="contactsTextWrap">
+        <h4 className="contactsTitle">СВЯЗЬ С НАМИ</h4>
+        <p className="contactsText">
+          Есть вопрос, нашли баг или хотите предложить фичу - пишите в любой из каналов ниже.
+        </p>
+      </div>
+
+      <div className="contactsLinks">
+        <a
+          href="https://t.me/rustscout"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="contactLink"
+        >
+          <FaTelegramPlane className="contactLinkIcon" />
+          <span>Telegram</span>
+        </a>
+
+        
+       
+
+        <a href="https://mail.google.com/mail/u/0/#inbox?compose=new" target="_blank" className="contactLink">
+          <BiEnvelope className="contactLinkIcon" />
+          <span>rustscout@gmail.com</span>
+        </a>
+      </div>
+    </section>
+
     </div>
   );
 };

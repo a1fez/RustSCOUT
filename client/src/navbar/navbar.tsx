@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import logo from '../resource/rustScout3.png';
+import logo from '../resource/rustScoutLogo.png';
 import './navbar.css';
 import { BiArchive } from 'react-icons/bi';
 import { GoGear } from 'react-icons/go';
@@ -9,7 +9,7 @@ import { CornerSvg } from './cornerSvg';
 
 
 
-const MENU_ITEMS = ['main', 'search', 'info'];
+const MENU_ITEMS = ['main', 'search'];
 
 interface NavbarProps {
   onOpenRoadmap?: () => void;

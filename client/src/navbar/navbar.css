@@ -1,3 +1,9 @@
+
+html {
+  overflow-y: scroll; /* полоса прокрутки всегда занимает место, даже если контента мало */
+}
+
+
 .navbar {
   display: grid;
   grid-template-columns: 1fr auto 1fr; /* Лево, центр (меню), право (кнопка + настройки) */
@@ -9,6 +15,7 @@
   border-bottom: 1px solid #dddddd62;
   padding: 0 24px;
   box-sizing: border-box;
+  position: relative;
 }
 
 /* Левая колонка */
@@ -33,6 +40,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  
 }
 
 .menuItem {
@@ -60,7 +68,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  color: #10c41f; /* Цвет stroke="currentColor" */
+  color: #22C55E; /* Цвет stroke="currentColor" */
 }
 
 /* Базовый угол */
@@ -127,7 +135,7 @@
 
 .menuItem.selected .cornerIcon {
   opacity: 1;
-  filter: drop-shadow(0 0 6px #22c55e);
+  filter: drop-shadow(0 0 6px #22C55E);
   transition-duration: 0.12s; /* быстрый хлёсткий щелчок */
 }
 

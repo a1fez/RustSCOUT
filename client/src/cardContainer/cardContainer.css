@@ -15,7 +15,7 @@
     max-width: 1200px;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
     gap: 25px;
-    background-color: #1a1a1a79; /* Более мягкий темный фон вместо ярко-красного */
+    background-color: #1a1a1a28; /* Более мягкий темный фон вместо ярко-красного */
     padding: 20px;
     border-radius: 12px;
     
@@ -34,7 +34,8 @@
 .cardContainer {
   display: grid;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1500px;
+  height: 300px;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
   box-sizing: border-box;

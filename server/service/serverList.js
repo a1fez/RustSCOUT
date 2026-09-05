@@ -6,6 +6,13 @@ const db = require('../db.js');
 
 let cacheServers = [];
 let lastUpdated = null;
+let isFetching = false;
+
+const REQUEST_DELAY_MS = 1500; // пауза между запросами page1 -> page2 -> page3
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 // Сохранение серверов в БД
 async function saveServersToDatabase(serversList) {
@@ -46,10 +53,17 @@ async function saveServersToDatabase(serversList) {
 }
 
 async function getServers() {
+  if (isFetching) {
+    console.log('⏭️  Пропуск запуска: предыдущий цикл обновления ещё не завершился');
+    return;
+  }
+  isFetching = true;
+
   const token = process.env.battleMetricsKey;
 
   if (!token) {
     console.error('❌ Ошибка: Переменная battleMetricsKey не найдена в .env!');
+    isFetching = false;
     return;
   }
 
@@ -62,35 +76,43 @@ async function getServers() {
   try {
     let allServers = [];
 
-    // 1. Первая страница (100 серверов)
+    // 1. Страница 1: серверы 1-100
     const page1Res = await axios.get('https://api.battlemetrics.com/servers', {
       params: {
         'filter[game]': 'rust',
-        'sort': '-players',
+        sort: '-players',
         'page[size]': '100',
       },
       headers,
     });
 
-    if (page1Res.data && page1Res.data.data) {
+    if (page1Res.data?.data) {
       allServers.push(...page1Res.data.data);
     }
 
-    // 2. Вторая страница по ссылке links.next от BattleMetrics (еще 100 серверов)
-    const nextUrl = page1Res.data?.links?.next;
-    if (nextUrl) {
-      const page2Res = await axios.get(nextUrl, { headers });
-      if (page2Res.data && page2Res.data.data) {
+    await sleep(REQUEST_DELAY_MS);
+
+    // 2. Страница 2: серверы 101-200 (курсор берётся из ответа страницы 1)
+    const nextUrl1 = page1Res.data?.links?.next;
+    let page2Res = null;
+    if (nextUrl1) {
+      page2Res = await axios.get(nextUrl1, { headers });
+      if (page2Res.data?.data) {
         allServers.push(...page2Res.data.data);
       }
     }
-    const nextUrl2 = page1Res.data?.links?.next;
+
+    await sleep(REQUEST_DELAY_MS);
+
+    // 3. Страница 3: серверы 201-300 (курсор берётся из ответа страницы 2, а не страницы 1!)
+    const nextUrl2 = page2Res?.data?.links?.next;
     if (nextUrl2) {
       const page3Res = await axios.get(nextUrl2, { headers });
-      if (page3Res.data && page3Res.data.data) {
+      if (page3Res.data?.data) {
         allServers.push(...page3Res.data.data);
       }
     }
+
     if (allServers.length > 0) {
       cacheServers = allServers.map((server) => ({
         id: String(server.id),
@@ -101,7 +123,9 @@ async function getServers() {
       }));
 
       lastUpdated = new Date();
-      console.log(`✅ [Cache Updated] Получено ${cacheServers.length} серверов в ${lastUpdated.toLocaleTimeString()}`);
+      console.log(
+        `✅ [Cache Updated] Получено ${cacheServers.length} серверов в ${lastUpdated.toLocaleTimeString()}`
+      );
 
       await saveServersToDatabase(cacheServers);
     }
@@ -111,12 +135,14 @@ async function getServers() {
     } else {
       console.error('❌ Ошибка сети/запроса:', error.message);
     }
+  } finally {
+    isFetching = false;
   }
 }
 
 // Запуск сразу и затем каждые 60 секунд
 getServers();
-setInterval(getServers, 60 * 1000);
+setInterval(getServers, 10 * 60 * 1000);
 
 function getCachedServers() {
   return {

@@ -1,14 +1,146 @@
+/* ==========================================================
+   ОБЩАЯ СТРУКТУРА СТРАНИЦЫ
+   ========================================================== */
+.mainPage {
+  min-height: calc(100vh - 60px);
+  background-color: #070709;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+  color: #f4f4f5;
+  padding: 60px 32px 100px 32px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+}
+
+/* ==========================================================
+   1. HERO СЕКЦИЯ
+   ========================================================== */
+.heroSection {
+  max-width: 960px;
+  margin: 0 auto 90px auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heroTelemetry {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.06);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  padding: 6px 14px;
+  margin-bottom: 24px;
+}
+
+.telemetryDot {
+  width: 6px;
+  height: 6px;
+  background-color: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #22c55e;
+  animation: telemetryPulse 1.6s infinite ease-in-out;
+}
+
+@keyframes telemetryPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.heroTitle {
+  font-size: 2.8rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
+  margin: 0 0 20px 0;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.accentText {
+  color: #22c55e;
+  text-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+}
+
+.heroSubtitle {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #a1a1aa;
+  max-width: 780px;
+  margin: 0 0 36px 0;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 50px;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #15803d;
+  border: 1px solid #22c55e;
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  padding: 12px 24px;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition: all 0.2s ease;
+}
+
+.primaryBtn:hover {
+  background: #22c55e;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.45);
+  transform: translateY(-2px);
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  background: #0e0e12;
+  border: 1px solid #27272a;
+  color: #a1a1aa;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 12px 22px;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition: all 0.2s ease;
+}
+
+.secondaryBtn:hover {
+  border-color: #eab308;
+  color: #eab308;
+  background: #141416;
+}
+
 /* Метрики системы */
 .metricsStrip {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr auto 1fr auto;
+  display: flex;
   align-items: center;
+  justify-content: space-around;
   width: 100%;
-  max-width: 960px;
+  max-width: 820px;
   background: #0d0d11;
   border: 1px solid #1a1a20;
   padding: 18px 24px;
-  box-sizing: border-box;
 }
 
 .metricItem {
@@ -20,22 +152,383 @@
 
 .metricVal {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   font-weight: 900;
   color: #ffffff;
 }
 
 .metricLabel {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem;
+  font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   color: #71717a;
-  text-align: center;
 }
 
 .metricDivider {
   width: 1px;
   height: 28px;
   background-color: #27272a;
+}
+
+/* ==========================================================
+   2. СЕКЦИЯ МОДУЛЕЙ
+   ========================================================== */
+.modulesSection {
+  max-width: 1140px;
+  margin: 0 auto 90px auto;
+}
+
+.sectionHeader {
+  margin-bottom: 36px;
+}
+
+.sectionTag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #22c55e;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+.sectionTitle {
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin: 0;
+  color: #ffffff;
+}
+
+.modulesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.moduleCard {
+  position: relative;
+  background: #0c0c0f;
+  border: 1px solid #1b1b22;
+  padding: 30px 24px;
+  display: flex;
+  flex-direction: column;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.moduleCard:hover {
+  transform: translateY(-4px);
+  border-color: #2e2e38;
+}
+
+.moduleCard.highlighted {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: #0d1410;
+}
+
+.cardIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.cardIcon {
+  font-size: 2rem;
+  color: #71717a;
+}
+
+.cardIcon.accent {
+  color: #22c55e;
+}
+
+.cardIndex {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #52525b;
+}
+
+.cardIndex.accent {
+  color: #22c55e;
+}
+
+.cardTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  margin: 0 0 12px 0;
+  color: #ffffff;
+}
+
+.cardDesc {
+  font-size: 0.84rem;
+  color: #8e8e93;
+  line-height: 1.55;
+  margin: 0 0 20px 0;
+  flex-grow: 1;
+}
+
+.cardBulletList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid #1a1a20;
+  padding-top: 14px;
+}
+
+.cardBulletList li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 0.76rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #71717a;
+  margin-bottom: 6px;
+}
+
+.cardBulletList li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: #22c55e;
+}
+
+/* ==========================================================
+   3. PIPELINE WORKFLOW (КАК ЭТО РАБОТАЕТ)
+   ========================================================== */
+.pipelineSection {
+  max-width: 1140px;
+  margin: 0 auto 90px auto;
+}
+
+.stepsWorkflow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  background: #09090c;
+  border: 1px solid #18181e;
+  padding: 30px;
+}
+
+.workflowStep {
+  display: flex;
+  flex-direction: column;
+}
+
+.stepNumber {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #22c55e;
+  margin-bottom: 6px;
+}
+
+.stepTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin: 0 0 8px 0;
+  color: #ffffff;
+}
+
+.stepText {
+  font-size: 0.8rem;
+  color: #71717a;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.workflowArrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #27272a;
+}
+
+/* ==========================================================
+   4. БЛОК БЕЗОПАСНОСТИ
+   ========================================================== */
+.securityNotice {
+  max-width: 1140px;
+  margin: 0 auto;
+  background: #09090c;
+  border: 1px solid #1f2937;
+  border-left: 3px solid #22c55e;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.securityIcon {
+  font-size: 2.4rem;
+  color: #22c55e;
+  flex-shrink: 0;
+}
+
+.securityTitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin: 0 0 6px 0;
+  color: #ffffff;
+}
+
+.securityText {
+  font-size: 0.8rem;
+  color: #8e8e93;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.advantagesSection {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+
+.advantagesStrip {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  width: 100%;
+  max-width: 1260px;
+  background: #0d0d11;
+  border: 1px solid #1a1a20;
+  padding: 32px 24px;
+  box-sizing: border-box;
+}
+
+.advantageItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 0 20px;
+}
+
+.advantageIcon {
+  font-size: 1.6rem;
+  color: #22c55e;
+  display: flex;
+}
+
+.advantageTitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 4px 0 0;
+}
+
+.advantageDesc {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #a1a1aa;
+  margin: 0;
+  max-width: 220px;
+}
+
+.advantageDivider {
+  width: 1px;
+  height: 56px;
+  background-color: #27272a;
+}
+
+@media (max-width: 720px) {
+  .advantagesStrip {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .advantageDivider {
+    width: 100%;
+    height: 1px;
+  }
+}
+
+
+.contactsSection {
+  max-width: 1178px;
+  margin: 0 auto;
+  padding: 24px 28px;
+  background: #0d0d11;
+  border: 1px solid #1a1a20;
+  border-left: 3px solid #22c55e;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.contactsTextWrap {
+  max-width: 560px;
+}
+
+.contactsTitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  margin: 0 0 6px;
+}
+
+.contactsText {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #a1a1aa;
+  margin: 0;
+}
+
+.contactsLinks {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.contactLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #27272a;
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.contactLink:hover {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.contactLinkIcon {
+  font-size: 1rem;
+}
+
+@media (max-width: 720px) {
+  .contactsSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .contactsLinks {
+    width: 100%;
+  }
+
+  .contactLink {
+    flex: 1;
+    justify-content: center;
+  }
 }
