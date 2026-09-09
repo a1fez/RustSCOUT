@@ -50,16 +50,11 @@ services:
   client:
     build:
       context: ./client
-      dockerfile: Dockerfile.dev       # Используем dev-образ
+      dockerfile: Dockerfile
     container_name: rustscout-client
     restart: unless-stopped
     ports:
-      - "5173:5173"                    # Порт Vite dev-сервера
-    volumes:
-      - ./client:/app                  # Пробрасывает код фронта на лету
-      - /app/node_modules              # Сохраняет контейнерные node_modules
-    environment:
-      - CHOKIDAR_USEPOLLING=true       # Нужно для стабильного отслеживания файлов на Windows
+      - "5173:80"
     depends_on:
       - server
     networks:
