@@ -1,0 +1,277 @@
+.statsWrap,
+.statsGate {
+  min-height: 100vh;
+  background: #070709;
+  color: #e4e4e7;
+  font-family: var(--font-mono);
+  box-sizing: border-box;
+}
+
+/* ── Гейт (ввод токена) ─────────────────────────────── */
+.statsGate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.statsGateBox {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #0d0d11;
+  border: 1px solid #1f1f24;
+  border-left: 3px solid #22c55e;
+  padding: 24px;
+}
+
+.statsGateTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+}
+
+.statsGateHint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #8b8b93;
+  line-height: 1.5;
+}
+
+.statsGateInput {
+  background: #121215;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  padding: 9px 11px;
+  color: #ffffff;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.statsGateInput:focus {
+  border-color: #22c55e;
+}
+
+.statsGateError {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #f87171;
+}
+
+.statsGateBtn {
+  background: #22c55e;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 0;
+  color: #05140b;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.statsGateBtn:hover {
+  opacity: 0.92;
+}
+
+/* ── Дашборд ────────────────────────────────────────── */
+.statsWrap {
+  padding: 24px clamp(16px, 5vw, 56px) 48px;
+}
+
+.statsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #1c1c1f;
+}
+
+.statsBrand {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #a1a1aa;
+}
+
+.statsHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.statsUpdated {
+  font-size: 0.7rem;
+  color: #52525b;
+}
+
+.statsLogout {
+  background: transparent;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  color: #a1a1aa;
+  font-size: 0.72rem;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.statsLogout:hover {
+  border-color: #3f3f46;
+  color: #e4e4e7;
+}
+
+.statsMsg {
+  font-size: 0.85rem;
+  color: #8b8b93;
+}
+
+.statsMsgErr {
+  color: #f87171;
+}
+
+.statsCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.statsCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #0d0d11;
+  border: 1px solid #1f1f24;
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+
+.statsCard.accent {
+  border-left: 3px solid #22c55e;
+}
+
+.statsCardLabel {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8b8b93;
+}
+
+.statsCardValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.statsCardSub {
+  font-size: 0.7rem;
+  color: #52525b;
+}
+
+.statsTableWrap {
+  background: #0d0d11;
+  border: 1px solid #1f1f24;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.statsTableTitle {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8b8b93;
+  padding: 14px 18px;
+  border-bottom: 1px solid #1c1c1f;
+}
+
+.statsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.statsTable th,
+.statsTable td {
+  text-align: left;
+  padding: 10px 18px;
+}
+
+.statsTable th {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #52525b;
+  font-weight: 600;
+}
+
+.statsTable tbody tr {
+  border-top: 1px solid #141417;
+}
+
+.statsRowToday td {
+  color: #ffffff;
+}
+
+.statsBarCol {
+  width: 40%;
+}
+
+.statsBar {
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+  background: #22c55e;
+  min-width: 2px;
+  opacity: 0.75;
+}
+
+.statsFootnote {
+  margin: 18px 2px 0;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: #52525b;
+}
+
+/* ==========================================================
+   АДАПТИВ ПОД МОБИЛЬНЫЕ
+   ========================================================== */
+@media (max-width: 600px) {
+  .statsWrap {
+    padding: 20px 14px 40px;
+  }
+
+  .statsCards {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .statsCard {
+    padding: 14px 16px;
+  }
+
+  .statsCardValue {
+    font-size: 1.6rem;
+  }
+
+  /* Таблица прокручивается по горизонтали вместо сжатия колонок */
+  .statsTableWrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .statsTable {
+    min-width: 440px;
+  }
+
+  .statsTable th,
+  .statsTable td {
+    padding: 9px 12px;
+  }
+}

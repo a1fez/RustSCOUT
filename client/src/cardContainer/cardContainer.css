@@ -1,0 +1,421 @@
+
+
+
+
+.cardWrapper{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #080808; 
+}
+
+.cardContainer {
+    display: grid;
+    max-width: 1200px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 25px;
+    background-color: #1a1a1a28; /* Более мягкий темный фон вместо ярко-красного */
+    padding: 20px;
+    border-radius: 12px;
+    
+}
+
+
+.cardWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+  background: #030303;
+}
+
+/* Карточки + журнал в одном центрированном блоке — на ультравайде журнал
+   остаётся рядом с карточками, а не улетает к краю экрана. */
+.cardLayout {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  max-width: 1760px; /* ~1400 сетка + 20 gap + 340 журнал */
+  margin: 0 auto;
+}
+
+.cardMain {
+  flex: 1 1 auto;
+  min-width: 0;
+  container: players / inline-size; /* число колонок зависит от ширины этой части */
+}
+
+.cardJournal {
+  flex: 0 0 340px;
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
+}
+
+.cardContainer {
+  position: relative;
+  display: grid;
+  width: 100%;
+  padding: 34px 16px 16px;                            /* сверху место под счётчик */
+  grid-template-columns: repeat(4, minmax(0, 1fr));   /* 4 карточки в ряд */
+  grid-auto-rows: minmax(80px, auto);                 /* 20 карточек = 5 рядов */
+  align-content: start;
+  gap: 16px;
+  box-sizing: border-box;
+  min-height: var(--cards-max-h);
+}
+
+/* Счётчик карточек: слева вверху блока */
+.cardCount {
+  position: absolute;
+  top: 10px;
+  left: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  user-select: none;
+}
+
+.cardCount.full {
+  color: #f87171;
+}
+
+/* Число колонок зависит от ширины части с карточками (.cardMain), а не окна */
+@container players (max-width: 900px) {
+  .cardContainer { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@container players (max-width: 640px) {
+  .cardContainer { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@container players (max-width: 420px) {
+  .cardContainer { grid-template-columns: 1fr; }
+}
+
+/* Узкий экран: журнал уходит под карточки */
+@media (max-width: 900px) {
+  .cardLayout { 
+    flex-direction: column; 
+    align-items: stretch; /* Растягивает дочерние элементы по горизонтали */
+  }
+  .cardMain {
+    width: 100%;          /* Заставляет блок с сеткой занимать всю ширину */
+  }
+  .cardJournal {
+    position: static;
+    flex-basis: auto;
+    width: 100%;
+  }
+}
+
+/* Телефон: меньше внешних отступов, счётчик не липнет к краю */
+@media (max-width: 600px) {
+  .cardWrapper {
+    padding: 12px;
+  }
+
+  .cardContainer {
+    padding: 34px 10px 12px;
+    gap: 12px;
+  }
+
+  .cardLayout {
+    gap: 14px;
+  }
+}
+
+/* Сама карточка в стиле модального окна */
+.card {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  background: #020202c9;
+  border: 2px solid #32353d;
+
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 14px;
+  box-sizing: border-box;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+
+}
+
+/* Кружок-статус в левом верхнем углу карточки */
+.cardStatusCorner {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  outline: 2px solid #020202;
+  z-index: 2;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: #10e222ce;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* Аватарка */
+.cardImage {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #23252b;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Блок текста: выравниваем никнейм и статус четко друг под другом */
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cardPlayerName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardStatusRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cardStatusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cardStatusLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  letter-spacing: 0.4px;
+  margin: 0;
+}
+
+/* Позиционирование кругового таймера справа на карточке */
+.cardCircularTimer {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: auto; /* Прижимает круг к правому краю карточки */
+}
+
+/* Векторный круг */
+.cardTimerSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* Начало анимации с 12 часов */
+}
+
+/* Фоновая серая подложка */
+.cardCircleBg {
+  fill: none;
+  stroke: #23252b;
+  stroke-width: 3;
+}
+
+/* Зеленый прогресс-бар */
+.cardCircleProgress {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 3;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 1px rgba(34, 197, 94, 0.5));
+  transition: stroke-dashoffset 1s linear;
+}
+
+/* Текст времени внутри круга */
+.cardTimerText {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: #4ade80;
+  letter-spacing: -0.5px;
+  user-select: none;
+}
+
+/* Скелетон в точно таких же габаритах */
+.skeletonCard {
+  border-left-color: #23252b !important;
+  cursor: default !important;
+  pointer-events: none;
+}
+
+.skeletonImage {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+}
+
+.skeletonInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.skeletonLine {
+  border-radius: 4px;
+}
+
+.skeletonName {
+  width: 70%;
+  height: 14px;
+}
+
+.skeletonStatus {
+  width: 45%;
+  height: 10px;
+}
+
+.skeletonShimmer {
+  background: linear-gradient(
+    90deg,
+    #1b1d24 0%,
+    #2a2e38 50%,
+    #1b1d24 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Когда карточек нет — единственная строка сетки центрируется по вертикали
+   внутри min-height контейнера (в обычном состоянии остаётся align-content: start). */
+.cardContainer:has(> .cardEmpty) {
+  align-content: center;
+}
+
+/* Сообщение «карточек нет» занимает всю сетку и центрируется в блоке
+   и по горизонтали, и по вертикали. */
+.cardEmpty {
+  grid-column: 1 / -1;       /* Растянуть блок на всю ширину сетки (от 1 до последней колонки) */
+  width: 100%;
+  max-width: 400px;
+  margin: auto;              /* Автоматические отступы центрируют блок внутри сетки */
+  padding: 28px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.6;
+  font-size: 13px;
+  color: #6b7280;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .cardEmpty {
+    /* на телефоне сетка невысокая — убираем огромную пустоту сверху/снизу */
+    min-height: 200px;
+    padding: 24px 16px;
+    justify-self: center;
+  }
+}
+
+/* Стили анимации переливающегося скелетона */
+.skeletonCard {
+  border-color: #23252b !important;
+  cursor: default !important;
+  pointer-events: none;
+}
+
+.skeletonImage {
+  border-radius: 8px;
+}
+
+.skeletonInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.skeletonLine {
+  border-radius: 4px;
+}
+
+.skeletonName {
+  width: 65%;
+  height: 16px;
+}
+
+.skeletonStatus {
+  width: 40%;
+  height: 12px;
+}
+
+/* Анимация Shimmer (серый перелив) */
+.skeletonShimmer {
+  background: linear-gradient(
+    90deg,
+    #1b1d24 0%,
+    #2a2e38 50%,
+    #1b1d24 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+

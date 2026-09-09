@@ -1,0 +1,224 @@
+/* Лента, а не окно: только боковые грани, без скруглений и рамок сверху/снизу —
+   визуально «впаяна» в блок, к которому примыкает. */
+.journal {
+  display: flex;
+  flex-direction: column;
+  background: #1a1a1a28;
+  border: none;
+  border: 1px solid #27272a71;
+  border-radius: 0;
+  overflow: hidden;
+  /* та же высота, что и максимальная высота блока карточек */
+  height: var(--cards-max-h);
+}
+
+.journalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: transparent;
+  border-bottom: 1px solid #1c1c1f;
+  flex-shrink: 0;
+}
+
+.journalTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #a1a1aa;
+}
+
+.journalClearBtn {
+  background: transparent;
+  border: none;
+  font-size: 0.7rem;
+  color: #71717a;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.journalClearBtn:hover:not(:disabled) {
+  color: #e4e4e7;
+}
+
+.journalClearBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.journalList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 transparent;
+}
+
+.journalList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.journalList::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 3px;
+}
+
+.journalItem {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #18181b;
+  animation: journalItemIn 0.18s ease-out;
+}
+
+.journalItem:last-child {
+  border-bottom: none;
+}
+
+.journalItem:hover {
+  background: #101013;
+}
+
+@keyframes journalItemIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.journalDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.journalBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.journalTopline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.journalTag {
+  font-weight: 800;
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.journalTime {
+  font-size: 0.66rem;
+  color: #52525b;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.journalPlayer {
+  margin: 3px 0 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #f4f4f5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.journalMsg {
+  margin: 0;
+  font-size: 0.74rem;
+  color: #a1a1aa;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* Смена / уход / вход — читаемый блок с полными именами серверов */
+.journalSwitch {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.journalAction {
+  font-size: 0.68rem;
+  color: #8b8b93;
+  margin-bottom: 2px;
+}
+
+.journalServer {
+  display: block;
+  padding: 6px 9px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  word-break: break-word;
+  border: 1px solid #26262b;
+  background: #141417;
+}
+
+.journalServer.from {
+  color: #9a9aa2;
+}
+
+.journalServer.to {
+  color: #f4f4f5;
+  border-color: #3f3a1d;
+  background: #1c1a12;
+}
+
+.journalServer.home {
+  color: #eafff0;
+  border-color: #1f4a30;
+  background: #102017;
+}
+
+.journalArrow {
+  align-self: center;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: #f59e0b;
+  margin: 1px 0;
+}
+
+.journalEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 34px 22px;
+  text-align: center;
+}
+
+.journalEmptyGlyph {
+  font-size: 24px;
+  color: #3f3f46;
+  line-height: 1;
+}
+
+.journalEmpty p {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #a1a1aa;
+}
+
+.journalEmptyHint {
+  font-size: 0.68rem;
+  color: #52525b;
+  line-height: 1.45;
+  max-width: 240px;
+}
+
+/* Телефон: журнал под карточками — не нужен во весь экран по высоте */
+@media (max-width: 900px) {
+  .journal {
+    height: 60vh;
+    max-height: 420px;
+  }
+}

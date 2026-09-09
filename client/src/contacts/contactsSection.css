@@ -1,0 +1,99 @@
+.contactsSection {
+  max-width: 1178px;
+  margin: 24px auto 40px;
+  padding: 24px 28px;
+  background: #080808;
+  border: 1px solid #1a1a20;
+  border-left: 3px solid #22c55e;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.contactsTextWrap {
+  max-width: 560px;
+}
+
+.contactsTitle {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  margin: 0 0 6px;
+}
+
+.contactsText {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #a1a1aa;
+  margin: 0;
+}
+
+.contactsLinks {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.contactLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #27272a;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.contactLink:hover {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.contactLinkIcon {
+  font-size: 1rem;
+}
+
+@media (max-width: 720px) {
+  .contactsSection {
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 20px 12px 32px;
+    padding: 20px;
+  }
+
+  .contactsLinks {
+    width: 100%;
+  }
+
+  .contactLink {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+/* Мелкие телефоны: ссылки в столбик, длинный e-mail не ломает вёрстку */
+@media (max-width: 480px) {
+  .contactsLinks {
+    flex-direction: column;
+  }
+
+  .contactLink {
+    width: 100%;
+    flex: none;
+    padding: 12px 14px;
+    font-size: 0.78rem;
+    white-space: normal;
+    word-break: break-word;
+    text-align: center;
+  }
+}

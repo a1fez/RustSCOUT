@@ -1,0 +1,77 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: rustscout-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-JVNM6aDP39RCT8fjYJmx}
+      POSTGRES_DB: ${POSTGRES_DB:-rustscout}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - rustscout-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: rustscout-redis
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6380:6379"
+    volumes:
+      - redisdata:/data
+    networks:
+      - rustscout-network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: rustscout-server
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./server:/app                  # Пробрасывает код сервера на лету
+      - /app/node_modules              # Защищает контейнерные зависимости от перезаписи
+    env_file:
+      - ./server/.env
+    environment:
+      - DATABASE_URL=postgresql://postgres:JVNM6aDP39RCT8fjYJmx@postgres:5432/rustscout?schema=public
+      - REDIS_URL=redis://rustscout-redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - rustscout-network
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev       # Используем dev-образ
+    container_name: rustscout-client
+    restart: unless-stopped
+    ports:
+      - "5173:5173"                    # Порт Vite dev-сервера
+    volumes:
+      - ./client:/app                  # Пробрасывает код фронта на лету
+      - /app/node_modules              # Сохраняет контейнерные node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true       # Нужно для стабильного отслеживания файлов на Windows
+    depends_on:
+      - server
+    networks:
+      - rustscout-network
+
+
+networks:
+  rustscout-network:
+    driver: bridge
+
+volumes:
+  pgdata:
+  redisdata:
+
+  

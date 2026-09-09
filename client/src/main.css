@@ -1,0 +1,60 @@
+:root {
+  --font-mono: 'Geist Mono', ui-monospace, 'Cascadia Code', 'Courier New', monospace;
+
+  /* Габариты сетки карточек. 20 карточек по 4 в ряд = 5 рядов.
+     Высота = ряды*80 + промежутки*16 + вертикальные паддинги контейнера (34 + 16). */
+  --card-row-h: 80px;
+  --card-gap: 16px;
+  --card-rows: 5;
+  --cards-max-h: calc(
+    var(--card-rows) * var(--card-row-h) +
+    (var(--card-rows) - 1) * var(--card-gap) + 50px
+  );
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  background: #030303;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Раскладка «карточки + журнал» живёт в cardContainer.css (.cardLayout). */
+
+/* Заглушка страницы «Информация» */
+.infoContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 32px;
+  color: #f4f4f5;
+}
+
+.infoContainer h1 {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  margin: 0 0 12px;
+}
+
+.infoContainer p {
+  color: #a1a1aa;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .infoContainer {
+    padding: 40px 16px;
+  }
+}

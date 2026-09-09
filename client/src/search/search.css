@@ -1,0 +1,279 @@
+.search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px 16px;
+    height: 200px;
+    box-sizing: border-box;
+}
+
+.searchBackground {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    background: url(../resource/rustSearch.png) center center no-repeat;
+    background-size: cover;
+    background-position: 10% 45%;
+    filter: blur(3px);
+    z-index: -1; /* Размещаем позади содержимого */
+}
+
+
+/* Общая плашка (карточка) с закругленными углами */
+.searchFormCard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 520px;
+    padding-right: 50px; /* Оставляем место под общую кнопку */
+}
+
+.inputRow {
+    position: relative;
+    width: 100%;
+}
+
+/* Единый стиль для инпута и селекта */
+.searchInput, 
+.customSelect {
+    width: 100%;
+    height: 38px;
+    border: none;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    background-color: #1a1a1a;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    padding: 0 16px;
+    box-sizing: border-box;
+    font-size: 14px;
+    color: #929292;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+}
+
+.searchInput:focus {
+    outline: none;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+/* Стили плейсхолдера кастомного селекта */
+.selectPlaceholder {
+    color: #8e8e8e;
+}
+
+.selectValue {
+    color: #222;
+    font-weight: 500;
+}
+
+/* Иконка стрелочки */
+.chevronIcon {
+    font-size: 16px;
+    color: #555;
+    transition: transform 0.3s ease;
+}
+
+.chevronIcon.rotate {
+    transform: rotate(180deg);
+}
+
+
+/* --- ВЫПАДАЮЩИЙ СПИСОК (Dropdown) --- */
+/* --- ВЫПАДАЮЩИЙ СПИСОК (Dropdown) --- */
+.dropdownMenu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;       /* Фиксирует ширину строго по родителю */
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    padding: 6px;
+    z-index: 100;
+    max-height: 180px;
+    overflow-y: auto;             /* Только вертикальный скролл */
+    overflow-x: hidden;           /* Убирает нижний горизонтальный скролл */
+    animation: fadeIn 0.2s ease-in-out;
+    
+    scrollbar-width: thin;
+    scrollbar-color: #333333 transparent;
+}
+
+
+
+/* Элемент списка: обрезает слишком длинные названия с троеточием (...) */
+.dropdownItem {
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    font-family: var(--font-mono);
+    color: #8e8e8e;
+    font-weight: 200;
+    
+    /* Предотвращает появление горизонтального скролла */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.dropdownItem:hover {
+    background-color: #262626;
+    color: #ffffff;
+}
+
+.dropdownItem.selected {
+    background-color: #303030;
+    font-weight: 500;
+    color: #ffffff93;
+}
+
+/* Правая кнопка поиска */
+.searchSubmitButton {
+    position: absolute;
+    right: 0;
+    top: 0px;
+    bottom: 0;
+    left: auto;
+    width: 40px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 6px;
+    background-color: #1a1a1a;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s;
+}
+
+.searchSubmitButton:hover {
+    background-color: #f7f7f72d;
+}
+
+.searchSubmitButton:active {
+    transform: scale(0.96);
+}
+
+.searchIcon {
+    font-size: 20px;
+    color: #222;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.selectInputWrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.selectInputWrapper .searchInput {
+    padding-right: 35px; /* Освобождаем место для стрелочки справа */
+}
+
+/* Позиционирование стрелочки кликабельным образом поверх инпута */
+.selectInputWrapper .chevronIcon {
+    position: absolute;
+    right: 14px;
+    font-size: 16px;
+    color: #777;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.chevronIcon.rotate {
+    transform: rotate(180deg);
+}
+
+/* Текст, если ничего не найдено */
+.dropdownNoResults {
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #888;
+    
+    font-weight: 700;
+}
+
+
+
+/* error message */
+.errorText {
+    /* Растягивается точно под длину одной строки текста */
+    width: fit-content;
+    max-width: 100%;
+    white-space: nowrap; /* Запрещает перенос на вторую строку */
+
+    height: 28px;
+    font-size: 13px;
+    padding: 0 12px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+
+    position: absolute;
+    top: 40px;
+    left: 2px;
+
+    font-weight: 500;
+    color: #ff4d4f;
+    background-color: rgba(1, 5, 1, 0.85);
+    border: 1px solid #b90e0e;
+    border-radius: 4px;
+    z-index: 10;
+}
+
+/* ==========================================================
+   АДАПТИВ ПОД МОБИЛЬНЫЕ
+   ========================================================== */
+@media (max-width: 600px) {
+    .search,
+    .searchBackground {
+        height: 170px;
+    }
+
+    .searchInput,
+    .customSelect {
+        height: 40px;
+        font-size: 16px; /* >=16px — iOS не зумит страницу при фокусе */
+    }
+
+    /* Ошибка переносится на несколько строк, а не уезжает за экран */
+    .errorText {
+        white-space: normal;
+        width: 100%;
+        height: auto;
+        min-height: 28px;
+        padding: 6px 12px;
+        top: 44px;
+        line-height: 1.35;
+    }
+
+    .errorText p {
+        margin: 0;
+    }
+}
