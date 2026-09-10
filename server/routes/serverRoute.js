@@ -8,7 +8,9 @@ const router = express.Router();
 router.get('/servers', async (req, res) => {
   try {
     const result = await db.query(
-      'SELECT * FROM "Server" ORDER BY players DESC LIMIT 200;'
+      `SELECT * FROM "Server"
+       WHERE status = 'online' AND "updatedAt" > NOW() - INTERVAL '20 minutes'
+       ORDER BY players DESC LIMIT 200;`
     );
 
     return res.status(200).json({

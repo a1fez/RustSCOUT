@@ -9,14 +9,20 @@ const { tierForRank } = require('./tiers.js');
 async function resolveServerTier(serverId) {
   if (!serverId) return null;
 
+  // Ранг считаем только среди «свежих» online-серверов: подмороженные строки
+  // (сервер давно выпал из топ-300 и не переопрашивается) не должны влиять на rank.
   const { rows } = await db.query(
     `SELECT (
        SELECT COUNT(*)::int
        FROM "Server" s2
-       WHERE s2.status = 'online' AND s2.players > s1.players
+       WHERE s2.status = 'online'
+         AND s2."updatedAt" > NOW() - INTERVAL '20 minutes'
+         AND s2.players > s1.players
      ) AS rank
      FROM "Server" s1
-     WHERE s1.id = $1`,
+     WHERE s1.id = $1
+       AND s1.status = 'online'
+       AND s1."updatedAt" > NOW() - INTERVAL '20 minutes'`,
     [String(serverId)]
   );
 

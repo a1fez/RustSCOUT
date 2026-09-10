@@ -89,7 +89,9 @@ async function scrapeTier(tier) {
 
   try {
     const result = await db.query(
-      'SELECT id FROM "Server" WHERE status = \'online\' ORDER BY players DESC LIMIT $1 OFFSET $2;',
+      `SELECT id FROM "Server"
+       WHERE status = 'online' AND "updatedAt" > NOW() - INTERVAL '20 minutes'
+       ORDER BY players DESC LIMIT $1 OFFSET $2;`,
       [tier.limit, tier.offset]
     );
 
