@@ -1,4 +1,6 @@
-// Возвращает актуальные статусы всех отслеживаемых игроков из реестра.
+// Возвращает актуальные статусы отслеживаемых игроков ОДНОГО клиента из
+// реестра (см. clientId в роутах и trackingRegistry.js) — иначе все анонимные
+// пользователи получали бы чужие записи в общем ответе.
 // Базовый статус (online / покинул сервер) пишет playerScraper при обновлении
 // сервера в ритме его тира; здесь только лёгкое до-обновление по свежему ключу
 // player:<bmId>:server, чтобы ответ не отставал сильнее одного цикла скрапера.
@@ -11,8 +13,9 @@ const redisSingleton = require('../redis.js');
 const { getAllTracked } = require('./trackingRegistry.js');
 const { resolveServerNames } = require('./serverNames.js');
 
-async function checkPlayersStatus(redisClient = redisSingleton) {
-  const tracked = await getAllTracked();
+async function checkPlayersStatus(clientId, redisClient = redisSingleton) {
+  const all = await getAllTracked();
+  const tracked = clientId ? all.filter((t) => t.clientId === clientId) : [];
   if (!tracked.length) return [];
 
   const withBm = tracked.filter((t) => t.bmId);

@@ -32,7 +32,7 @@ const POLL_INTERVAL_MS = 10 * 1000; // как часто перечитывае�
  */
 async function reconcileEntry(entry, playersOnServer, { fresh = false } = {}) {
   if (isExpired(entry)) {
-    await removeTracked(entry.steamId);
+    await removeTracked(entry.clientId, entry.steamId);
     return null;
   }
 
@@ -93,7 +93,7 @@ async function reconcileEntry(entry, playersOnServer, { fresh = false } = {}) {
     patch.serverId = status.currentServerId;
   }
 
-  await patchTracked(entry.steamId, patch);
+  await patchTracked(entry.clientId, entry.steamId, patch);
   return status;
 }
 

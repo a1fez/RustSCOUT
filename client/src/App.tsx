@@ -10,6 +10,7 @@ import type { NotifEvent, NotifInput } from "./notifications/notification";
 import { makeNotifId, SOUND_TYPES } from "./notifications/notification";
 import { primeAudio, playAlert } from "./sound/alert";
 import { ContactsSection } from "./contacts/contactsSection";
+import { getClientId } from "./clientId";
 
 export interface SearchData {
   steamId: string;
@@ -47,7 +48,7 @@ const SYSTEM_NOTIFICATIONS: NotifEvent[] = [
 function requestUntrack(steamId: string) {
   fetch(`${API}/api/untrack`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-Client-Id': getClientId() },
     body: JSON.stringify({ steamId }),
   }).catch(() => {});
 }
@@ -129,7 +130,7 @@ const App = () => {
       try {
         const res = await fetch(`${API}/api/status`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-Client-Id': getClientId() },
           body: JSON.stringify({}),
         });
         const json = await res.json();
@@ -289,7 +290,7 @@ const App = () => {
     try {
       const res = await fetch(`${API}/api/track`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Client-Id': getClientId() },
         body: JSON.stringify({
           steamId,
           bmId: player.bmId,

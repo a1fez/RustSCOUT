@@ -2,10 +2,17 @@ const express = require('express');
 const router = express.Router();
 const redis = require('../redis.js');
 const { checkPlayersStatus } = require('../service/trackingPlayers');
-const { addTracked, removeTracked, clearAllTracked, getAllTracked } = require('../service/trackingRegistry');
+const { addTracked, removeTracked, clearTrackedForClient, getAllTracked } = require('../service/trackingRegistry');
 const { resolveServerTier } = require('../service/tierResolver');
 const { reconcileAllFromRedis } = require('../service/trackingReconcile');
 const { getBySteamId } = require('../service/verifiedPlayers');
+
+// Каждый анонимный клиент (браузер) шлёт свой X-Client-Id — так реестр
+// отслеживания не расползается на всех пользователей разом (см. trackingRegistry.js).
+function getClientId(req) {
+  const id = req.headers['x-client-id'] || req.body?.clientId;
+  return id ? String(id).slice(0, 200) : null;
+}
 
 module.exports = (redisClient) => {
   // Начать отслеживание игрока.
@@ -14,7 +21,11 @@ module.exports = (redisClient) => {
   router.post('/track', async (req, res) => {
     try {
       const { steamId, bmId, personaname, serverId, durationMs } = req.body || {};
+      const clientId = getClientId(req);
 
+      if (!clientId) {
+        return res.status(400).json({ success: false, error: 'X-Client-Id обязателен' });
+      }
       if (!steamId || !serverId) {
         return res.status(400).json({ success: false, error: 'steamId и serverId обязательны' });
       }
@@ -33,6 +44,7 @@ module.exports = (redisClient) => {
 
       const tier = await resolveServerTier(serverId);
       const entry = await addTracked({
+        clientId,
         steamId,
         bmId: resolvedBmId,
         personaname,
@@ -62,31 +74,44 @@ module.exports = (redisClient) => {
   router.post('/untrack', async (req, res) => {
     try {
       const { steamId } = req.body || {};
+      const clientId = getClientId(req);
+      if (!clientId) {
+        return res.status(400).json({ success: false, error: 'X-Client-Id обязателен' });
+      }
       if (!steamId) {
         return res.status(400).json({ success: false, error: 'steamId обязателен' });
       }
-      await removeTracked(steamId);
+      await removeTracked(clientId, steamId);
       res.json({ success: true });
     } catch (err) {
       res.status(500).json({ success: false, error: err.message });
     }
   });
 
-  // Снять с отслеживания вообще всех (вызывается фронтом при удалении карточки).
-  router.post('/untrack-all', async (_req, res) => {
+  // Снять с отслеживания всех игроков ЭТОГО клиента (вызывается фронтом при
+  // удалении карточки) — чужие записи в реестре не трогаем.
+  router.post('/untrack-all', async (req, res) => {
     try {
-      await clearAllTracked();
+      const clientId = getClientId(req);
+      if (!clientId) {
+        return res.status(400).json({ success: false, error: 'X-Client-Id обязателен' });
+      }
+      await clearTrackedForClient(clientId);
       res.json({ success: true });
     } catch (err) {
       res.status(500).json({ success: false, error: err.message });
     }
   });
 
-  // Текущий статус всех отслеживаемых игроков (фронт опрашивает этот роут).
+  // Текущий статус отслеживаемых игроков ЭТОГО клиента (фронт опрашивает этот роут).
   // Читаем через тот же Redis-клиент (redis.js), которым пишет playerScraper.
-  router.post('/status', async (_req, res) => {
+  router.post('/status', async (req, res) => {
     try {
-      const data = await checkPlayersStatus();
+      const clientId = getClientId(req);
+      if (!clientId) {
+        return res.status(400).json({ success: false, error: 'X-Client-Id обязателен' });
+      }
+      const data = await checkPlayersStatus(clientId);
       res.json({ success: true, data });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -131,6 +156,7 @@ module.exports = (redisClient) => {
         }
 
         tracked.push({
+          clientId: e.clientId,
           steamId: e.steamId,
           bmId: e.bmId,
           personaname: e.personaname,
