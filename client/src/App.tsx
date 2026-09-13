@@ -373,7 +373,11 @@ const App = () => {
       )}
 
       {currentPage === 'main' && (
-        <MainPage />
+        <MainPage  
+        onNavigateSearch={() => setCurrentPage('search')}
+        onOpenRoadmap={() => setCurrentPage('roadmap')}
+        />
+        
       )}
     </>
   );
