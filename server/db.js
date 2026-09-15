@@ -30,6 +30,19 @@ async function initDB() {
         "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
     `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "User" (
+        "steamId" VARCHAR(32) UNIQUE NOT NULL,
+        "userId" SERIAL PRIMARY KEY,
+        personaname TEXT,
+        "avatarLink" TEXT,
+        "createdAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        "lastActive" TIMESTAMPTZ NULL
+
+      );  
+    `);
+
     await pool.query('CREATE INDEX IF NOT EXISTS "VerifiedPlayer_bmId_idx" ON "VerifiedPlayer" ("bmId");');
     console.log('✅ [PostgreSQL] Таблица "VerifiedPlayer" готова');
   } catch (err) {
