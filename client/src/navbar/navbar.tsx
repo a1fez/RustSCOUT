@@ -106,7 +106,7 @@ const Navbar = ({
               onClick={toggleNotif}
               aria-label="Системные оповещения"
             >
-              <BiArchive className="icon" />
+              <BiArchive className="iconBi"/>
               {unreadCount > 0 && (
                 <span className="notificationBadge">
                   {unreadCount > 9 ? '9+' : unreadCount}
@@ -178,11 +178,7 @@ const Navbar = ({
             )}
           </div>
           <GoGear className="icon" />
-          <HiUserCircle
-            className="icon"
-            color="black"
-            style={{ backgroundColor: 'white', borderRadius: '50%' }}
-          />
+          <div className="signUpButton"> Login </div>
         </div>
       </div>
     </div>
