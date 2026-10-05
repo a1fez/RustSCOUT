@@ -42,9 +42,10 @@ async function initDB() {
 
       );  
     `);
+    console.log('✅ [PostgreSQL] Таблицa User готовa')
 
     await pool.query('CREATE INDEX IF NOT EXISTS "VerifiedPlayer_bmId_idx" ON "VerifiedPlayer" ("bmId");');
-    console.log('✅ [PostgreSQL] Таблица "VerifiedPlayer" готова');
+    console.log('✅ [PostgreSQL] Таблицы готовы');
   } catch (err) {
     console.error('❌ [PostgreSQL] Ошибка инициализации таблицы:', err.message);
   }

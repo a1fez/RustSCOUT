@@ -1,12 +1,15 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const { createClient } = require('redis');
-
 // Загрузка .env и фоновых сервисов
+const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 require('./service/serverList.js');
 require('./service/playerScraper.js');
+
+const { RedisStore } = require('connect-redis');
+const session = require('express-session');
+const express = require('express');
+const cors = require('cors');
+const redisClient = require('./redis.js')
+
 
 // Поллер отслеживаемых игроков: раз в 10с перечитывает Redis по каждому
 // отслеживаемому игроку и списку его сервера.
@@ -33,16 +36,25 @@ const { analyticsMiddleware } = require('./service/analytics.js');
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Инициализация Redis клиента
-const redisClient = createClient({
-  url: process.env.REDIS_URL || 'redis://redis:6379',
-});
+//redis
 
-redisClient.on('error', (err) => console.error('❌ Ошибка Redis Client:', err));
-redisClient.connect().then(() => {
-  console.log('✅ Успешное подключение к Redis');
-}).catch((err) => {
-  console.error('❌ Не удалось подключиться к Redis:', err.message);
+let redisStore = new RedisStore({
+  client: redisClient,
+  prefix: "myapp",
+})
+
+app.use(
+  session({
+    store: redisStore,
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.SESSION_SECRET,
+    cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 1}
+}))
+
+app.get('/api/session-test', (req, res) => {
+  req.session.visits = (req.session.visits || 0) + 1;
+  res.json({ visits: req.session.visits });
 });
 
 // Middlewares
@@ -60,6 +72,8 @@ app.use('/api', serverRoutes);
 
 // Роуты игроков
 app.use('/api', playerRoutes(redisClient));
+
+
 
 // Роут поиска игрока
 // Отдаёт данные, ТОЛЬКО когда вся цепочка Steam -> Redis -> BattleMetrics
