@@ -13,6 +13,7 @@ const MENU_ITEMS = ['main', 'search'];
 
 interface NavbarProps {
   onOpenRoadmap?: () => void;
+  onOpenProfile?: () => void;
   onSelectTab?: (tab: string) => void;
   notifications?: NotifEvent[];
   onClearNotifications?: () => void;
@@ -21,6 +22,7 @@ interface NavbarProps {
 
 const Navbar = ({
   onOpenRoadmap,
+  onOpenProfile,
   onSelectTab,
   notifications = [],
   onClearNotifications,
@@ -178,7 +180,9 @@ const Navbar = ({
             )}
           </div>
           <GoGear className="icon" />
-          <div className="signUpButton"> Login </div>
+          <button className="signUpButton" onClick={onOpenProfile} type="button">
+            Login
+          </button>
         </div>
       </div>
     </div>

@@ -13,11 +13,17 @@
     left: 0;
     width: 100%;
     height: 200px;
-    background: url(../resource/rustSearch.png) center center no-repeat;
+    /* Накладываем два градиента поверх фоновой картинки:
+       1. linear-gradient — плавно гасит белизну снизу в основной цвет фона (#000 или #0a0a0a).
+       2. radial-gradient — мягко заливает центр глубоким черным и слегка приглушает края. */
+    background: 
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 40%, rgba(0, 0, 0, 0.95) 100%),
+        radial-gradient(ellipse 15% 75% at center, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.8) 100%),
+        url(../resource/rustSearch1.jpg) center center no-repeat;
     background-size: cover;
     background-position: 10% 45%;
-    filter: blur(3px);
-    z-index: -1; /* Размещаем позади содержимого */
+    filter: blur(0px);
+    z-index: -1;
 }
 
 

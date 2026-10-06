@@ -6,6 +6,7 @@ import './main.css';
 import { Roadmap } from "./pages/roadmap/roadmap";
 import type { PlayerData } from "./cardContainer/player";
 import { MainPage } from "./pages/main/mainPage";
+import { UserProfile } from "./pages/userProfile/userProfile";
 import type { NotifEvent, NotifInput } from "./notifications/notification";
 import { makeNotifId, SOUND_TYPES } from "./notifications/notification";
 import { primeAudio, playAlert } from "./sound/alert";
@@ -337,6 +338,7 @@ const App = () => {
     <>
       <Navbar
         onOpenRoadmap={() => setCurrentPage('roadmap')}
+        onOpenProfile={() => setCurrentPage('profile')}
         onSelectTab={(tab) => setCurrentPage(tab.toLocaleLowerCase())}
         notifications={systemNotifications}
         onClearNotifications={clearSystemNotifications}
@@ -364,6 +366,10 @@ const App = () => {
 
       {currentPage === 'roadmap' && (
         <Roadmap onBack={() => setCurrentPage('search')} />
+      )}
+
+      {currentPage === 'profile' && (
+        <UserProfile />
       )}
 
       {currentPage === 'info' && (

@@ -1,0 +1,808 @@
+.profileView {
+  min-height: calc(100vh - 60px);
+  background-color: #000000;
+  color: #f4f4f5;
+  padding: 40px 40px 80px 40px;
+  box-sizing: border-box;
+  font-family: var(--font-mono);
+  animation: profileFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes profileFadeIn {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Плашка профиля: во всю ширину, над сайдбаром и контентом ── */
+.profileBanner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto 24px auto;
+  background: #0d0d11;
+  border: 1px solid #1f1f24;
+  border-radius: 10px;
+  padding: 20px 24px;
+}
+
+.identityAvatar {
+  position: relative;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #18181b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.identityAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.identityAvatarFallback {
+  font-size: 30px;
+  color: #52525b;
+}
+
+.identitySteamBadge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #101014;
+  border: 1px solid #27272a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #66c0f4;
+  font-size: 11px;
+}
+
+.bannerInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.identityName {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.bannerMetaRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.identitySteamId {
+  display: inline-flex;
+  align-items: center;
+  background: #121215;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  padding: 3px 4px 3px 8px;
+  gap: 6px;
+}
+
+.identitySteamId code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #d1d5db;
+}
+
+.copyBtnSmall {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+}
+
+.copyBtnSmall:hover {
+  color: #ffffff;
+}
+
+.identityProfileLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #66c0f4;
+  text-decoration: none;
+}
+
+.identityProfileLink:hover {
+  text-decoration: underline;
+}
+
+.bannerActions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bannerPlanChip {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+/* ── Основная раскладка: сайдбар (только навигация) + контент ── */
+.profileLayout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.profileSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profileNav {
+  display: flex;
+  flex-direction: column;
+  background: #0d0d11;
+  border: 1px solid #1f1f24;
+  border-radius: 10px;
+  padding: 6px;
+  gap: 2px;
+}
+
+.profileNavItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  color: #8b8b93;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 11px 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.profileNavIcon {
+  display: flex;
+  font-size: 15px;
+  color: #52525b;
+  transition: color 0.15s ease;
+}
+
+.profileNavItem:hover {
+  background: #15151a;
+  color: #e4e4e7;
+}
+
+.profileNavItem.active {
+  background: rgba(34, 197, 94, 0.1);
+  color: #ffffff;
+}
+
+.profileNavItem.active .profileNavIcon {
+  color: #22c55e;
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid #ef444433;
+  border-radius: 8px;
+  color: #ef4444;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.logoutBtn:hover {
+  background: #ef44441a;
+  border-color: #ef4444;
+}
+
+/* ── Контент раздела ───────────────────────────────────── */
+.profileContent {
+  background: #0d0d11;
+  border: 1px solid #1f1f24;
+  border-radius: 10px;
+  padding: 28px 32px;
+  min-height: 420px;
+}
+
+.contentPane {
+  animation: paneFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes paneFadeIn {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.paneTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+}
+
+.paneHint {
+  font-size: 0.8rem;
+  color: #71717a;
+  line-height: 1.5;
+  margin: 0 0 24px 0;
+  max-width: 560px;
+}
+
+/* ── Профиль: сетка инфоблоков ─────────────────────────── */
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.infoTile {
+  background: #121215;
+  border: 1px solid #27272a;
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.infoTileLabel {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.infoTileValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.monoValue {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.connectedValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #4ade80;
+}
+
+.statusDotSmall {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+}
+
+/* ── Настройки: строки с переключателями ──────────────── */
+.settingsGroupLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #52525b;
+  margin: 0 0 12px 0;
+}
+
+.settingsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.settingsRowLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #a1a1aa;
+  font-size: 16px;
+}
+
+.settingsRowLabel > div {
+  min-width: 0;
+}
+
+.settingsRowTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e4e4e7;
+  margin: 0;
+}
+
+.settingsRowSub {
+  font-size: 11px;
+  color: #6b7280;
+  margin: 2px 0 0 0;
+}
+
+.notifTypeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.settingsDivider {
+  height: 1px;
+  background: #1c1c1f;
+  margin: 2px 0;
+}
+
+/* Переключатель вкл/выкл */
+.toggleSwitch {
+  position: relative;
+  flex-shrink: 0;
+  width: 38px;
+  height: 22px;
+  border-radius: 11px;
+  background: #27272a;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.toggleSwitch.on {
+  background: #22c55e;
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform 0.2s ease;
+}
+
+.toggleSwitch.on .toggleKnob {
+  transform: translateX(16px);
+}
+
+/* Сегментированный контрол (длительность трекинга) */
+.segmentedControl {
+  display: flex;
+  background: #121215;
+  border: 1px solid #27272a;
+  border-radius: 7px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.segmentBtn {
+  background: transparent;
+  border: none;
+  color: #71717a;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.segmentBtn:hover {
+  color: #d1d5db;
+}
+
+.segmentBtn.active {
+  background: #22c55e;
+  color: #05140b;
+}
+
+/* Степпер (лимит одновременных отслеживаний) */
+.stepperControl {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #121215;
+  border: 1px solid #27272a;
+  border-radius: 7px;
+  padding: 4px 8px;
+}
+
+.stepperBtn {
+  background: transparent;
+  border: none;
+  color: #a1a1aa;
+  font-size: 16px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.stepperBtn:hover {
+  color: #ffffff;
+}
+
+.stepperValue {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  min-width: 16px;
+  text-align: center;
+}
+
+/* ── Друзья: две колонки (в сети / не в сети) ─────────── */
+.friendsColumns {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.friendsColumn {
+  min-width: 0;
+}
+
+.friendsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.friendCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #121215;
+  border: 1px solid #27272a;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.friendAvatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #18181b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #52525b;
+  font-size: 16px;
+}
+
+.friendInfo {
+  min-width: 0;
+}
+
+.friendName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e4e4e7;
+  margin: 0 0 3px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friendStatusRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #71717a;
+}
+
+.friendStatusLabel {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.friendServer {
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── История поиска ───────────────────────────────────── */
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #121215;
+  border: 1px solid #27272a;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.historyIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #18181b;
+  color: #52525b;
+  font-size: 13px;
+}
+
+.historyInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.historyName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e4e4e7;
+  margin: 0 0 3px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historySub {
+  font-size: 11px;
+  color: #6b7280;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historySub code {
+  font-family: var(--font-mono);
+  color: #8b8b93;
+}
+
+.historyWhen {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #52525b;
+  white-space: nowrap;
+}
+
+/* ── Подписка: функционал слева, тарифы сверху ────────── */
+.planTableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #1f1f24;
+  border-radius: 10px;
+}
+
+.planTable {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  background: #121215;
+}
+
+.planFeatureHeader {
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #52525b;
+  background: #0d0d11;
+  border-bottom: 1px solid #1f1f24;
+}
+
+.planColHeader {
+  text-align: center;
+  padding: 14px 12px;
+  background: #0d0d11;
+  border-bottom: 1px solid #1f1f24;
+  border-left: 1px solid #1c1c1f;
+  transition: background 0.15s ease;
+}
+
+.planColName {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+}
+
+.planColPrice {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  color: #71717a;
+}
+
+.planFeatureCell {
+  padding: 11px 16px;
+  font-size: 12px;
+  color: #d1d5db;
+  border-bottom: 1px solid #1a1a1d;
+  white-space: nowrap;
+}
+
+.planValueCell {
+  text-align: center;
+  padding: 11px 12px;
+  border-bottom: 1px solid #1a1a1d;
+  border-left: 1px solid #1a1a1d;
+  transition: background 0.15s ease;
+}
+
+.planTable tbody tr:hover .planFeatureCell,
+.planTable tbody tr:hover .planValueCell {
+  background: #15151a;
+}
+
+.planColHeader.selectedCol,
+.planValueCell.selectedCol,
+.planCtaCell.selectedCol {
+  background: rgba(34, 197, 94, 0.07);
+}
+
+.cellYes {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4ade80;
+}
+
+.cellNo {
+  color: #3f3f46;
+  font-size: 13px;
+}
+
+.cellSoon {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #facc15;
+  background: rgba(234, 179, 8, 0.12);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.planCtaCell {
+  padding: 14px 12px;
+  text-align: center;
+  border-left: 1px solid #1c1c1f;
+  background: #0d0d11;
+}
+
+.planSelectBtn {
+  width: 100%;
+  background: #1c1c1f;
+  border: 1px solid #27272a;
+  color: #e4e4e7;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 9px 0;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.planSelectBtn:hover:not(:disabled) {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.planSelectBtn.isCurrent {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.35);
+  color: #4ade80;
+  cursor: default;
+}
+
+/* ==========================================================
+   АДАПТИВ ПОД МОБИЛЬНЫЕ
+   ========================================================== */
+@media (max-width: 900px) {
+  .profileView {
+    padding: 48px 24px 64px;
+  }
+
+  .profileLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .profileBanner {
+    flex-wrap: wrap;
+  }
+
+  .bannerActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 680px) {
+  .friendsColumns {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .profileView {
+    padding: 36px 16px 56px;
+  }
+
+  .profileContent {
+    padding: 20px 18px;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .segmentedControl {
+    flex-wrap: wrap;
+  }
+
+  .historyItem {
+    flex-wrap: wrap;
+  }
+
+  .historyWhen {
+    margin-left: 40px;
+  }
+}

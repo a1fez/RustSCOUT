@@ -38,7 +38,8 @@ async function initDB() {
         personaname TEXT,
         "avatarLink" TEXT,
         "createdAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-        "lastActive" TIMESTAMPTZ NULL
+        "lastActive" TIMESTAMPTZ NULL,
+        "role" VARCHAR(10) DEFAULT 'user'
 
       );  
     `);

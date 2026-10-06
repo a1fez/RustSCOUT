@@ -527,7 +527,9 @@ html {
   border-radius: 5px;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   transition: 0.2s;
-
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
 }
 
 .signUpButton:hover {
