@@ -1,3 +1,6 @@
+:root {
+    --searchBackColor: #0e0e0e;
+}
 .search {
     display: flex;
     justify-content: center;
@@ -52,7 +55,7 @@
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     color: #fff;
-    background-color: #1a1a1a;
+    background-color: var(--searchBackColor);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     padding: 0 16px;
     box-sizing: border-box;
@@ -101,7 +104,7 @@
     left: 0;
     width: 100%;
     box-sizing: border-box;       /* Фиксирует ширину строго по родителю */
-    background-color: #1a1a1a;
+    background-color: var(--searchBackColor);
     border-radius: 10px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     padding: 6px;
@@ -155,9 +158,9 @@
     left: auto;
     width: 40px;
     margin-right: 5px;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 6px;
-    background-color: #1a1a1a;
+    background-color: var(--searchBackColor);
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15);
     display: flex;
     align-items: center;

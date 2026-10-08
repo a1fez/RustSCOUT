@@ -3,7 +3,7 @@ import logo from '../resource/rustScoutLogo.png';
 import './navbar.css';
 import { BiArchive } from 'react-icons/bi';
 import { GoGear } from 'react-icons/go';
-import { HiUserCircle } from 'react-icons/hi';
+
 
 import { CornerSvg } from './cornerSvg';
 import type { NotifEvent } from '../notifications/notification';

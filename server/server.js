@@ -1,14 +1,17 @@
 // Загрузка .env и фоновых сервисов
 const path = require('path');
+
 require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 require('./service/serverList.js');
 require('./service/playerScraper.js');
+require('./auth.js');
 
 const { RedisStore } = require('connect-redis');
 const session = require('express-session');
 const express = require('express');
 const cors = require('cors');
 const redisClient = require('./redis.js')
+const passport = require('passport');
 
 
 // Поллер отслеживаемых игроков: раз в 10с перечитывает Redis по каждому
@@ -73,7 +76,18 @@ app.use('/api', serverRoutes);
 // Роуты игроков
 app.use('/api', playerRoutes(redisClient));
 
+// Passport Auth Steam
+app.use(passport.initialize());
+app.use(passport.session());
 
+
+
+app.get('/api/auth/steam', passport.authenticate('steam'));
+
+app.get('/api/auth/steam/return', passport.authenticate('steam', { failureRedirect: '/' }), (req, res) => {
+  // Успешная аутентификация, редирект на фронт
+  res.redirect(process.env.APP_CLIENT_URL + '/');
+});
 
 // Роут поиска игрока
 // Отдаёт данные, ТОЛЬКО когда вся цепочка Steam -> Redis -> BattleMetrics
