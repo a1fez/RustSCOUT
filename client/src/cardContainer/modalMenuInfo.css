@@ -54,6 +54,23 @@
   flex-direction: column;
 }
 
+/* ОБЗОР и АКТИВНОСТЬ: модалка не жёстко 600px, а растягивается под содержимое —
+   иначе на низких экранах кнопки ОБЗОРА вылезали за карточку, а графики АКТИВНОСТИ
+   не влезали. Листается весь оверлей. СЕРВЕРА/НИКНЕЙМЫ остаются фиксированными
+   со скроллом внутри, чтобы длинный список ников не раздувал модалку. */
+.modalMenu:has(.battleMetricsInfo, .activityPane) {
+  height: auto;
+  min-height: min(600px, calc(100vh - 200px));
+}
+
+/* Журнал справа подстраивается под высоту левой колонки и скроллится внутри,
+   а не растягивает модалку. В режиме «колонкой» (≤840px) у него своя высота. */
+@media (min-width: 841px) {
+  .modalMenu:has(.battleMetricsInfo, .activityPane) .modalJournalPane {
+    contain: size;
+  }
+}
+
 /* Правая колонка — отслеживание этого игрока */
 .modalJournalPane {
   flex: 0 0 300px;
@@ -381,10 +398,14 @@
   position: relative;
   flex: 1;
   min-height: 320px;
+  /* flex вместо height: 100% у вкладки — работает и когда высота модалки не фиксирована */
+  display: flex;
+  flex-direction: column;
 }
 
 .tabPane {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }

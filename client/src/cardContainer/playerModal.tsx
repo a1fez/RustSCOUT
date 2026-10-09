@@ -4,6 +4,7 @@ import type { NotifEvent } from "../notifications/notification";
 import { TrackJournal } from "../tracking/trackJournal";
 import { LuInfo }  from "react-icons/lu";
 import { CustomTooltip } from "./customToolTip";
+import { ActivityHeatmap } from "./activityHeatmap";
 import "./modalMenuInfo.css";
 
 
@@ -31,7 +32,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
     onToggleTracking,
     trackEvents = [],
 }) => {
-    const [activeTab, setActiveTab] = useState<'main' | 'servers' | 'names'>('main');
+    const [activeTab, setActiveTab] = useState<'main' | 'activity' | 'servers' | 'names'>('main');
     const [copied, setCopied] = useState<boolean>(false);
     const [nameSearch, setNameSearch] = useState<string>('');
 
@@ -166,6 +167,12 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
             ОБЗОР
           </button>
           <button
+            className={`tabBtn ${activeTab === 'activity' ? 'active' : ''}`}
+            onClick={() => setActiveTab('activity')}
+          >
+            АКТИВНОСТЬ
+          </button>
+          <button
             className={`tabBtn ${activeTab === 'servers' ? 'active' : ''}`}
             onClick={() => setActiveTab('servers')}
           >
@@ -297,6 +304,17 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                   Удалить карточку
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* Вкладка: Активность по часам за неделю */}
+          {activeTab === 'activity' && (
+            <div className="tabPane activityPane">
+              {player.activity && player.activity.length > 0 ? (
+                <ActivityHeatmap days={player.activity} />
+              ) : (
+                <p className="emptyText">Нет данных об активности</p>
+              )}
             </div>
           )}
 

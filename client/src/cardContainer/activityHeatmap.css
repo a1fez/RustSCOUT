@@ -1,0 +1,137 @@
+/* Вкладка АКТИВНОСТЬ: 7 колонок (дни) × 24 черточки (часы) */
+.activityHeatmap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.activityStats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.activityStat {
+  background: #121215;
+  border: 1px solid #27272a;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.activityStatLabel {
+  font-size: 11px;
+  color: #6b7280;
+  letter-spacing: 0.04em;
+}
+
+.activityStatValue {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: #e4e4e7;
+}
+
+.activityGrid {
+  display: grid;
+  grid-template-columns: 22px repeat(7, 1fr);
+  gap: 10px;
+}
+
+.activityHourLabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+}
+
+.activityColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.activityDayLabel,
+.activityDateLabel {
+  font-size: 10px;
+  text-align: center;
+  color: #8b8b93;
+}
+
+.activityDayLabel {
+  height: 14px;
+  flex-shrink: 0;
+  margin-bottom: 6px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.activityDateLabel {
+  height: 12px;
+  flex-shrink: 0;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  color: #52525b;
+}
+
+.activityTicks {
+  display: grid;
+  grid-template-rows: repeat(24, 6px);
+  row-gap: 2px;
+}
+
+.activityTick {
+  /* на 10px короче колонки, по центру под подписью дня */
+  width: calc(100% - 10px);
+  justify-self: center;
+  border-radius: 2px;
+  background: #1c1c20;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  cursor: default;
+}
+
+.activityTick.isHovered {
+  transform: scaleX(1.08);
+  box-shadow: 0 0 0 1px #e4e4e7;
+}
+
+/* Шкала яркости — тёмно-зелёная */
+.lvl0 { background: #1c1c20; }
+.lvl1 { background: #12301d; }
+.lvl2 { background: #14532d; }
+.lvl3 { background: #1a6b38; }
+.lvl4 { background: #22893f; }
+
+.activityFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.activityReadout {
+  margin: 0;
+  font-size: 11px;
+  color: #a1a1aa;
+  font-family: var(--font-mono);
+}
+
+.activityLegend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.activityLegendTick {
+  width: 14px;
+  height: 7px;
+  border-radius: 2px;
+}

@@ -40,8 +40,15 @@ export interface PlayerData {
   currentServer?: CurrentServerInfo | null;
   servers?: ServerHistoryItem[];
   nicknames?: string[];
+  activity?: ActivityDay[];           // последние 7 дней, от старых к новым
 
   // Отслеживание
   initialServerId?: string | null;   // сервер, с которого началось отслеживание
   hasLeftInitialServer?: boolean;     // игрок ушёл с исходного сервера (обновляется опросом)
+}
+
+// Активность игрока за день: hours[0..23] — минуты онлайна в этом часу (0..60)
+export interface ActivityDay {
+  date: string;     // ISO-дата дня, 'YYYY-MM-DD' (локальное время)
+  hours: number[];  // ровно 24 значения
 }
