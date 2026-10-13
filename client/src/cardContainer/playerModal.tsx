@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import type { PlayerData } from "./player";
+import React, { useState, useEffect } from "react";
+import type { PlayerData, ActivityDay } from "./player";
 import type { NotifEvent } from "../notifications/notification";
 import { TrackJournal } from "../tracking/trackJournal";
 import { LuInfo }  from "react-icons/lu";
 import { CustomTooltip } from "./customToolTip";
 import { ActivityHeatmap } from "./activityHeatmap";
+import { fetchActivity } from "./activityApi";
 import "./modalMenuInfo.css";
 
 
@@ -35,7 +36,8 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
     const [activeTab, setActiveTab] = useState<'main' | 'activity' | 'servers' | 'names'>('main');
     const [copied, setCopied] = useState<boolean>(false);
     const [nameSearch, setNameSearch] = useState<string>('');
-
+    const [activity, setActivity] = useState<ActivityDay[] | null>(player.activity ?? null)
+    const [activityStatus, setActivityStatus] = useState<'idle' | 'loading' | 'error'>('idle');
     // Доля оставшегося времени в [0..1]. Без клэмпа кольцо «прокручивалось»
     // много раз, когда знаменатель (был захардкожен 300с) не совпадал с реальным окном.
     const totalSec = trackTotalSeconds > 0 ? trackTotalSeconds : 1;
@@ -46,6 +48,23 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
     const trackWindowLabel =
         totalSec % 60 === 0 ? `${totalSec / 60} мин` : `${Math.round(totalSec / 60)} мин`;
 
+    useEffect(() => {
+        if (activeTab !== 'activity' || activity || !player.bmId) return;
+        
+        const controller = new AbortController();
+        setActivityStatus('loading');
+        fetchActivity(player.bmId, controller.signal)
+            .then((days) => {
+                setActivity(days);
+                setActivityStatus('idle');
+            })
+            .catch((err) => {
+                if (err.name !== 'AbortError') setActivityStatus('error');
+            })
+        return () => controller.abort();
+    }, [activeTab, activity, player.bmId]);
+
+    
     const handleCopySteamId = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (player.steamId && player.steamId !== 'Не привязан') {
@@ -310,8 +329,12 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
           {/* Вкладка: Активность по часам за неделю */}
           {activeTab === 'activity' && (
             <div className="tabPane activityPane">
-              {player.activity && player.activity.length > 0 ? (
-                <ActivityHeatmap days={player.activity} />
+              {activityStatus === 'loading' ? (
+                <p className="emptyText">Загрузка…</p>
+              ) : activityStatus === 'error' ? (
+                <p className="emptyText">Не удалось загрузить активность</p>
+              ) : activity && activity.length > 0 ? (
+                <ActivityHeatmap days={activity} />
               ) : (
                 <p className="emptyText">Нет данных об активности</p>
               )}

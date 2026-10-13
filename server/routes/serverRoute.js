@@ -4,6 +4,8 @@ const redisClient = require("../redis.js");
 const { count } = require('node:console');
 
 const router = express.Router();
+const MAX_ACTIVITY_DAYS = 90; // Столько храним в PlayerActivity 
+
 
 router.get('/servers', async (req, res) => {
   try {
@@ -66,7 +68,7 @@ router.get('/player/:bmId/server', async (req, res) => {
     const serverId = await redisClient.get(`player:${bmId}:server`);
 
     if (!serverId){
-      return res.setMaxListeners(404).json({
+      return res.status(404).json({
         success: false,
         message: 'Player doesnt found on following servers',
       });
@@ -85,8 +87,38 @@ router.get('/player/:bmId/server', async (req, res) => {
   }
 });
 
+router.get('/player/:bmId/activity', async (req, res) => {
+  const { bmId } = req.params;
 
+  if(!/^\d{1,18}$/.test(bmId)) {
+    return res.status(400).json({
+      success: false,
+      message: 'bmId должен быть числом'
+    })
+  }
 
+  const days = Number(req.query.days ?? 7);
+  if (!Number.isInteger(days) || days < 1 || days > MAX_ACTIVITY_DAYS) {
+    return res.status(400).json({
+      success: false,
+      message: `days: от 1 до ${MAX_ACTIVITY_DAYS}`
+    })
+  }
 
+  try {
+    const result = await db.query(
+      `SELECT to_char(day, 'YYYY-MM-DD') AS day, minutes
+      FROM "PlayerActivity"
+      WHERE "bmId" = $1 AND day >= (NOW() AT TIME ZONE 'UTC')::date - $2::int
+      ORDER BY day`,
+      [bmId, days]
+    );
+    return res.json( { success: true, data: result.rows } );
+  } catch (error) {
+    console.error('❌ [activity] Ошибка чтения активности:', error.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+
+});
 
 module.exports = router;
