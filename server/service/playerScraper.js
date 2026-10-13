@@ -8,6 +8,7 @@ const redisClient = require('../redis.js');
 const { scheduleRequest } = require('../rateLimiter.js');
 const { TIERS } = require('./tiers.js');
 const { reconcileTrackedOnServer } = require('./trackingReconcile.js');
+const { recordServerPlayers } = require('./activityRecorder.js');
 
 const TTL_SECONDS = 240; // Время жизни кэша игроков в Redis
 
@@ -44,6 +45,12 @@ async function fetchAndCacheServerPlayers(serverId, headers) {
         multi.set(`player:${p.bmId}:server`, String(serverId), { EX: TTL_SECONDS });
       }
       await multi.exec();
+
+       try {
+        await recordServerPlayers(serverId, players);
+      } catch (err) {
+        console.warn(`⚠️ [activity] Сервер ${serverId}:`, err.message);
+      }
     }
 
     // Сервер только что обновился в Redis — перепроверяем отслеживаемых игроков на нём.

@@ -17,6 +17,7 @@ const passport = require('passport');
 // Поллер отслеживаемых игроков: раз в 10с перечитывает Redis по каждому
 // отслеживаемому игроку и списку его сервера.
 const { startTrackingPoller } = require('./service/trackingReconcile.js');
+const { startActivityFlusher } = require('./service/activityRecorder.js');
 const { clearAllTracked } = require('./service/trackingRegistry.js');
 
 // При старте сервера сбрасываем реестр отслеживания — фронт всё равно потерял
@@ -26,6 +27,7 @@ clearAllTracked()
   .catch((err) => console.error('❌ [Tracking] Не удалось очистить реестр при старте:', err.message));
 
 startTrackingPoller();
+startActivityFlusher();
 
 // Импорт функции сопоставления и сбора данных игрока
 const { resolvePlayerOnServer, NoMatchReason } = require('./service/playerReq.js');

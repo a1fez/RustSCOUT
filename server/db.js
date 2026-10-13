@@ -45,6 +45,19 @@ async function initDB() {
     `);
     console.log('✅ [PostgreSQL] Таблицa User готовa')
 
+    // Игровое время по часам (см. service/activityRecorder.js).
+    // Одна строка = один игрок за одни сутки (UTC), minutes[1..24] — минуты в каждом часу.
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "PlayerActivity" (
+        "bmId" BIGINT NOT NULL,
+        day DATE NOT NULL,
+        minutes SMALLINT[] NOT NULL DEFAULT array_fill(0::smallint, ARRAY[24]),
+        PRIMARY KEY ("bmId", day)
+      );
+    `);
+    // Для ежедневной очистки строк старше 90 дней
+    await pool.query('CREATE INDEX IF NOT EXISTS "PlayerActivity_day_idx" ON "PlayerActivity" (day);');
+
     await pool.query('CREATE INDEX IF NOT EXISTS "VerifiedPlayer_bmId_idx" ON "VerifiedPlayer" ("bmId");');
     console.log('✅ [PostgreSQL] Таблицы готовы');
   } catch (err) {
