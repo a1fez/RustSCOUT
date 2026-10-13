@@ -114,7 +114,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 className="statusDot"
                 style={{
                   backgroundColor: player.isOnline
-                    ? '#4caf50'
+                    ? '#22c55e'
                     : player.steam?.personastate === 1
                     ? '#38bdf8'
                     : '#888',

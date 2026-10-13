@@ -23,7 +23,7 @@
 
 .activityStatLabel {
   font-size: 11px;
-  color: #6b7280;
+  color: #71717a;
   letter-spacing: 0.04em;
 }
 
@@ -46,7 +46,7 @@
   line-height: 1;
   display: flex;
   align-items: center;
-  color: #6b7280;
+  color: #71717a;
 }
 
 .activityColumn {
@@ -60,7 +60,7 @@
 .activityDateLabel {
   font-size: 10px;
   text-align: center;
-  color: #8b8b93;
+  color: #a1a1aa;
 }
 
 .activityDayLabel {
@@ -126,7 +126,7 @@
   align-items: center;
   gap: 4px;
   font-size: 10px;
-  color: #6b7280;
+  color: #71717a;
   flex-shrink: 0;
 }
 

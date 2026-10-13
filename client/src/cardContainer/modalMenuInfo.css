@@ -123,7 +123,7 @@
   margin: 6px 0 0;
   font-size: 11px;
   line-height: 1.45;
-  color: #8b8b93;
+  color: #a1a1aa;
 }
 
 /* Заголовок над списком серверов во вкладке СЕРВЕРА */
@@ -136,7 +136,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #2dd4bf;
+  color: #22c55e;
   text-transform: uppercase;
   flex-shrink: 0;
 }
@@ -208,7 +208,7 @@
   background: #121215;
   border: 1px solid #27272a;
   border-radius: 6px;
-  color: #9ca3af;
+  color: #a1a1aa;
   width: 28px;
   height: 28px;
   display: flex;
@@ -236,7 +236,7 @@
   height: 64px;
   border-radius: 10px;
   overflow: hidden;
-  background: #23252b;
+  background: #18181b;
   flex-shrink: 0;
 }
 
@@ -286,7 +286,7 @@
 .statusLabel {
   font-size: 11px;
   font-weight: 600;
-  color: #9ca3af;
+  color: #a1a1aa;
   letter-spacing: 0.5px;
 }
 
@@ -303,13 +303,13 @@
 .playerSteamId code {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: #d1d5db;
+  color: #d4d4d8;
 }
 
 .copyBtn {
   background: transparent;
   border: none;
-  color: #9ca3af;
+  color: #a1a1aa;
   cursor: pointer;
   padding: 0;
   display: flex;
@@ -322,13 +322,13 @@
 
 .copySuccess {
   font-size: 11px;
-  color: #4caf50;
+  color: #22c55e;
 }
 
 .currentServerBanner {
   background: #121215;
   border: 1px solid #27272a;
-  border-left: 3px solid #2dd4bf;
+  border-left: 3px solid #22c55e;
   border-radius: 6px;
   padding: 8px 12px;
   margin-bottom: 14px;
@@ -337,7 +337,7 @@
 .bannerLabel {
   font-size: 10px;
   font-weight: 700;
-  color: #2dd4bf;
+  color: #22c55e;
   margin: 0 0 2px 0;
   letter-spacing: 0.5px;
 }
@@ -345,7 +345,7 @@
 .bannerServerName {
   font-size: 13px;
   font-weight: 600;
-  color: #f8fafc;
+  color: #f4f4f5;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -355,7 +355,7 @@
 .bannerServerIp {
   font-size: 11px;
   font-family: var(--font-mono);
-  color: #94a3b8;
+  color: #a1a1aa;
   margin: 2px 0 0 0;
 }
 
@@ -373,7 +373,7 @@
   flex: 1;
   background: transparent;
   border: none;
-  color: #6b7280;
+  color: #71717a;
   font-size: 11px;
   font-weight: 600;
   padding: 7px 0;
@@ -383,12 +383,12 @@
 }
 
 .tabBtn:hover {
-  color: #d1d5db;
+  color: #d4d4d8;
 }
 
 .tabBtn.active {
   background: #27272a;
-  color: #2dd4bf;
+  color: #22c55e;
 }
 
 /* Тянется на всю оставшуюся высоту карточки (у модалки фиксированная height),
@@ -420,7 +420,7 @@
 .sectionLabel {
   font-size: 11px;
   font-weight: 600;
-  color: #6b7280;
+  color: #71717a;
   letter-spacing: 0.8px;
 }
 
@@ -447,7 +447,7 @@
 
 .statTile .label {
   font-size: 12px;
-  color: #9ca3af;
+  color: #a1a1aa;
   margin: 0 0 6px 0;
   font-weight: 500;
 }
@@ -464,17 +464,17 @@
   align-items: center;
   gap: 6px; /* Отступ между текстом и значком */
   font-size: 13px;
-  color: #8c9099;
+  color: #a1a1aa;
 }
 
 .infoIcon {
   cursor: pointer;
-  color: #5c626e;
+  color: #52525b;
   transition: color 0.2s ease;
 }
 
 .infoIcon:hover {
-  color: #a0a6b5;
+  color: #a1a1aa;
 }
 
 .infoWrapper {
@@ -482,13 +482,13 @@
   align-items: center;
   position: relative; /* Важно для позиционирования тултипа внутри */
   cursor: pointer;
-  color: #5c626e;
+  color: #52525b;
   transition: color 0.2s ease;
 }
 
 /* Изменение цвета иконки при наведении */
 .infoWrapper:hover {
-  color: #a0a6b5;
+  color: #a1a1aa;
 }
 
 /* Стилизация контейнера тултипа по умолчанию (скрыт) */
@@ -512,7 +512,7 @@
 .trackHint {
   margin: 6px 2px 0;
   font-size: 12px;
-  color: #9aa1ad;
+  color: #a1a1aa;
 }
 
 .trackBtn {
@@ -545,7 +545,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #64748b;
+  background: #71717a;
   transition: all 0.2s ease;
 }
 
@@ -557,7 +557,7 @@
 .trackText {
   font-size: 12px;
   font-weight: 600;
-  color: #d1d5db;
+  color: #d4d4d8;
   letter-spacing: 0.3px;
 }
 
@@ -584,14 +584,14 @@
 /* Фоновая серая обводка */
 .timerCircleBg {
   fill: none;
-  stroke: #2b2e38;
+  stroke: #27272a;
   stroke-width: 3.2;
 }
 
 /* Активная уменьшающаяся полоса */
 .timerCircleProgress {
   fill: none;
-  stroke: #64748b;
+  stroke: #71717a;
   stroke-width: 3.2;
   stroke-linecap: round;
   transition: stroke-dashoffset 1s linear, stroke 0.3s ease;
@@ -621,19 +621,18 @@
   box-sizing: border-box;
 }
 
-.actionBtn.primary {
-  background: #e5983b;
-  color: #000000;
-}
-
+/* Обе ссылки (Steam и BattleMetrics) в одном стиле — тёмные, как остальные плашки */
+.actionBtn.primary,
 .actionBtn.secondary {
   background: #121215;
   border: 1px solid #27272a;
   color: #ffffff;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .actionBtn:hover {
-  opacity: 0.9;
+  background: #1a1a1d;
+  border-color: #3f3f46;
 }
 
 .deleteCard {
@@ -691,7 +690,7 @@
 .listItemSub {
   font-size: 12px;
   font-weight: 600;
-  color: #07e42c9a;
+  color: rgba(34, 197, 94, 0.7);
 }
 
 .nameSearchInput {
@@ -708,7 +707,7 @@
 }
 
 .nameSearchInput:focus {
-  border-color: #2dd4bf;
+  border-color: #22c55e;
 }
 
 .namesScrollContainer {
@@ -736,7 +735,7 @@
   padding: 4px 8px;
   font-size: 16px;
   font-weight: 600;
-  color: #d1d5db;
+  color: #d4d4d8;
   white-space: nowrap;
   max-width: 100%;
   overflow: hidden;
@@ -745,7 +744,7 @@
 
 .emptyText {
   text-align: center;
-  color: #6b7280;
+  color: #71717a;
   font-size: 12px;
   padding: 40px 0;
   margin: 0;
