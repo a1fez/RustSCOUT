@@ -10,7 +10,7 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({ onBack }) => {
   return (
     <div className="comingSoonView">
       <h1 className="comingSoonTitle">В РАЗРАБОТКЕ.</h1>
-      <h1 className="comingSoonTitle">СКОРО ПОЯВИТЬСЯ <LiaGrinWinkSolid /></h1> 
+      <h1 className="comingSoonTitle">СКОРО ПОЯВИТСЯ <LiaGrinWinkSolid className="comingSoonIcon" /></h1> 
       
 
       {onBack && (
