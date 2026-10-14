@@ -7,6 +7,7 @@ import { Roadmap } from "./pages/roadmap/roadmap";
 import type { PlayerData } from "./cardContainer/player";
 import { MainPage } from "./pages/main/mainPage";
 import { UserProfile } from "./pages/userProfile/userProfile";
+import { ComingSoon } from "./pages/comingSoon/comingSoon";
 import type { NotifEvent, NotifInput } from "./notifications/notification";
 import { makeNotifId, SOUND_TYPES } from "./notifications/notification";
 import { primeAudio, playAlert } from "./sound/alert";
@@ -380,11 +381,19 @@ const App = () => {
       )}
 
       {currentPage === 'main' && (
-        <MainPage  
+        <MainPage
         onNavigateSearch={() => setCurrentPage('search')}
         onOpenRoadmap={() => setCurrentPage('roadmap')}
         />
-        
+
+      )}
+
+      {currentPage === 'documentation' && (
+        <ComingSoon onBack={() => setCurrentPage('main')} />
+      )}
+
+      {currentPage === 'session' && (
+        <ComingSoon onBack={() => setCurrentPage('main')} />
       )}
     </>
   );

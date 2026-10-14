@@ -76,7 +76,10 @@ export const Roadmap: React.FC<RoadmapProps> = ({ onBack }) => {
         {/* 5 узлов */}
         <div className="nodesGrid">
           {ROADMAP_STEPS.map((step) => (
-            <div key={step.id} className={`nodeCol ${step.status}`}>
+            <div
+              key={step.id}
+              className={`nodeCol ${step.status}`}
+            >
               <div className="nodeMarkerWrap">
                 <div className={`nodeMarker ${step.status}`}>
                   {step.status === 'done' && <span className="markerIcon">✓</span>}

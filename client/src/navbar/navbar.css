@@ -10,7 +10,7 @@ html {
   align-items: center;
   width: 100%;
   height: 60px;
-  background-color: #000000;
+  background-color: #0505053a;
   color: #ffffff;
   border-bottom: 1px solid #dddddd62;
   padding: 0 24px;
@@ -34,17 +34,14 @@ html {
 
 /* Центральная колонка */
 .menu {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 24px;
   list-style: none;
   margin: 0;
   padding: 0;
-  
 }
-
-
-
 
 
 .menuItem {
@@ -67,86 +64,81 @@ html {
   z-index: 2;
 }
 
-/* Обертка прицела */
-.targetSight {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  color: #22C55E; /* Цвет stroke="currentColor" */
-}
-
-/* Базовый угол */
-.cornerIcon {
-  position: absolute;
-  opacity: 0;
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.2s ease,
-              filter 0.2s ease;
-}
-
-/* Позиционирование и разворот каждого угла */
-.cornerTL {
-  top: 0;
-  left: 0;
-  transform: translate(-8px, -8px); /* исходно раздвинут */
-}
-
-.cornerTR {
-  top: 0;
-  right: 0;
-  transform: rotate(90deg) translate(-8px, -8px);
-}
-
-.cornerBR {
-  bottom: 0;
-  right: 0;
-  transform: rotate(180deg) translate(-8px, -8px);
-}
-
-.cornerBL {
-  bottom: 0;
-  left: 0;
-  transform: rotate(270deg) translate(-8px, -8px);
-}
-
 /* ==========================================================
-   1. HOVER (Прицеливание: углы появляются с зазором)
+   1. HOVER
    ========================================================== */
 .menuItem:hover .menuText {
   color: #e4e4e7;
 }
 
-.menuItem:hover .cornerIcon {
-  opacity: 0.6;
-  filter: drop-shadow(0 0 3px rgba(34, 197, 94, 0.4));
-}
-
-.menuItem:hover .cornerTL { transform: translate(-4px, -4px); }
-.menuItem:hover .cornerTR { transform: rotate(90deg) translate(-4px, -4px); }
-.menuItem:hover .cornerBR { transform: rotate(180deg) translate(-4px, -4px); }
-.menuItem:hover .cornerBL { transform: rotate(270deg) translate(-4px, -4px); }
-
 /* ==========================================================
-   2. SELECTED (Захват: резкое схлопывание вплотную к слову)
+   2. SELECTED
    ========================================================== */
 .menuItem.selected .menuText {
   color: #ffffff;
-  background: #22c55e2a; 
+  background: #22c55e2a;
   border-radius: 3px;
-  
   text-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
 }
 
-.menuItem.selected .cornerIcon {
-  opacity: 1;
-  filter: drop-shadow(0 0 6px #22C55E);
-  transition-duration: 0.5s; 
+/* Гнездо под маршрутную точку — есть у каждой кнопки меню */
+.menuSocket {
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 7px;
+  height: 7px;
+  box-sizing: border-box;
+  border: 1px dashed rgba(34, 197, 94, 0.4);
+  border-radius: 50%;
+  background: rgba(9, 9, 11, 0.5);
+  z-index: 1;
+  transition: border-color 0.2s ease;
 }
 
-.menuItem.selected .cornerTL { transform: translate(0, 0); }
-.menuItem.selected .cornerTR { transform: rotate(90deg) translate(0, 0); }
-.menuItem.selected .cornerBR { transform: rotate(180deg) translate(0, 0); }
-.menuItem.selected .cornerBL { transform: rotate(270deg) translate(0, 0); }
+.menuItem:hover .menuSocket {
+  border-color: rgba(34, 197, 94, 0.75);
+}
+
+/* Прерывистый маршрут, соединяющий гнёзда всех кнопок */
+.menuTrack {
+  position: absolute;
+  bottom: -6px;
+  height: 0;
+  border-top: 2px dashed rgba(34, 197, 94, 0.3);
+  pointer-events: none;
+  z-index: 0;
+  transition: left 0.35s ease, width 0.35s ease;
+}
+
+/* Зелёная точка, плавно едущая по маршруту к активной кнопке */
+.menuDot {
+  position: absolute;
+  bottom: -9px;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e, 0 0 12px rgba(34, 197, 94, 0.55);
+  pointer-events: none;
+  z-index: 2;
+  transition: left 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: menuDotPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes menuDotPulse {
+  0%, 100% {
+    transform: scale(0.85);
+    box-shadow: 0 0 4px #22c55e, 0 0 8px rgba(34, 197, 94, 0.45);
+  }
+  50% {
+    transform: scale(1.35);
+    box-shadow: 0 0 10px #22c55e, 0 0 18px rgba(34, 197, 94, 0.75);
+  }
+}
+
 /* Правая секция: контейнер для знака и иконок */
 .rightSection {
   display: flex;
@@ -530,6 +522,7 @@ html {
   background: transparent;
   color: #ffffff;
   cursor: pointer;
+  gap: 4px;
 }
 
 .signUpButton:hover {

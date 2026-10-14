@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './useProfile.css';
 import { FaSteam } from 'react-icons/fa';
 import {
@@ -243,7 +243,7 @@ export const UserProfile: React.FC = () => {
   return (
     <div className="profileView">
       {/* Плашка профиля — во всю ширину, над навигацией и контентом */}
-      <div className="profileBanner">
+      <div className="profileBanner reveal" style={{ '--reveal-order': 0 } as React.CSSProperties}>
         <div className="identityAvatar">
           {MOCK_USER.avatarfull ? (
             <img src={MOCK_USER.avatarfull} alt={MOCK_USER.personaname} />
@@ -285,7 +285,7 @@ export const UserProfile: React.FC = () => {
 
       <div className="profileLayout">
         {/* Левая колонка: навигация по разделам */}
-        <aside className="profileSidebar">
+        <aside className="profileSidebar reveal" style={{ '--reveal-order': 1 } as React.CSSProperties}>
           <nav className="profileNav">
             {NAV_ITEMS.map((item) => (
               <button
@@ -302,7 +302,7 @@ export const UserProfile: React.FC = () => {
         </aside>
 
         {/* Правая колонка: контент выбранного раздела */}
-        <section className="profileContent">
+        <section className="profileContent reveal" style={{ '--reveal-order': 2 } as React.CSSProperties}>
           {activeSection === 'profile' && (
             <div className="contentPane">
               <h2 className="paneTitle">Профиль Steam</h2>

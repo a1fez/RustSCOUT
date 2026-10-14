@@ -1,15 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import logo from '../resource/rustScoutLogo.png';
 import './navbar.css';
 import { BiArchive } from 'react-icons/bi';
 import { GoGear } from 'react-icons/go';
-
-
-import { CornerSvg } from './cornerSvg';
+import { SiSteam } from 'react-icons/si'; 
 import type { NotifEvent } from '../notifications/notification';
 import { NOTIF_META, formatRelativeTime } from '../notifications/notification';
 
-const MENU_ITEMS = ['main', 'search'];
+const MENU_ITEMS = ['main', 'search', 'documentation', 'session'];
 
 interface NavbarProps {
   onOpenRoadmap?: () => void;
@@ -33,6 +31,11 @@ const Navbar = ({
   const [, forceTick] = useState(0);
   const notifRef = useRef<HTMLDivElement>(null);
 
+  const menuRef = useRef<HTMLUListElement>(null);
+  const itemRefs = useRef<Record<string, HTMLLIElement | null>>({});
+  const [dotLeft, setDotLeft] = useState<number | null>(null);
+  const [trackBounds, setTrackBounds] = useState<{ left: number; width: number } | null>(null);
+
   const unreadCount = notifications.reduce((acc, n) => (n.read ? acc : acc + 1), 0);
 
   // Закрытие меню по клику вне него
@@ -54,6 +57,37 @@ const Navbar = ({
     return () => clearInterval(id);
   }, [isNotifOpen]);
 
+  // Пересчёт позиции "маршрутной" точки и дорожки под пунктами меню
+  useLayoutEffect(() => {
+    const recalc = () => {
+      const menuEl = menuRef.current;
+      if (!menuEl) return;
+      const menuRect = menuEl.getBoundingClientRect();
+
+      const centers = MENU_ITEMS.map((item) => {
+        const el = itemRefs.current[item];
+        if (!el) return null;
+        const rect = el.getBoundingClientRect();
+        return rect.left + rect.width / 2 - menuRect.left;
+      });
+
+      const activeIndex = MENU_ITEMS.indexOf(activeTab);
+      const activeCenter = centers[activeIndex];
+      if (activeCenter != null) setDotLeft(activeCenter);
+
+      const validCenters = centers.filter((c): c is number => c != null);
+      if (validCenters.length > 1) {
+        const left = validCenters[0];
+        const right = validCenters[validCenters.length - 1];
+        setTrackBounds({ left, width: right - left });
+      }
+    };
+
+    recalc();
+    window.addEventListener('resize', recalc);
+    return () => window.removeEventListener('resize', recalc);
+  }, [activeTab]);
+
   const toggleNotif = () => {
     setNotifOpen((open) => {
       const next = !open;
@@ -69,27 +103,31 @@ const Navbar = ({
         <img src={logo} alt="RustScout" />
       </div>
 
-      <ul className="menu">
+      <ul className="menu" ref={menuRef}>
         {MENU_ITEMS.map((item) => {
           const isSelected = activeTab === item;
           return (
             <li
               key={item}
+              ref={(el) => { itemRefs.current[item] = el; }}
               className={`menuItem ${isSelected ? 'selected' : ''}`}
               onClick={() => { setActiveTab(item); onSelectTab?.(item); }}
             >
+              <span className="menuSocket" />
               <span className="menuText">{item}</span>
-
-              {/* 4 угла прицела */}
-              <div className="targetSight">
-                <CornerSvg className="cornerIcon cornerTL" />
-                <CornerSvg className="cornerIcon cornerTR" />
-                <CornerSvg className="cornerIcon cornerBL" />
-                <CornerSvg className="cornerIcon cornerBR" />
-              </div>
             </li>
           );
         })}
+
+        {trackBounds && (
+          <span
+            className="menuTrack"
+            style={{ left: trackBounds.left, width: trackBounds.width }}
+          />
+        )}
+        {dotLeft !== null && (
+          <span className="menuDot" style={{ left: dotLeft }} />
+        )}
       </ul>
 
       {/* Правая часть: кнопка-знак + иконки */}
@@ -182,6 +220,7 @@ const Navbar = ({
           <GoGear className="icon" />
           <button className="signUpButton" onClick={onOpenProfile} type="button">
             Login
+            <SiSteam className="iconSi"/> 
           </button>
         </div>
       </div>

@@ -1,9 +1,6 @@
 import React from 'react';
 import './mainPage.css';
-import {
-  BiRadar, BiNetworkChart, BiTerminal,
-  BiGift, BiSync, BiRocket, BiCurrentLocation,
-} from 'react-icons/bi';
+
 import { ContactsSection } from '../../contacts/contactsSection';
 
 interface MainPageProps {
@@ -11,161 +8,165 @@ interface MainPageProps {
   onOpenRoadmap?: () => void;
 }
 
+const FAQ_ITEMS = [
+  {
+    q: 'Это законно?',
+    a: 'Да. Сервис ничего не взламывает и не обходит защиту серверов — он читает те же публичные данные, которые и так видит любой игрок через консоль сервера.',
+  },
+  {
+    q: 'Сколько это стоит?',
+    a: 'Ничего. Основной поиск и мониторинг останутся бесплатными. Но хостинг и API-токены стоят реальных денег каждый месяц, так что часть продвинутых фич в будущем может стать платной или ограниченной — честно предупреждаю заранее.',
+  },
+  {
+    q: 'Насколько свежие данные?',
+    a: 'Топ 1–100 серверов синхронизируется не реже раза в 60 секунд, топ 101–200 — раз в 120 секунд. Старых снимков не показываем.',
+  },
+  {
+    q: 'Зачем вход через Steam?',
+    a: 'Нужен для системы пользователей и авторизации, а в будущем — для интеграции с Rust+ и возможности подключать друзей. Из Steam мы забираем только публичный профиль: ни паролей, ни платёжных данных сервис не видит.',
+  },
+  {
+    q: 'Проект не забросят?',
+    a: 'План разработки открыт — можно посмотреть, что уже сделано, а что в работе. Я веду его сам и обновляю по мере реальных изменений, а не для галочки.',
+  },
+  {
+    q: 'Какие сервера отслеживаются?',
+    a: 'Топ-300 серверов Rust — от самых популярных ванильных до крупных модифицированных, с приоритетом по реальной активности игроков. Нужного сервера нет в списке — напишите, добавляю по запросам.',
+  },
+  {
+    q: 'Нужно ли что-то устанавливать?',
+    a: 'Нет, и стараюсь обходиться без расширений и прочей ерунды. Разве что в будущем появится своё мобильное приложение с открытым исходным кодом — в первую очередь ради уведомлений, чтобы упростить структуру проекта.',
+  },
+  {
+    q: 'Кого вообще можно найти?',
+    a: 'Любого игрока, который хотя бы раз заходил на один из отслеживаемых серверов, — по нику или SteamID.',
+  },
+  {
+    q: 'Что в планах дальше?',
+    a: 'Графики активности по времени суток, определение часового пояса кланов и поиск связей между игроками по истории серверов — всё это уже в работе, прогресс виден в плане разработки.',
+  },
+  {
+    q: 'Как сообщить о проблеме?',
+    a: 'Пишите в Telegram, Discord или на почту внизу страницы — отвечаю лично, обычно в течение дня.',
+  },
+];
+
+const FEATURES = [
+  {
+    index: 'I',
+    title: 'Сбор данных',
+    text: 'Фоновый сбор через распределённые очереди: система опрашивает топ-300 серверов по своей тир-системе и в первую очередь — самые популярные из них.',
+  },
+  {
+    index: 'II',
+    title: 'Отслеживание активности',
+    text: 'Видно, на каких серверах и когда именно активен игрок. Дальше это превратится в графики активности — чтобы было проще угадывать подходящий момент.',
+  },
+  {
+    index: 'III',
+    title: 'История серверов',
+    text: 'История переходов между серверами уже строит граф связей. В планах — находить по нему скрытые связи между игроками и кланами.',
+  },
+];
+
 export const MainPage: React.FC<MainPageProps> = ({ onNavigateSearch, onOpenRoadmap }) => {
   return (
-    <div className="mainPage">
-      {/* 1. HERO SECTION */}
-      <section className="heroSection">
-        <div className="heroTelemetry">
-          <span className="telemetryDot" />
-          <span>////</span>
+    <div className="mainJournal">
+      {/* ШАПКА */}
+      <header className="masthead reveal" style={{ '--reveal-order': 0 } as React.CSSProperties}>
+        <div className="mastheadKicker">
+          <span>ГЛАВНАЯ</span>
+          <span>СОЛО-РАЗРАБОТКА · В ПРОЦЕССЕ</span>
         </div>
 
-        <h1 className="heroTitle">
-          ВЕБ-СЕРВИС МОНИТОРИНГА И АНАЛИЗА ИГРОКОВ <span className="accentText">RUST</span>
-        </h1>
+        <div className="mastheadGrid">
+          <h1 className="mastheadTitle">
+            Точно и без лишнего — <em>RustSCOUT</em>
+          </h1>
 
-        <p className="heroSubtitle">
-          Сервис фиксирует онлайн игроков, пользуюясь публичными данными серверов и фильтрирует. Так вы получаете быстрый доступ к информации вместо траты кучу времени на ручной поиск. В будущем сервис будет предоставлять аналитику по игрокам и кланам, а также графики активности и взаимосвязей.
+          <div className="mastheadLead">
+            <p>
+              RustScout фиксирует, кто сейчас в сети на серверах Rust, — по тем же
+              открытым данным, которые и так показывает сам сервер. Без ручного обхода
+              вкладок и без гаданий, зашёл человек или нет.
+            </p>
+
+            <div className="mastheadActions">
+              <button className="actionLink actionLink--primary" onClick={onNavigateSearch} type="button">
+                Перейти к поиску <span className="actionArrow">→</span>
+              </button>
+              <button className="actionLink" onClick={onOpenRoadmap} type="button">
+                План разработки
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* ЛИЧНОЕ ПИСЬМО АВТОРА */}
+      <section className="letterSection reveal" style={{ '--reveal-order': 1 } as React.CSSProperties}>
+        <span className="letterMark">Письмо автора</span>
+
+        <blockquote className="letterBody">
+          <p>
+            Всем привет. Здесь нет магии или скрытых механизмов: сервис собирает только открытые публичные данные серверов и моментально показывает статус игроков в удобном интерфейсе.
+
+            Я развиваю проект в одиночку и отвечаю за репутацию своим именем. Если у вас возникнут вопросы по работе алгоритмов или безопасности данных — ниже есть честный FAQ и открытая документация.
+          </p>
+          <p>
+            Информация которую использует сам сервис, является общедоступной, сервис предоставляет ее в удобном виде с учетом ее автоматизации вместо долгого и ручного поиска.
+          </p>
+          <footer className="letterSign">— Единственный разраб RustScout</footer>
+        </blockquote>
+      </section>
+
+      {/* FAQ */}
+      <section className="faqSection reveal" style={{ '--reveal-order': 2 } as React.CSSProperties}>
+        <div className="faqKicker">
+          <span>FAQ</span>
+          <span>ЧАСТЫЕ ВОПРОСЫ</span>
+        </div>
+        <h2 className="sectionHead">Прежде чем начать</h2>
+
+        <p className="faqIntro">
+          Слежу за другими трекерами и форумами — вижу, на что жалуются их
+          игроки. Что-то беру в работу, что-то обхожу стороной специально. Но
+          если честно, хочется не чужих недовольных пользователей, а своих =)
         </p>
 
-        <div className="heroActions">
-          <button className="primaryBtn" onClick={onNavigateSearch} type="button">
-            <BiTerminal className="btnIcon" />
-            <span>ПЕРЕЙТИ К ПОИСКУ</span>
-          </button>
-
-          <button className="secondaryBtn" onClick={onOpenRoadmap} type="button">
-            <span>ПЛАН РАЗРАБОТКИ // WIP</span>
-          </button>
-        </div>
-
-        {/* Метрики системы */}
-        <div className="metricsStrip">
-          <div className="metricItem">
-            <span className="metricVal">&le; 60s</span>
-            <span className="metricLabel">СИНХРОНИЗАЦИЯ ТОП 1-100</span>
-          </div>
-          <div className="metricDivider" />
-          <div className="metricItem">
-            <span className="metricVal">120s</span>
-            <span className="metricLabel">СИНХРОНИЗАЦИЯ ТОП 101-200</span>
-          </div>
-          <div className="metricDivider" />
-          <div className="metricItem">
-            <span className="metricVal">1s</span>
-            <span className="metricLabel">СКОРОСТЬ ПОЛУЧЕНИЯ ДАННЫХ</span>
-          </div>
-          
-        </div>
+        <dl className="faqList">
+          {FAQ_ITEMS.map((item, i) => (
+            <div className="faqRow" key={item.q}>
+              <span className="faqNum">{String(i + 1).padStart(2, '0')}</span>
+              <div className="faqBody">
+                <dt className="faqQ">{item.q}</dt>
+                <dd className="faqA">{item.a}</dd>
+              </div>
+            </div>
+          ))}
+        </dl>
       </section>
 
-      {/* 2. КЛЮЧЕВЫЕ МОДУЛИ ВЕБ-ПЛАТФОРМЫ */}
-      <section className="modulesSection">
-        <div className="sectionHeader">
-          <span className="sectionTag">PLATFORM ARCHITECTURE</span>
-          <h2 className="sectionTitle">ФУНКЦИОНАЛ ПЛАТФОРМЫ</h2>
-        </div>
+      {/* КАК ЭТО УСТРОЕНО */}
+      <section className="featuresSection reveal" style={{ '--reveal-order': 3 } as React.CSSProperties}>
+        <div className="sectionKicker">Функционал</div>
+        <h2 className="sectionHead">Как это устроено</h2>
 
-        <div className="modulesGrid">
-          <div className="moduleCard">
-            <div className="cardCorner" />
-            <div className="cardIconWrap">
-              <BiRadar className="cardIcon" />
-              <span className="cardIndex">CORE_01</span>
-            </div>
-            <h3 className="cardTitle">СБОР ДАННЫХ</h3>
-            <p className="cardDesc">
-              Фоновый сбор данных через распределенные очереди. Система опрашивает топ 300 серверов которые имеют свою тир систему и приоритетно собирает данные с наиболее популярных серверов.
-            </p>
-            <ul className="cardBulletList">
-              <li>Быстрое определение входа/выхода игрока</li>
-              <li>Анализ активности на серверах</li>
-            </ul>
-          </div>
-
-          <div className="moduleCard highlighted">
-            <div className="cardCorner" />
-            <div className="cardIconWrap">
-              <BiCurrentLocation className="cardIcon accent" />
-              <span className="cardIndex accent">CORE_02</span>
-            </div>
-            <h3 className="cardTitle">ОТСЛЕЖИВАНИЕ АКТИВНОСТИ</h3>
-            <p className="cardDesc">
-              Спроектированная система дает возможность отслеживать активность игрока на разных серверах и определять его поведение и выбирать подходящий для вас момент. В будущем будут выстроины графики активности игроков, благодаря этому вы сможете определить наилучшее время для ваших действий.
-              
-            </p>
-            <ul className="cardBulletList">
-              <li>Поиск скрытых взаимосвязей</li>
-              <li>История переходов и совместных сессий</li>
-            </ul>
-          </div>
-
-          <div className="moduleCard">
-            <div className="cardCorner" />
-            <div className="cardIconWrap">
-              <BiNetworkChart  className="cardIcon" />
-              <span className="cardIndex">CORE_03</span>
-            </div>
-            <h3 className="cardTitle">АНАЛИЗ ИСТОРИИ СЕРВЕРОВ</h3>
-            <p className="cardDesc">
-              Система показывает историю переходов игроков между серверами и строит граф связей. В будущем это позволит выявлять скрытые взаимосвязи между игроками и кланами, а также определять их активность на разных серверах.
-            </p>
-            <ul className="cardBulletList">
-              <li>Определение часового пояса клана</li>
-              <li>Расчет безопасных окон для вылазок</li>
-            </ul>
-          </div>
-        </div>
+        <ol className="featureList">
+          {FEATURES.map((f) => (
+            <li className="featureItem" key={f.index}>
+              <span className="featureIndex">{f.index}</span>
+              <div className="featureBody">
+                <h3 className="featureTitle">{f.title}</h3>
+                <p className="featureText">{f.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </section>
 
-      {/* 3. PIPELINE WORKFLOW (КАК РАБОТАЕТ ВЕБ-СЕРВИС) */}
-      <section className="advantagesSection">
-      <div className="sectionHeader">
-        <span className="sectionTag">WHY RUSTSCOUT</span>
-        <h2 className="sectionTitle">ПОЧЕМУ RUSTSCOUT</h2>
-      </div>
-
-      <div className="advantagesStrip">
-        <div className="advantageItem">
-          <span className="advantageIcon">
-            <BiGift />
-          </span>
-          <h3 className="advantageTitle">БЕСПЛАТНО</h3>
-          <p className="advantageDesc">
-            Полный доступ к поиску и мониторингу без подписок и скрытых платежей.
-          </p>
-        </div>
-
-        <div className="advantageDivider" />
-
-        <div className="advantageItem">
-          <span className="advantageIcon">
-            <BiSync />
-          </span>
-          <h3 className="advantageTitle">АКТУАЛЬНОСТЬ ДАННЫХ</h3>
-          <p className="advantageDesc">
-            Обновление каждые 60–120 секунд, без устаревших снимков.
-          </p>
-        </div>
-
-        <div className="advantageDivider" />
-
-        <div className="advantageItem">
-          <span className="advantageIcon">
-            <BiRocket />
-          </span>
-          <h3 className="advantageTitle">ВИДИМОЕ РАЗВИТИЕ ПРОЕКТА</h3>
-          <p className="advantageDesc">
-            Открытый план разработки, новые модули выходят регулярно.
-          </p>
-        </div>
-      </div>
-    </section>
-
-      {/* 4. СВЯЗЬ С НАМИ */}
+      {/* СВЯЗЬ С НАМИ */}
       <ContactsSection />
-
     </div>
   );
 };

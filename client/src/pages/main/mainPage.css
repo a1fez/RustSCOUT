@@ -1,558 +1,368 @@
 /* ==========================================================
-   ОБЩАЯ СТРУКТУРА СТРАНИЦЫ
+   ОБЩАЯ СТРУКТУРА СТРАНИЦЫ — журнальная вёрстка
    ========================================================== */
-.mainPage {
+
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;800&display=swap');
+
+
+.mainJournal {
   min-height: calc(100vh - 60px);
-  background-color: #030303;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 32px 32px;
-  color: #f4f4f5;
-  padding: 60px 32px 100px 32px;
+  background: #050505;
+  color: #d4d4d6;
+  font-family: Georgia, 'Times New Roman', 'Noto Serif', serif;
+  padding: 72px 0 110px;
   box-sizing: border-box;
-  font-family: var(--font-mono);
-  user-select: none;
+}
+
+.mainJournal section,
+.mainJournal header {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 32px;
 }
 
 /* ==========================================================
-   1. HERO СЕКЦИЯ
+   1. ШАПКА / MASTHEAD
    ========================================================== */
-.heroSection {
-  max-width: 960px;
-  margin: 0 auto 90px auto;
-  text-align: center;
+.masthead {
+  padding-bottom: 46px;
+  margin-bottom: 56px;
+  border-bottom: 1px solid #242426;
+}
+
+.mastheadKicker {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.heroTelemetry {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  align-items: baseline;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.15em;
-  color: #22c55e;
-  background: #080808;
-  border: 1px solid rgba(34, 197, 94, 0.25);
-  padding: 6px 14px;
-  margin-bottom: 24px;
-}
-
-.telemetryDot {
-  width: 6px;
-  height: 6px;
-  background-color: #22c55e;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #22c55e;
-  animation: telemetryPulse 1.6s infinite ease-in-out;
-}
-
-@keyframes telemetryPulse {
-  0%, 100% { opacity: 0.3; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-
-.heroTitle {
-  font-size: 2.8rem;
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  line-height: 1.15;
-  margin: 0 0 20px 0;
-  color: #ffffff;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-}
-
-.accentText {
-  color: #22c55e;
-  text-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
-}
-
-.heroSubtitle {
-  font-size: 1.05rem;
-  line-height: 1.6;
-  color: #a1a1aa;
-  max-width: 780px;
-  margin: 0 0 36px 0;
-}
-
-.heroActions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 50px;
-}
-
-.primaryBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: #15803d;
-  border: 1px solid #22c55e;
-  color: #ffffff;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  padding: 12px 24px;
-  cursor: pointer;
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-  transition: all 0.2s ease;
-}
-
-.primaryBtn:hover {
-  background: #22c55e;
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.45);
-  transform: translateY(-2px);
-}
-
-.secondaryBtn {
-  display: inline-flex;
-  align-items: center;
-  background: #080808;
-  border: 1px solid #1a1a1a;
-  color: #a1a1aa;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  padding: 12px 22px;
-  cursor: pointer;
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-  transition: all 0.2s ease;
-}
-
-.secondaryBtn:hover {
-  border-color: #eab308;
-  color: #eab308;
-  background: #131313ab;
-}
-
-/* Метрики системы */
-.metricsStrip {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  width: 100%;
-  max-width: 820px;
-  background: #080808;
-  border: 1px solid #1a1a20;
-  border-radius: 2px;
-  padding: 18px 24px;
-}
-
-.metricItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.metricVal {
-  font-family: var(--font-mono);
-  font-size: 1.4rem;
-  font-weight: 900;
-  color: #ffffff;
-}
-
-.metricLabel {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #71717a;
-  
-}
-
-.metricDivider {
-  width: 1px;
-  height: 28px;
-  background-color: #27272a;
-}
-
-/* ==========================================================
-   2. СЕКЦИЯ МОДУЛЕЙ
-   ========================================================== */
-.modulesSection {
-  max-width: 1140px;
-  margin: 0 auto 90px auto;
-}
-
-.sectionHeader {
+  color: #6b6b70;
   margin-bottom: 36px;
 }
 
-.sectionTag {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  color: #22c55e;
-  margin-bottom: 6px;
-  display: inline-block;
+.mastheadGrid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 56px;
+  align-items: end;
 }
 
-.sectionTitle {
-  font-size: 1.8rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
+.mastheadTitle {
+  font-weight: 500;
+  font-size: 3rem;
+  line-height: 1.12;
   margin: 0;
-  color: #ffffff;
+  color: #f5f5f4;
+  font-family: 'Chakra Petch', sans-serif;
+  
 }
 
-.modulesGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+.mastheadTitle em {
+  color: #3fcf73;
+  font-style: normal;
 }
 
-.moduleCard {
-  position: relative;
-  background: #080808;
-  border: 1px solid #1b1b22;
-  border-radius: 3px;
-  padding: 30px 24px;
-  display: flex;
-  flex-direction: column;
-  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+.mastheadLead p {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: #a8a8ac;
+  margin: 0 0 26px;
 }
 
-.moduleCard:hover {
-  transform: translateY(-4px);
-  border-color: #2e2e38;
-}
-
-.moduleCard.highlighted {
-  border-color: rgba(34, 197, 94, 0.4);
-  background: #0d1410;
-}
-
-.cardIconWrap {
+.mastheadActions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 22px;
+  gap: 28px;
+  flex-wrap: wrap;
 }
 
-.cardIcon {
-  font-size: 2rem;
-  color: #71717a;
-}
-
-.cardIcon.accent {
-  color: #22c55e;
-}
-
-.cardIndex {
+.actionLink {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 800;
-  color: #52525b;
-}
-
-.cardIndex.accent {
-  color: #22c55e;
-}
-
-.cardTitle {
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  margin: 0 0 12px 0;
-  color: #ffffff;
-}
-
-.cardDesc {
-  font-size: 0.84rem;
-  color: #8e8e93;
-  line-height: 1.55;
-  margin: 0 0 20px 0;
-  flex-grow: 1;
-}
-
-.cardBulletList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  border-top: 1px solid #1a1a20;
-  padding-top: 14px;
-}
-
-.cardBulletList li {
-  position: relative;
-  padding-left: 14px;
-  font-size: 0.76rem;
-  font-family: var(--font-mono);
-  color: #71717a;
-  margin-bottom: 6px;
-}
-
-.cardBulletList li::before {
-  content: '>';
-  position: absolute;
-  left: 0;
-  color: #22c55e;
-}
-
-/* ==========================================================
-   3. PIPELINE WORKFLOW (КАК ЭТО РАБОТАЕТ)
-   ========================================================== */
-.pipelineSection {
-  max-width: 1140px;
-  margin: 0 auto 90px auto;
-}
-
-.stepsWorkflow {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr auto 1fr;
-  align-items: center;
-  gap: 16px;
-  background: #09090c;
-  border: 1px solid #18181e;
-  padding: 30px;
-}
-
-.workflowStep {
-  display: flex;
-  flex-direction: column;
-}
-
-.stepNumber {
-  font-family: var(--font-mono);
-  font-size: 1.8rem;
-  font-weight: 900;
-  color: #22c55e;
-  margin-bottom: 6px;
-}
-
-.stepTitle {
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  margin: 0 0 8px 0;
-  color: #ffffff;
-}
-
-.stepText {
-  font-size: 0.8rem;
-  color: #71717a;
-  line-height: 1.45;
-  margin: 0;
-}
-
-.workflowArrow {
-  font-family: var(--font-mono);
-  font-size: 1.2rem;
-  font-weight: 900;
-  color: #27272a;
-}
-
-/* ==========================================================
-   4. БЛОК БЕЗОПАСНОСТИ
-   ========================================================== */
-.securityNotice {
-  max-width: 1140px;
-  margin: 0 auto;
-  background: #080808;
-  border: 1px solid #1f2937;
-  border-left: 3px solid #22c55e;
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.securityIcon {
-  font-size: 2.4rem;
-  color: #22c55e;
-  flex-shrink: 0;
-}
-
-.securityTitle {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  margin: 0 0 6px 0;
-  color: #ffffff;
-}
-
-.securityText {
-  font-size: 0.8rem;
-  color: #8e8e93;
-  line-height: 1.45;
-  margin: 0;
-}
-
-.advantagesSection {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 64px 24px;
-}
-
-.advantagesStrip {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr auto 1fr;
-  align-items: center;
-  width: 100%;
-  max-width: 1260px;
-  background: #080808;
-  border: 1px solid #1a1a20;
-  padding: 32px 24px;
-  box-sizing: border-box;
-}
-
-.advantageItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 8px;
-  padding: 0 20px;
-}
-
-.advantageIcon {
-  font-size: 1.6rem;
-  color: #22c55e;
-  display: flex;
-}
-
-.advantageTitle {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 4px 0 0;
-}
-
-.advantageDesc {
   font-size: 0.78rem;
-  line-height: 1.5;
-  color: #a1a1aa;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #3a3a3d;
+  padding: 4px 0 6px;
+  color: #c4c4c8;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.actionLink:hover {
+  color: #f5f5f4;
+  border-color: #6b6b70;
+}
+
+.actionLink--primary {
+  color: #3fcf73;
+  border-color: #2d6b45;
+}
+
+.actionLink--primary:hover {
+  color: #5fe28d;
+  border-color: #3fcf73;
+}
+
+.actionArrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.actionLink--primary:hover .actionArrow {
+  transform: translateX(3px);
+}
+
+/* ==========================================================
+   2. ПИСЬМО АВТОРА
+   ========================================================== */
+.letterSection {
+  max-width: 740px;
+  margin: 0 auto 88px;
+  padding: 0 32px;
+}
+
+.letterMark {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #3fcf73;
+  margin-bottom: 20px;
+}
+
+.letterBody {
   margin: 0;
-  max-width: 220px;
+  padding-left: 28px;
+  border-left: 2px solid #2d6b45;
 }
 
-.advantageDivider {
-  width: 1px;
-  height: 56px;
-  background-color: #27272a;
+.letterBody p {
+  font-size: 1.12rem;
+  font-style: italic;
+  line-height: 1.75;
+  color: #c4c4c8;
+  margin: 0 0 20px;
 }
 
-@media (max-width: 720px) {
-  .advantagesStrip {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
+.letterSign {
+  margin-top: 24px;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  color: #8a8a8f;
+}
 
-  .advantageDivider {
-    width: 100%;
-    height: 1px;
-  }
+/* ==========================================================
+   ОБЩИЕ ЗАГОЛОВКИ СЕКЦИЙ
+   ========================================================== */
+.sectionKicker {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #3fcf73;
+  margin-bottom: 8px;
+}
+
+.sectionHead {
+  font-weight: 400;
+  font-size: 1.9rem;
+  margin: 0 0 36px;
+  color: #f5f5f4;
+}
+
+/* ==========================================================
+   4. FAQ
+   ========================================================== */
+.faqSection {
+  margin-bottom: 88px;
+  font-family: 'Chakra Petch', sans-serif;
+}
+
+/* Шапка FAQ того же масштаба, что и masthead в начале страницы */
+.faqKicker {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6b6b70;
+  padding-bottom: 18px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid #242426;
+}
+
+.faqKicker span:first-child {
+  color: #3fcf73;
+}
+
+.faqIntro {
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.55;
+  color: #f5f5f4;
+  max-width: 760px;
+  margin: 0 0 40px;
+  padding-left: 20px;
+  border-left: 2px solid #3fcf73;
+}
+
+.faqList {
+  margin: 0;
+}
+
+.faqRow {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 20px;
+  padding: 22px 0;
+  border-top: 1px solid #1d1d1f;
+}
+
+.faqRow:last-child {
+  border-bottom: 1px solid #1d1d1f;
+}
+
+.faqNum {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #4a4a4e;
+  padding-top: 3px;
+}
+
+.faqQ {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f5f5f4;
+  margin: 0 0 8px;
+}
+
+.faqA {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #9b9ba0;
+  max-width: 640px;
+}
+
+/* ==========================================================
+   5. КАК ЭТО УСТРОЕНО
+   ========================================================== */
+.featuresSection {
+  margin-bottom: 88px;
+  font-family: 'Chakra Petch', sans-serif;
+}
+
+.featureList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.featureItem {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 24px;
+  padding: 28px 0;
+  border-top: 1px solid #1d1d1f;
+}
+
+.featureItem:last-child {
+  border-bottom: 1px solid #1d1d1f;
+}
+
+.featureIndex {
+  font-family: Georgia, serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: #2a2a2d;
+  line-height: 1;
+}
+
+.featureTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 0 0 10px;
+  color: #f5f5f4;
+}
+
+.featureText {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #9b9ba0;
+  margin: 0;
+  max-width: 640px;
 }
 
 /* ==========================================================
    АДАПТИВ ПОД МОБИЛЬНЫЕ
    ========================================================== */
-
-/* Планшет: модули в 2 колонки, пайплайн-воркфлоу в столбик */
-@media (max-width: 1000px) {
-  .modulesGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .stepsWorkflow {
+@media (max-width: 860px) {
+  .mastheadGrid {
     grid-template-columns: 1fr;
-    gap: 24px;
-    padding: 24px;
+    gap: 28px;
   }
 
-  .workflowArrow {
-    transform: rotate(90deg);
-    justify-self: center;
+  .mastheadTitle {
+    font-size: 2.2rem;
   }
 }
 
-/* Телефон */
-@media (max-width: 720px) {
-  .mainPage {
-    padding: 40px 16px 72px;
-    background-size: 24px 24px;
+@media (max-width: 640px) {
+  .mainJournal {
+    padding: 48px 0 80px;
   }
 
-  .heroSection {
-    margin-bottom: 60px;
+  .mainJournal section,
+  .mainJournal header {
+    padding: 0 18px;
   }
 
-  .heroTitle {
-    font-size: clamp(1.5rem, 7vw, 2.2rem);
-  }
-
-  .heroSubtitle {
-    font-size: 0.95rem;
-  }
-
-  .heroActions {
+  .mastheadKicker,
+  .faqKicker {
     flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    width: 100%;
-    max-width: 360px;
-  }
-
-  .primaryBtn,
-  .secondaryBtn {
-    justify-content: center;
-    width: 100%;
-  }
-
-  /* Метрики: столбиком, разделители — горизонтальные */
-  .metricsStrip {
-    flex-direction: column;
-    gap: 16px;
-    padding: 18px;
-  }
-
-  .metricDivider {
-    width: 100%;
-    height: 1px;
-  }
-
-  .modulesSection,
-  .pipelineSection,
-  .advantagesSection {
-    margin-bottom: 60px;
-  }
-
-  .advantagesSection {
-    padding: 40px 16px;
-  }
-
-  .modulesGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .moduleCard {
-    padding: 24px 20px;
-  }
-
-  .sectionTitle {
-    font-size: 1.4rem;
-  }
-
-  .sectionHeader {
-    margin-bottom: 24px;
-  }
-
-  .securityNotice {
-    flex-direction: column;
+    gap: 6px;
     align-items: flex-start;
-    gap: 14px;
-    padding: 18px;
+  }
+
+  .mastheadTitle {
+    font-size: 1.8rem;
+  }
+
+  .letterSection {
+    padding: 0 18px;
+  }
+
+  .letterBody {
+    padding-left: 18px;
+  }
+
+  .letterBody p {
+    font-size: 1rem;
+  }
+
+  .faqRow,
+  .featureItem {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .faqNum,
+  .featureIndex {
+    display: none;
   }
 }

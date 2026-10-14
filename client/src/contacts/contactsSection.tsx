@@ -8,9 +8,9 @@ import './contactsSection.css';
  * отдельным блоком, не внутри контейнера карточек.
  */
 export const ContactsSection = () => (
-  <section className="contactsSection">
+  <section className="contactsSection reveal">
     <div className="contactsTextWrap">
-      <h4 className="contactsTitle">СВЯЗЬ С НАМИ</h4>
+      <h4 className="contactsTitle">сВась</h4>
       <p className="contactsText">
         Есть вопрос, нашли баг или хотите предложить фичу - пишите в любой из каналов ниже.
       </p>
@@ -29,7 +29,7 @@ export const ContactsSection = () => (
       
       </a>
       <a
-        href="https://discord.gg/fNJHYXzy3x"
+        href="https://discord.gg/ZkyekxzhxE"
         target="_blank"
         rel="noopener noreferrer"
         className="contactLink"
