@@ -63,7 +63,10 @@ app.get('/api/session-test', (req, res) => {
 });
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+  origin: process.env.APP_CLIENT_URL,
+  credentials: true,
+}));
 app.use(express.json());
 
 // Аналитика посещаемости (считает все запросы к API, кроме самого /api/stats)
@@ -90,6 +93,20 @@ app.get('/api/auth/steam/return', passport.authenticate('steam', { failureRedire
   // Успешная аутентификация, редирект на фронт
   res.redirect(process.env.APP_CLIENT_URL + '/');
 });
+
+app.get('/api/me', (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({error: 'Не авторизован'})
+  }
+  res.json({
+    name: req.user.personaname,
+    steamId: req.user.steamId,
+    avatarfull: req.user.avatarLink,
+    profileUrl: 'https://steamcommunity.com/profiles/' + req.user.steamId,
+    linkedAt: new Date(req.user.createdAt).toLocaleDateString('ru-Ru'),
+    plan: 'FREE',
+  })
+})
 
 // Роут поиска игрока
 // Отдаёт данные, ТОЛЬКО когда вся цепочка Steam -> Redis -> BattleMetrics

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './useProfile.css';
 import { FaSteam } from 'react-icons/fa';
 import {
@@ -19,9 +19,11 @@ import type { NotifType } from '../../notifications/notification';
 
 type Section = 'profile' | 'friends' | 'history' | 'notifications' | 'rustplus' | 'subscription';
 
+
+
 // Моковые данные — реальная авторизация через Steam появится на STAGE | 02 (см. роадмап).
 const MOCK_USER = {
-  personaname: 'rust_hunter_94',
+  name: 'xxx',
   steamId: '76561198000000000',
   avatarfull: '',
   profileUrl: 'https://steamcommunity.com/profiles/76561198000000000',
@@ -138,7 +140,6 @@ const FEATURE_ROWS: FeatureRow[] = [
 export const UserProfile: React.FC = () => {
   const [activeSection, setActiveSection] = useState<Section>('profile');
   const [copied, setCopied] = useState(false);
-
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [notifToggles, setNotifToggles] = useState<Record<NotifType, boolean>>({
     left: true,
@@ -149,8 +150,27 @@ export const UserProfile: React.FC = () => {
     update: true,
   });
 
+  const [user, setUser] = useState<typeof MOCK_USER | null>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    fetch('http://localhost:5001/api/me', { credentials: 'include' })
+      .then((res) => {
+        if(!res.ok){
+          setUser(null);
+          return null;
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data) setUser(data);
+        setLoading(false);
+      });
+      
+  }, []);
+  if (loading) return <div>Загрузка...</div>;
+  if (!user) return <a href="http://localhost:5001/api/auth/steam">Войти через Steam</a>;
   const handleCopySteamId = () => {
-    navigator.clipboard.writeText(MOCK_USER.steamId);
+    navigator.clipboard.writeText(user.steamId);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -159,7 +179,7 @@ export const UserProfile: React.FC = () => {
     setNotifToggles((prev) => ({ ...prev, [type]: !prev[type] }));
   };
 
-  const currentPlanName = MOCK_USER.plan;
+  const currentPlanName = user.plan;
 
   const NAV_ITEMS: { id: Section; label: string; icon: React.ReactNode }[] = [
     { id: 'profile', label: 'ПРОФИЛЬ', icon: <LuUser /> },
@@ -175,8 +195,8 @@ export const UserProfile: React.FC = () => {
       {/* Плашка профиля — во всю ширину, над навигацией и контентом */}
       <div className="profileBanner reveal" style={{ '--reveal-order': 0 } as React.CSSProperties}>
         <div className="identityAvatar">
-          {MOCK_USER.avatarfull ? (
-            <img src={MOCK_USER.avatarfull} alt={MOCK_USER.personaname} />
+          {user.avatarfull ? (
+            <img src={user.avatarfull} alt={user.name} />
           ) : (
             <LuUser className="identityAvatarFallback" />
           )}
@@ -186,17 +206,17 @@ export const UserProfile: React.FC = () => {
         </div>
 
         <div className="bannerInfo">
-          <p className="identityName">{MOCK_USER.personaname}</p>
+          <p className="identityName">{user.name}</p>
           <div className="bannerMetaRow">
             <div className="identitySteamId">
-              <code>{MOCK_USER.steamId}</code>
+              <code>{user.steamId}</code>
               <button className="copyBtnSmall" onClick={handleCopySteamId} title="Копировать SteamID">
                 {copied ? <LuCheck /> : <LuCopy />}
               </button>
             </div>
             <a
               className="identityProfileLink"
-              href={MOCK_USER.profileUrl}
+              href={user.profileUrl}
               target="_blank"
               rel="noreferrer"
             >
@@ -250,11 +270,11 @@ export const UserProfile: React.FC = () => {
                 </div>
                 <div className="infoTile">
                   <span className="infoTileLabel">Привязан</span>
-                  <span className="infoTileValue">{MOCK_USER.linkedAt}</span>
+                  <span className="infoTileValue">{user.linkedAt}</span>
                 </div>
                 <div className="infoTile">
                   <span className="infoTileLabel">SteamID64</span>
-                  <span className="infoTileValue monoValue">{MOCK_USER.steamId}</span>
+                  <span className="infoTileValue monoValue">{user.steamId}</span>
                 </div>
                 <div className="infoTile">
                   <span className="infoTileLabel">Текущий тариф</span>
