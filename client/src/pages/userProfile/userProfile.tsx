@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './useProfile.css';
 import { FaSteam } from 'react-icons/fa';
 import {
@@ -30,6 +30,8 @@ const MOCK_USER = {
   linkedAt: '04.10.2026',
   plan: 'FREE',
 };
+
+export type SteamUser = typeof MOCK_USER;
 
 // Типы событий, для которых реально показываем переключатель (без «update» — это системные новости).
 const TOGGLE_TYPES: NotifType[] = ['left', 'switched', 'returned', 'online', 'offline'];
@@ -137,7 +139,12 @@ const FEATURE_ROWS: FeatureRow[] = [
   },
 ];
 
-export const UserProfile: React.FC = () => {
+interface UserProfileProps {
+  user: SteamUser | null;
+  loading: boolean;
+}
+
+export const UserProfile: React.FC<UserProfileProps> = ({ user, loading }) => {
   const [activeSection, setActiveSection] = useState<Section>('profile');
   const [copied, setCopied] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -150,23 +157,6 @@ export const UserProfile: React.FC = () => {
     update: true,
   });
 
-  const [user, setUser] = useState<typeof MOCK_USER | null>(null);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    fetch('http://localhost:5001/api/me', { credentials: 'include' })
-      .then((res) => {
-        if(!res.ok){
-          setUser(null);
-          return null;
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data) setUser(data);
-        setLoading(false);
-      });
-      
-  }, []);
   if (loading) return <div>Загрузка...</div>;
   if (!user) return <a href="http://localhost:5001/api/auth/steam">Войти через Steam</a>;
   const handleCopySteamId = () => {

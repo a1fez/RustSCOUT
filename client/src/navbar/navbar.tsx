@@ -6,10 +6,13 @@ import { GoGear } from 'react-icons/go';
 import { SiSteam } from 'react-icons/si'; 
 import type { NotifEvent } from '../notifications/notification';
 import { NOTIF_META, formatRelativeTime } from '../notifications/notification';
+import type { SteamUser } from "../pages/userProfile/userProfile";
+
 
 const MENU_ITEMS = ['main', 'search', 'documentation', 'session'];
 
 interface NavbarProps {
+  user?: SteamUser | null;
   onOpenRoadmap?: () => void;
   onOpenProfile?: () => void;
   onSelectTab?: (tab: string) => void;
@@ -19,6 +22,7 @@ interface NavbarProps {
 }
 
 const Navbar = ({
+  user,
   onOpenRoadmap,
   onOpenProfile,
   onSelectTab,
@@ -218,7 +222,7 @@ const Navbar = ({
             )}
           </div>
           <GoGear className="icon" />
-          <button className="signUpButton" onClick={onOpenProfile} type="button">
+          <button className="signUpButton" onClick={() => (user ? onOpenProfile?.() : (window.location.href = 'http://localhost:5001/api/auth/steam'))} type="button">
             Login
             <SiSteam className="iconSi"/> 
           </button>

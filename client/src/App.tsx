@@ -13,6 +13,8 @@ import { makeNotifId, SOUND_TYPES } from "./notifications/notification";
 import { primeAudio, playAlert } from "./sound/alert";
 import { ContactsSection } from "./contacts/contactsSection";
 import { getClientId } from "./clientId";
+import type { SteamUser } from "./pages/userProfile/userProfile";
+
 
 export interface SearchData {
   steamId: string;
@@ -68,6 +70,25 @@ const App = () => {
   const [trackEvents, setTrackEvents] = useState<NotifEvent[]>([]);
   // Системные оповещения (иконка в навбаре)
   const [systemNotifications, setSystemNotifications] = useState<NotifEvent[]>(SYSTEM_NOTIFICATIONS);
+
+  const [user, setUser] = useState<SteamUser | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+  fetch('http://localhost:5001/api/me', { credentials: 'include' })
+    .then((res) => {
+      if (!res.ok) {
+        setUser(null);
+        return null;
+      }
+      return res.json();
+    })
+    .then((data) => {
+      if (data) setUser(data);
+      setAuthLoading(false);
+    });
+}, []);
+
 
   const serverNamesRef = useRef<Record<string, string>>({});
   const prevStatusRef = useRef<Record<string, StatusSnapshot>>({});
@@ -338,6 +359,7 @@ const App = () => {
   return (
     <>
       <Navbar
+        user={user}
         onOpenRoadmap={() => setCurrentPage('roadmap')}
         onOpenProfile={() => setCurrentPage('profile')}
         onSelectTab={(tab) => setCurrentPage(tab.toLocaleLowerCase())}
@@ -370,7 +392,7 @@ const App = () => {
       )}
 
       {currentPage === 'profile' && (
-        <UserProfile />
+        <UserProfile user={user} loading={authLoading} />
       )}
 
       {currentPage === 'info' && (
