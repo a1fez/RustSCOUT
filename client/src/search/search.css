@@ -2,20 +2,21 @@
     --searchBackColor: #0e0e0e;
 }
 .search {
+    position: relative;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 6px;
     width: 100%;
-    padding: 20px 16px;
-    height: 200px;
+    padding: 18px 16px 20px;
+    min-height: 200px; /* растёт, когда раскрыты описания режимов */
     box-sizing: border-box;
 }
 
 .searchBackground {
     position: absolute;
-    left: 0;
-    width: 100%;
-    height: 200px;
+    inset: 0; /* фон тянется за высотой блока поиска */
     /* Накладываем два градиента поверх фоновой картинки:
        1. linear-gradient — плавно гасит белизну снизу в основной цвет фона (#000 или #0a0a0a).
        2. radial-gradient — мягко заливает центр глубоким черным и слегка приглушает края. */
@@ -72,6 +73,22 @@
 .searchInput:focus {
     outline: none;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+/* Плашка-заглушка на месте поля сервера (режим BM): та же высота, без ввода */
+.searchInputGhost {
+    border-style: dashed;
+    border-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(14, 14, 14, 0.6);
+    box-shadow: none;
+    color: #52525b;
+    font-size: 12px;
+    cursor: default;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    line-height: 36px;
 }
 
 /* Стили плейсхолдера кастомного селекта */
@@ -260,9 +277,8 @@
    АДАПТИВ ПОД МОБИЛЬНЫЕ
    ========================================================== */
 @media (max-width: 600px) {
-    .search,
-    .searchBackground {
-        height: 170px;
+    .search {
+        min-height: 170px;
     }
 
     .searchInput,

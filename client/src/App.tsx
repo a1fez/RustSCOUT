@@ -12,6 +12,7 @@ import type { NotifEvent, NotifInput } from "./notifications/notification";
 import { makeNotifId, SOUND_TYPES } from "./notifications/notification";
 import { primeAudio, playAlert } from "./sound/alert";
 import { ContactsSection } from "./contacts/contactsSection";
+import { SearchHistory } from "./searchHistory/searchHistory";
 import { getClientId } from "./clientId";
 import type { SteamUser } from "./pages/userProfile/userProfile";
 
@@ -75,7 +76,7 @@ const App = () => {
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
-  fetch('http://localhost:5001/api/me', { credentials: 'include' })
+  fetch(`${API}/api/me`, { credentials: 'include' })
     .then((res) => {
       if (!res.ok) {
         setUser(null);
@@ -85,13 +86,27 @@ const App = () => {
     })
     .then((data) => {
       if (data) setUser(data);
-      setAuthLoading(false);
-    });
+    })
+    .catch(() => setUser(null))
+    .finally(() => setAuthLoading(false));
+    
 }, []);
+
 
 
   const serverNamesRef = useRef<Record<string, string>>({});
   const prevStatusRef = useRef<Record<string, StatusSnapshot>>({});
+
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API}/api/auth/logout`, { method: 'POST', credentials: 'include'});
+    } finally {
+      setUser(null);
+      setCurrentPage('search');
+    }
+  };
+
 
   const serverName = useCallback((id: string | null | undefined): string => {
     if (!id) return 'неизвестный сервер';
@@ -383,6 +398,7 @@ const App = () => {
             trackEvents={trackEvents}
             onClearTrackEvents={clearTrackEvents}
           />
+          <SearchHistory isLoggedIn={!!user} />
           <ContactsSection />
         </>
       )}
@@ -392,7 +408,7 @@ const App = () => {
       )}
 
       {currentPage === 'profile' && (
-        <UserProfile user={user} loading={authLoading} />
+        <UserProfile user={user} loading={authLoading} onLogout={handleLogout} />
       )}
 
       {currentPage === 'info' && (

@@ -1,0 +1,271 @@
+/* История поиска — под блоком карточек, по той же ширине, что и .cardLayout */
+.historyWrapper {
+  padding: 0 20px;
+  background: #030303;
+}
+
+.history {
+  max-width: 1760px;
+  margin: 0 auto;
+  background: #1a1a1a28;
+  border: 1px solid #27272a71;
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid #1c1c1f;
+}
+
+.historyTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #a1a1aa;
+}
+
+.historyCount {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #18181b;
+  color: #71717a;
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+}
+
+.historyClearBtn {
+  background: transparent;
+  border: none;
+  font-size: 0.7rem;
+  color: #71717a;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.historyClearBtn:hover:not(:disabled) {
+  color: #e4e4e7;
+}
+
+.historyClearBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.historyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Строка: аватар | игрок + запрос | сервер | статус | время | действия */
+.historyRow {
+  display: grid;
+  grid-template-columns: 32px minmax(160px, 1.3fr) minmax(0, 1.4fr) 86px 96px auto;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #141417;
+  transition: background 0.15s ease;
+}
+
+.historyRow:last-child {
+  border-bottom: none;
+}
+
+.historyRow:hover {
+  background: #0e0e10;
+}
+
+.historyAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #18181b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+.historyAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.historyMain {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.historyName {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f4f4f5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historyRow.notFound .historyName {
+  color: #71717a;
+}
+
+.historyQuery {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.historyQuery code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #71717a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historyMode {
+  flex-shrink: 0;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid #27272a;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #a1a1aa;
+}
+
+.historyServer {
+  font-size: 11px;
+  color: #a1a1aa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historyStatus {
+  justify-self: start;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.historyStatus.ok {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.historyStatus.fail {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.historyTime {
+  font-size: 11px;
+  color: #52525b;
+  white-space: nowrap;
+}
+
+.historyActions {
+  display: flex;
+  gap: 4px;
+  opacity: 0.45;
+  transition: opacity 0.15s ease;
+}
+
+.historyRow:hover .historyActions,
+.historyActions:focus-within {
+  opacity: 1;
+}
+
+.historyIconBtn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: #121215;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  color: #a1a1aa;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.historyIconBtn:hover {
+  color: #ffffff;
+  border-color: #3f3f46;
+  background: #1a1a1d;
+}
+
+.historyIconBtn.danger:hover {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.historyEmpty {
+  padding: 28px 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #52525b;
+}
+
+.historyEmpty p {
+  margin: 0;
+}
+
+.historyHint {
+  margin: 0;
+  padding: 10px 14px;
+  border-top: 1px solid #141417;
+  font-size: 11px;
+  color: #52525b;
+}
+
+/* Планшет: сервер переезжает под имя, время — в одну колонку со статусом */
+@media (max-width: 900px) {
+  .historyRow {
+    grid-template-columns: 32px minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'avatar main status actions'
+      'avatar server time actions';
+    row-gap: 4px;
+  }
+
+  .historyAvatar { grid-area: avatar; }
+  .historyMain { grid-area: main; }
+  .historyServer { grid-area: server; }
+  .historyStatus { grid-area: status; justify-self: end; }
+  .historyTime { grid-area: time; justify-self: end; }
+  .historyActions { grid-area: actions; opacity: 1; }
+}
+
+@media (max-width: 520px) {
+  .historyWrapper {
+    padding: 0 10px;
+  }
+
+  .historyRow {
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .historyActions {
+    flex-direction: column;
+  }
+}

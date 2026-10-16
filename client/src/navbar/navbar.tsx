@@ -222,7 +222,7 @@ const Navbar = ({
             )}
           </div>
           <GoGear className="icon" />
-          <button className="signUpButton" onClick={() => (user ? onOpenProfile?.() : (window.location.href = 'http://localhost:5001/api/auth/steam'))} type="button">
+          <button className="signUpButton" onClick={() => (user ? onOpenProfile?.() : (window.location.href = '/api/auth/steam'))} type="button">
             Login
             <SiSteam className="iconSi"/> 
           </button>

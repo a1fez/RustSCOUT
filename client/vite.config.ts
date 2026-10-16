@@ -7,6 +7,9 @@ export default defineConfig({
   server: {
   host: true,
   port: 5173,
-  allowedHosts: ['rustscout.app', 'www.rustscout.app', '.rustscout.app']
+  allowedHosts: ['rustscout.app', 'www.rustscout.app', '.rustscout.app'],
+  proxy: {
+    '/api': 'http://localhost:5001',
+  }
 }
 })

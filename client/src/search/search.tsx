@@ -2,7 +2,16 @@ import { useState, useRef, useEffect } from 'react';
 import { HiArrowNarrowRight } from 'react-icons/hi';
 import { IoChevronDown } from 'react-icons/io5';
 import { ERROR_MESSAGE } from '../../error';
+import { SearchModes, type SearchMode } from './searchModes';
+import { LiveStats } from './liveStats';
 import './search.css';
+
+// Подсказки в полях для каждого режима поиска
+const QUERY_PLACEHOLDER: Record<SearchMode, string> = {
+  bm: 'BattleMetrics ID или ссылка на игрока...',
+  steam: 'Введите SteamID...',
+  nick: 'Никнейм игрока...',
+};
 
 
 
@@ -30,6 +39,12 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
   const [isLoadingServers, setIsLoadingServers] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showError, setShowError] = useState(false);
+
+  // Режим поиска и раскрытие блоков с описанием режимов
+  const [mode, setMode] = useState<SearchMode>('steam');
+  const [modesInfoOpen, setModesInfoOpen] = useState(false);
+  // ВРЕМЕННО: пока бэкенд умеет только Steam + сервер — для других режимов показываем заглушку
+  const [modeNotice, setModeNotice] = useState<string | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -70,7 +85,19 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleModeChange = (next: SearchMode) => {
+    setMode(next);
+    setText('');
+    setShowError(false);
+    setModeNotice(null);
+  };
+
   const handleSubmit = () => {
+    if (mode !== 'steam') {
+      setModeNotice(mode === 'bm' ? 'Поиск по BattleMetrics скоро появится' : 'Поиск по никнейму скоро появится');
+      return;
+    }
+
     const cleanSteam = text.trim();
     const cleanServer = server.trim();
 
@@ -110,28 +137,48 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
     ? ERROR_MESSAGE[errorReason] || 'Не удалось найти игрока. Попробуйте ещё раз.'
     : null;
 
+  const hasServerField = mode !== 'bm';
+  const errorMessage = showError ? 'Заполните SteamID и сервер' : modeNotice ?? serverErrorText;
+
+  const errorBlock = errorMessage && (
+    <div className="errorText" style={{ color: 'red', marginTop: '10px' }}>
+      <p>{errorMessage}</p>
+    </div>
+  );
+
   return (
     <div className="search">
       <div className="searchBackground" />
+
+      <SearchModes
+        mode={mode}
+        onChange={handleModeChange}
+        infoOpen={modesInfoOpen}
+        onToggleInfo={() => setModesInfoOpen((open) => !open)}
+      />
+
       <div className="searchFormCard">
-        {/* Инпут SteamID */}
+        {/* Основной инпут: SteamID / BM ID / никнейм — зависит от режима */}
         <div className={`inputRow ${showError && isSteamEmpty ? 'inputError' : ''}`}>
           <input
             value={text}
             onChange={(e) => {
-              setText(e.target.value.replace(/\D/g, ''));
+              // SteamID — только цифры; BM-ссылку и ник не трогаем
+              setText(mode === 'steam' ? e.target.value.replace(/\D/g, '') : e.target.value);
               if (showError) setShowError(false);
+              if (modeNotice) setModeNotice(null);
             }}
             type="text"
             className="searchInput"
-            placeholder="Введите SteamID..."
+            placeholder={QUERY_PLACEHOLDER[mode]}
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleSubmit();
             }}
           />
         </div>
 
-        {/* Инпут Сервера */}
+        {/* Инпут Сервера (в режиме BM не нужен) */}
+        {hasServerField && (
         <div
           className={`inputRow ${showError && isServerEmpty ? 'inputError' : ''}`}
           ref={dropdownRef}
@@ -140,7 +187,13 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
             <input
               type="text"
               className="searchInput"
-              placeholder={isLoadingServers ? 'Загрузка серверов...' : 'Выберите или введите сервер...'}
+              placeholder={
+                isLoadingServers
+                  ? 'Загрузка серверов...'
+                  : mode === 'nick'
+                  ? 'Сервер (необязательно)...'
+                  : 'Выберите или введите сервер...'
+              }
               value={server}
               onFocus={() => setIsOpen(true)}
               onChange={(e) => {
@@ -159,17 +212,7 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
             />
           </div>
 
-          {showError && (
-            <div className="errorText" style={{ color: 'red', marginTop: '10px' }}>
-              <p>Заполните SteamID и сервер</p>
-            </div>
-          )}
-
-          {!showError && serverErrorText && (
-            <div className="errorText" style={{ color: 'red', marginTop: '10px' }}>
-              <p>{serverErrorText}</p>
-            </div>
-          )}
+          {errorBlock}
 
           {isOpen && (
             <div className="dropdownMenu">
@@ -198,6 +241,15 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
             </div>
           )}
         </div>
+        )}
+
+        {/* В режиме BM вместо сервера — плашка той же высоты, чтобы форма не прыгала */}
+        {!hasServerField && (
+          <div className="inputRow">
+            <div className="searchInput searchInputGhost">Сервер не нужен — ищем напрямую по BattleMetrics</div>
+            {errorBlock}
+          </div>
+        )}
 
         {/* Кнопка отправки */}
         <button
@@ -208,6 +260,8 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
           <HiArrowNarrowRight className="searchIcon" style={{ color: '#929292' }} />
         </button>
       </div>
+
+      <LiveStats hidden={!!errorMessage} />
     </div>
   );
 };

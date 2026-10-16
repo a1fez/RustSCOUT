@@ -142,9 +142,10 @@ const FEATURE_ROWS: FeatureRow[] = [
 interface UserProfileProps {
   user: SteamUser | null;
   loading: boolean;
+  onLogout?: () => void;
 }
 
-export const UserProfile: React.FC<UserProfileProps> = ({ user, loading }) => {
+export const UserProfile: React.FC<UserProfileProps> = ({ user, loading, onLogout }) => {
   const [activeSection, setActiveSection] = useState<Section>('profile');
   const [copied, setCopied] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -158,7 +159,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, loading }) => {
   });
 
   if (loading) return <div>Загрузка...</div>;
-  if (!user) return <a href="http://localhost:5001/api/auth/steam">Войти через Steam</a>;
+  if (!user) return <a href="/api/auth/steam">Войти через Steam</a>;
   const handleCopySteamId = () => {
     navigator.clipboard.writeText(user.steamId);
     setCopied(true);
@@ -217,7 +218,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, loading }) => {
 
         <div className="bannerActions">
           <span className="bannerPlanChip">{currentPlanName}</span>
-          <button className="logoutBtn" type="button">
+          <button className="logoutBtn" type="button"  onClick={onLogout}>
             <LuLogOut /> Выйти
           </button>
         </div>

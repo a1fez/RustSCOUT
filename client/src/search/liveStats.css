@@ -1,0 +1,62 @@
+/* Строка «что сейчас обрабатываем» под формой поиска */
+.liveStats {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 10px;
+  margin-top: 12px;
+  padding: 4px 12px;
+  background: rgba(9, 9, 11, 0.7);
+  border: 1px solid #1c1c1f;
+  border-radius: 999px;
+  font-size: 11px;
+  color: #71717a;
+  letter-spacing: 0.02em;
+}
+
+.liveStats.isHidden {
+  visibility: hidden;
+}
+
+.liveStatsItem b {
+  color: #e4e4e7;
+  font-weight: 700;
+}
+
+.liveStatsDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+  animation: liveStatsPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes liveStatsPulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+.liveStatsSep {
+  width: 1px;
+  height: 10px;
+  background: #27272a;
+}
+
+.liveStatsUpdated {
+  color: #52525b;
+}
+
+@media (max-width: 600px) {
+  .liveStatsSepWide,
+  .liveStatsUpdated {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liveStatsDot {
+    animation: none;
+  }
+}

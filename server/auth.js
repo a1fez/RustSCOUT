@@ -23,7 +23,7 @@ passport.use(new SteamStrategy({
 
     console.log('Steam user profile:', profile);
     done(null, dbUser); // that mean authentication was successful, and we pass the user profile to the next step
-    } catch {
+    } catch (err) {
     console.error('❌ Ошибка в Steam verify-callback:', err.message);
     done(err);
 }
@@ -36,6 +36,11 @@ passport.serializeUser(function (user, done) {
 });
 
 passport.deserializeUser(async function(id, done) {
-    const result = await pool.query('SELECT * FROM "User" WHERE "userId" = $1', [id])
-    done(null, result.rows[0]);
+    try { 
+        const result = await pool.query('SELECT * FROM "User" WHERE "userId" = $1', [id])
+        done(null, result.rows[0] || false); 
+    } catch (err) {
+        done(err);
+    }
+    
 });

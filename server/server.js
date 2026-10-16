@@ -108,6 +108,16 @@ app.get('/api/me', (req, res) => {
   })
 })
 
+app.post('/api/auth/logout', (req, res, next) => {
+  req.logout((err) => {
+    if (err) return next(err);
+    req.session.destroy(() => {
+      res.clearCookie('connect.sid');
+      res.json({ success: true });
+    });
+  });
+});
+
 // Роут поиска игрока
 // Отдаёт данные, ТОЛЬКО когда вся цепочка Steam -> Redis -> BattleMetrics
 // прошла успешно. Иначе — 404 с указанием причины, без фейковой карточки.
