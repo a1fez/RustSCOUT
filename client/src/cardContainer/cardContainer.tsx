@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import type { PlayerData } from './player';
+import { cardKey, type PlayerData } from './player';
 import { PlayerModal } from './playerModal';
+import { PlayerAvatar } from '../playerAvatar/playerAvatar';
 import { TrackJournal } from '../tracking/trackJournal';
 import type { NotifEvent } from '../notifications/notification';
 import './cardContainer.css';
@@ -10,8 +11,9 @@ const TRACK_SECONDS = 6000; // для кольцевого прогресса н
 const MAX_CARDS = 20;       // максимум карточек одновременно
 
 export interface SearchData {
-  steamId: string;
-  serverId: string;
+  steamId?: string;
+  bmId?: string;
+  serverId?: string;
   timestamp: number;
 }
 
@@ -26,6 +28,8 @@ interface CardContainerProps {
   onDeleteCard: (steamId: string) => void;
   trackEvents: NotifEvent[];
   onClearTrackEvents: () => void;
+  isAddingCard: boolean;
+  setIsAddingCard: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const CardContainer = ({
@@ -39,10 +43,11 @@ const CardContainer = ({
   onDeleteCard,
   trackEvents,
   onClearTrackEvents,
+  isAddingCard,
+  setIsAddingCard
 }: CardContainerProps) => {
 
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerData | null>(null);
-  const [isAddingCard, setIsAddingCard] = useState<boolean>(false);
 
   const formatTimer = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -52,11 +57,12 @@ const CardContainer = ({
 
   // Запрос данных игрока по SteamID + выбранному серверу
   useEffect(() => {
-    if (!searchQuery?.steamId) return;
+    if (!searchQuery) return;
+    const { steamId, bmId, serverId = '' } = searchQuery;
+    if (!steamId && !bmId) return;
 
-    const { steamId, serverId } = searchQuery;
-
-    const existingPlayer = cards.find((card) => card.steamId === steamId);
+    // Уже есть такая карточка? По Steam сверяем steamId, по BM — bmId
+    const existingPlayer = cards.find((card) => steamId ? card.steamId === steamId : card.bmId === bmId);
     if (existingPlayer) {
       setSelectedPlayer(existingPlayer);
       setSearchQuery(null);
@@ -74,9 +80,12 @@ const CardContainer = ({
     setSearchError(null);
 
     const hasServer = serverId && serverId !== 'undefined' && serverId.trim() !== '';
-    const queryUrl = hasServer
+    const queryUrl = bmId
+      ? `${API}/api/player/bm/${bmId}`
+      : hasServer
       ? `${API}/api/player/${steamId}?server=${encodeURIComponent(serverId.trim())}`
       : `${API}/api/player/${steamId}`;
+
 
     fetch(queryUrl)
       .then(async (res) => {
@@ -107,7 +116,7 @@ const CardContainer = ({
   // Модалка должна показывать свежие данные (текущий сервер обновляется опросом),
   // поэтому берём актуальную карточку из cards, а не замороженный selectedPlayer.
   const activePlayer = selectedPlayer
-    ? cards.find((c) => c.steamId === selectedPlayer.steamId) ?? selectedPlayer
+    ? cards.find((c) => cardKey(c) === cardKey(selectedPlayer))
     : null;
 
   const cardCount = cards.length + (isAddingCard ? 1 : 0);
@@ -136,7 +145,7 @@ const CardContainer = ({
           )}
 
           {cards.map((player) => {
-            const playerTimer = trackingMap[player.steamId] || 0;
+            const playerTimer = trackingMap[cardKey(player)] || 0;
             const isTracked = playerTimer > 0;
 
             // Кружок в левом верхнем углу: зелёный — на сервере, жёлтый — сменил
@@ -149,7 +158,7 @@ const CardContainer = ({
 
             return (
               <div
-                key={player.steamId}
+                key={cardKey(player)}
                 className="card"
                 onClick={() => setSelectedPlayer(player)}
               >
@@ -166,16 +175,12 @@ const CardContainer = ({
                 />
 
                 <div className="cardImage">
-                  {player.steam?.avatarfull ? (
-                    <img src={player.steam.avatarfull} alt={player.steam.personaname} />
-                  ) : (
-                    <div className="avatarPlaceholder">👤</div>
-                  )}
+                  <PlayerAvatar src={player.steam?.avatarfull} alt={player.steam?.personaname} />
                 </div>
 
                 <div className="cardInfo">
                   <p className="cardPlayerName">
-                    {player.steam?.personaname || `ID: ${player.steamId}`}
+                    { player.steam?.personaname || player.bmName || `BM: ${player.bmId}`}
                   </p>
 
                   <div className="cardStatusRow">
@@ -238,11 +243,11 @@ const CardContainer = ({
           player={activePlayer}
           onClose={() => setSelectedPlayer(null)}
           onDelete={(steamId) => { onDeleteCard(steamId); setSelectedPlayer(null); }}
-          isTracking={(trackingMap[activePlayer.steamId] || 0) > 0}
-          trackingTimer={trackingMap[activePlayer.steamId] || 0}
+          isTracking={(trackingMap[cardKey(activePlayer)] || 0) > 0}
+          trackingTimer={trackingMap[cardKey(activePlayer)] || 0}
           trackTotalSeconds={TRACK_SECONDS}
           onToggleTracking={onToggleTracking}
-          trackEvents={trackEvents.filter((e) => e.steamId === activePlayer.steamId)}
+          trackEvents={trackEvents.filter((e) => e.steamId === cardKey(activePlayer))}
         />
       )}
     </>

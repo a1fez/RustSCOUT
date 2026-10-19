@@ -5,4 +5,6 @@ export const ERROR_MESSAGE: Record<string, string> = {
   name_not_matched: 'Игрок сейчас не в сети на выбранном сервере.',
   bm_request_failed: 'Ошибка при обращении к BattleMetrics. Попробуйте позже.',
   card_limit: 'Достигнут лимит карточек (20). Удалите одну, чтобы добавить новую.',
+  rate_limited: 'Слишком много поисков. Подождите минуту и попробуйте снова.',
+  bm_player_not_found: 'Игрок с таким BattleMetrics ID не найден.',
 };

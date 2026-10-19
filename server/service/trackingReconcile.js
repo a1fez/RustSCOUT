@@ -81,9 +81,9 @@ async function reconcileEntry(entry, playersOnServer, { fresh = false } = {}) {
     isOnline: Boolean(currentServerId || nameMatch),
     currentServerId: currentServerId || (nameMatch && entry.serverId ? String(entry.serverId) : null),
     onInitialServer,
-    hasLeftInitialServer: Boolean(currentServerId) && !onInitialServer,
     stillListedByName: Boolean(nameMatch),
     lastCheckedAt: Date.now(),
+    hasLeftInitialServer: Boolean(currentServerId && entry.initialServerId) && !onInitialServer,
   };
 
   const patch = { status };

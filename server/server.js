@@ -6,6 +6,7 @@ require('./service/serverList.js');
 require('./service/playerScraper.js');
 require('./auth.js');
 
+const { searchRateLimit } = require('./service/searchRateLimit.js');
 const { RedisStore } = require('connect-redis');
 const session = require('express-session');
 const express = require('express');
@@ -18,6 +19,7 @@ const passport = require('passport');
 // отслеживаемому игроку и списку его сервера.
 const { startTrackingPoller } = require('./service/trackingReconcile.js');
 const { startActivityFlusher } = require('./service/activityRecorder.js');
+const { startNameIndex } = require('./service/nameIndex.js');
 const { clearAllTracked } = require('./service/trackingRegistry.js');
 
 // При старте сервера сбрасываем реестр отслеживания — фронт всё равно потерял
@@ -28,18 +30,25 @@ clearAllTracked()
 
 startTrackingPoller();
 startActivityFlusher();
+startNameIndex();
 
 // Импорт функции сопоставления и сбора данных игрока
-const { resolvePlayerOnServer, NoMatchReason } = require('./service/playerReq.js');
+const { resolvePlayerOnServer, resolvePlayerByBmId, NoMatchReason } = require('./service/playerReq.js');
 
 // Импорт роутов серверов (PostgreSQL)
 const serverRoutes = require('./routes/serverRoute.js');
 const playerRoutes = require('./routes/playerRoutes.js');
 const statsRoutes = require('./routes/statsRoute.js');
+const liveStatsRoutePlayers = require('./routes/liveStatsRoutePlayers.js')
+const nameSearchRoute = require('./routes/nameSearchRoute.js');
 const { analyticsMiddleware } = require('./service/analytics.js');
 
 const app = express();
+app.set('trust proxy', 1);
+
 const PORT = process.env.PORT || 5001;
+
+
 
 //redis
 
@@ -47,6 +56,8 @@ let redisStore = new RedisStore({
   client: redisClient,
   prefix: "myapp",
 })
+
+
 
 app.use(
   session({
@@ -69,17 +80,23 @@ app.use(cors({
 }));
 app.use(express.json());
 
+
+
 // Аналитика посещаемости (считает все запросы к API, кроме самого /api/stats)
 app.use(analyticsMiddleware);
 
 // Приватный дашборд статистики (гейт по STATS_TOKEN из .env)
 app.use('/api', statsRoutes);
+app.use('/api', liveStatsRoutePlayers);
 
 // Роуты серверов
 app.use('/api', serverRoutes);
 
 // Роуты игроков
 app.use('/api', playerRoutes(redisClient));
+
+app.use('/api/players/search', searchRateLimit(redisClient, { name: 'suggest', limit: 120}));
+app.use('/api', nameSearchRoute);
 
 // Passport Auth Steam
 app.use(passport.initialize());
@@ -121,7 +138,7 @@ app.post('/api/auth/logout', (req, res, next) => {
 // Роут поиска игрока
 // Отдаёт данные, ТОЛЬКО когда вся цепочка Steam -> Redis -> BattleMetrics
 // прошла успешно. Иначе — 404 с указанием причины, без фейковой карточки.
-app.get('/api/player/:steamId', async (req, res) => {
+app.get('/api/player/:steamId', searchRateLimit(redisClient), async (req, res) => {
   const { steamId } = req.params;
   const targetServer = req.query.server;
 
@@ -157,6 +174,25 @@ app.get('/api/player/:steamId', async (req, res) => {
   }
 });
 
+
+app.get('/api/player/bm/:bmId', searchRateLimit(redisClient), async(req, res) => {
+  const {bmId} = req.params;
+  if (!/^\d{1,18}$/.test(bmId)) {
+    return res.status(400).json({ matched: false, reason: 'bm_player_not_found' });
+  }
+
+  try {
+    const result = await resolvePlayerByBmId(bmId, redisClient);
+    if (!result.matched) {
+      const status = result.reason === NoMatchReason.BM_PLAYER_NOT_FOUND ? 404 : 502;
+      return res.status(status).json({ matched: false, reason: result.reason });
+    }
+    return res.json(result);
+  } catch (error) {
+    console.error('❌ Ошибка роута /api/player/bm/:bmId:', error.message);
+    return res.status(500).json({ matched: false, reason: 'bm_request_failed' });
+  }
+});
 // Запуск сервера
 app.listen(PORT, () => {
   console.log(`🚀 Сервер запущен на http://localhost:${PORT}`);

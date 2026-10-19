@@ -185,6 +185,10 @@
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s;
 }
+.searchSubmitButton:disabled{
+    opacity: 0.4;
+    cursor: not-allowed;
+}
 
 .searchSubmitButton:hover {
     background-color: #f7f7f72d;
@@ -301,4 +305,51 @@
     .errorText p {
         margin: 0;
     }
+}
+/* --- Подсказки по никнейму --- */
+.dropdownMenu.nickSuggest {
+    max-height: 320px;
+}
+
+.dropdownItem.nickItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nickDot {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #52525b;
+}
+
+.nickDot.isOnline {
+    background: #22c55e;
+    box-shadow: 0 0 6px #22c55e;
+}
+
+.nickName {
+    flex-shrink: 0;
+    max-width: 55%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #e4e4e7;
+}
+
+.nickMatch {
+    background: none;
+    color: #fff;
+    font-weight: 700;
+}
+
+.nickServer {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+    font-size: 12px;
+    color: #71717a;
 }

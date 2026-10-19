@@ -4,7 +4,7 @@ import CardContainer from "./cardContainer/cardContainer";
 import Search from "./search/search";
 import './main.css';
 import { Roadmap } from "./pages/roadmap/roadmap";
-import type { PlayerData } from "./cardContainer/player";
+import { cardKey, type PlayerData } from "./cardContainer/player";
 import { MainPage } from "./pages/main/mainPage";
 import { UserProfile } from "./pages/userProfile/userProfile";
 import { ComingSoon } from "./pages/comingSoon/comingSoon";
@@ -15,13 +15,8 @@ import { ContactsSection } from "./contacts/contactsSection";
 import { SearchHistory } from "./searchHistory/searchHistory";
 import { getClientId } from "./clientId";
 import type { SteamUser } from "./pages/userProfile/userProfile";
+import type { SearchData } from './cardContainer/cardContainer';
 
-
-export interface SearchData {
-  steamId: string;
-  serverId: string;
-  timestamp: number;
-}
 
 const API = '';
 const TRACK_SECONDS = 6000;      // окно отслеживания (совпадает с TTL на бэке через durationMs)
@@ -66,6 +61,8 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState<SearchData | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<string>('search');
+
+  const [isAddingCard, setIsAddingCard] = useState<boolean>(false);
 
   // Журнал отслеживания (правая колонка)
   const [trackEvents, setTrackEvents] = useState<NotifEvent[]>([]);
@@ -265,7 +262,7 @@ const App = () => {
 
         setCards((prev) =>
           prev.map((card) => {
-            const s = bySteam[card.steamId];
+            const s = bySteam[cardKey(card)];
             if (!s) return card;
 
             let currentServer = card.currentServer ?? null;
@@ -303,8 +300,8 @@ const App = () => {
   }, [trackedKey, serverName, addTrackEvent]);
 
   const toggleTracking = useCallback(async (player: PlayerData) => {
-    const steamId = player.steamId;
-    if (!steamId || steamId === 'Не привязан') return;
+    const steamId = cardKey(player);
+    if (!player.bmId) return;
 
     if ((trackingMap[steamId] || 0) > 0) {
       setTrackingMap((prev) => {
@@ -319,9 +316,9 @@ const App = () => {
 
     primeAudio(); // разблокировка звука в рамках клика
 
-    const serverId = player.initialServerId || player.currentServer?.id || '';
-    if (!serverId) {
-      console.error('Отслеживание: неизвестен сервер игрока');
+    const serverId = player.initialServerId || player.currentServer?.id || null;
+    if (!serverId && !player.bmId) {
+      console.error('Отслеживание: нет ни сервера, ни bmId');
       return;
     }
 
@@ -349,7 +346,7 @@ const App = () => {
   }, [trackingMap]);
 
   const deleteCard = useCallback((steamId: string) => {
-    setCards((prev) => prev.filter((c) => c.steamId !== steamId));
+    setCards((prev) => prev.filter((c) => cardKey(c) !== steamId));
     // Снимаем с отслеживания только этого игрока — таймеры остальных не трогаем
     setTrackingMap((prev) => {
       if (!(steamId in prev)) return prev;
@@ -360,7 +357,7 @@ const App = () => {
     delete prevStatusRef.current[steamId];
     requestUntrack(steamId);
   }, []);
-
+  
   const handleSearch = (steamId: string, serverIdOrName: string) => {
     if (!steamId) return;
     setSearchError(null);
@@ -369,6 +366,11 @@ const App = () => {
       serverId: serverIdOrName ? serverIdOrName.trim() : '',
       timestamp: Date.now(),
     });
+  };
+
+  const handleSearchBm = (bmId: string) => {
+    setSearchError(null);
+    setSearchQuery({ bmId, timestamp: Date.now() });
   };
 
   return (
@@ -385,7 +387,7 @@ const App = () => {
 
       {currentPage === 'search' && (
         <>
-          <Search onSearch={handleSearch} errorReason={searchError} />
+          <Search onSearch={handleSearch} onSearchBm={handleSearchBm} errorReason={searchError} isSearching={isAddingCard} />
           <CardContainer
             searchQuery={searchQuery}
             cards={cards}
@@ -397,6 +399,8 @@ const App = () => {
             onDeleteCard={deleteCard}
             trackEvents={trackEvents}
             onClearTrackEvents={clearTrackEvents}
+            isAddingCard={isAddingCard}
+            setIsAddingCard={setIsAddingCard}
           />
           <SearchHistory isLoggedIn={!!user} />
           <ContactsSection />

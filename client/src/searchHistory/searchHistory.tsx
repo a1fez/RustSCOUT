@@ -1,5 +1,6 @@
 import { LuHistory, LuRotateCw, LuX } from 'react-icons/lu';
 import type { SearchMode } from '../search/searchModes';
+import { PlayerAvatar } from '../playerAvatar/playerAvatar';
 import './searchHistory.css';
 
 export interface SearchHistoryItem {
@@ -59,7 +60,7 @@ export const SearchHistory = ({ isLoggedIn = false, items = MOCK_HISTORY }: Sear
           {items.map((item) => (
             <li key={item.id} className={`historyRow ${item.found ? '' : 'notFound'}`}>
               <div className="historyAvatar">
-                {item.avatar ? <img src={item.avatar} alt="" /> : <span>👤</span>}
+                <PlayerAvatar src={item.avatar} />
               </div>
 
               <div className="historyMain">

@@ -16,6 +16,7 @@ import {
 } from 'react-icons/lu';
 import { NOTIF_META } from '../../notifications/notification';
 import type { NotifType } from '../../notifications/notification';
+import { PlayerAvatar } from '../../playerAvatar/playerAvatar';
 
 type Section = 'profile' | 'friends' | 'history' | 'notifications' | 'rustplus' | 'subscription';
 
@@ -186,11 +187,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, loading, onLogou
       {/* Плашка профиля — во всю ширину, над навигацией и контентом */}
       <div className="profileBanner reveal" style={{ '--reveal-order': 0 } as React.CSSProperties}>
         <div className="identityAvatar">
-          {user.avatarfull ? (
-            <img src={user.avatarfull} alt={user.name} />
-          ) : (
-            <LuUser className="identityAvatarFallback" />
-          )}
+          <PlayerAvatar src={user.avatarfull} alt={user.name} />
           <span className="identitySteamBadge" title="Подключено через Steam">
             <FaSteam />
           </span>

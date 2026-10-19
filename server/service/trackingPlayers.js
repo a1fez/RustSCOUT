@@ -44,7 +44,7 @@ async function checkPlayersStatus(clientId, redisClient = redisSingleton) {
       isOnline: Boolean(currentServerId) || Boolean(t.status?.stillListedByName),
       currentServerId,
       onInitialServer,
-      hasLeftInitialServer: Boolean(currentServerId) && !onInitialServer,
+      hasLeftInitialServer: Boolean(currentServerId && t.initialServerId) && !onInitialServer,
       stillListedByName: t.status?.stillListedByName ?? null,
       lastCheckedAt: t.status?.lastCheckedAt ?? null,
       startedAt: t.startedAt,

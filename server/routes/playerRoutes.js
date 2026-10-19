@@ -26,10 +26,12 @@ module.exports = (redisClient) => {
       if (!clientId) {
         return res.status(400).json({ success: false, error: 'X-Client-Id обязателен' });
       }
-      if (!steamId || !serverId) {
-        return res.status(400).json({ success: false, error: 'steamId и serverId обязательны' });
+      if (!steamId) {
+        return res.status(400).json({ success: false, error: 'steamId обязателен' });
       }
-
+      if (!serverId && !bmId) {
+        return res.status(400).json({ success: false, error: 'Нужен serverId или bmId' });
+      }
       // bmId нужен реконсайлеру (player:<bmId>:server). Если фронт его не прислал —
       // берём из подтверждённой связки, а не заставляем ловить игрока в Redis.
       let resolvedBmId = bmId ? String(bmId) : null;

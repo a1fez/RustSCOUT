@@ -1,0 +1,21 @@
+/* Заполняет контейнер-родитель; размер, фон и скругление задаёт он */
+.playerAvatar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.playerAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Иконка масштабируется под любой размер контейнера: 32px в истории, 64px в модалке */
+.playerAvatarFallback {
+  width: 50%;
+  height: 50%;
+  color: #52525b;
+}

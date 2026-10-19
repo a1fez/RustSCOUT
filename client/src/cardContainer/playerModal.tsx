@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import type { PlayerData, ActivityDay } from "./player";
+import{ cardKey, type PlayerData, type ActivityDay } from "./player";
 import type { NotifEvent } from "../notifications/notification";
 import { TrackJournal } from "../tracking/trackJournal";
 import { LuInfo }  from "react-icons/lu";
+import { PlayerAvatar } from "../playerAvatar/playerAvatar";
 import { CustomTooltip } from "./customToolTip";
 import { ActivityHeatmap } from "./activityHeatmap";
 import { fetchActivity } from "./activityApi";
@@ -67,7 +68,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
     
     const handleCopySteamId = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (player.steamId && player.steamId !== 'Не привязан') {
+         if (player.steamId){
             navigator.clipboard.writeText(player.steamId);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
@@ -96,18 +97,11 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
         {/* Шапка: Steam профиль */}
         <div className="steamInfo">
           <div className="playerImg">
-            {player.steam?.avatarfull ? (
-              <img
-                src={player.steam.avatarfull}
-                alt={player.steam.personaname}
-              />
-            ) : (
-              <div className="avatarPlaceholder">👤</div>
-            )}
+            <PlayerAvatar src={player.steam?.avatarfull} alt={player.steam?.personaname} />
           </div>
           <div className="playerDetails">
             <p className="playerName">
-              {player.steam?.personaname || 'Профиль не найден'}
+              {player.steam?.personaname || player.bmName || 'Профиль не найден'}
             </p>
             <div className="statusContainer">
               <span
@@ -129,8 +123,8 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
               </span>
             </div>
             <div className="playerSteamId">
-              <code>{player.steamId}</code>
-              {player.steamId !== 'Не привязан' && (
+              <code>{player.steamId ?? 'Не привязан'}</code>
+              {player.steamId && (
                 <button
                   className="copyBtn"
                   onClick={handleCopySteamId}
@@ -286,7 +280,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
 
               {/* Действия */}
               <div className="actions">
-                {player.steamId !== 'Не привязан' && (
+                {player.steamId && (
                   <a
                     className="actionBtn primary"
                     href={
@@ -316,7 +310,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                   className="deleteCard"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDelete(player.steamId);
+                    onDelete(cardKey(player));
                     onClose();
                   }}
                 >

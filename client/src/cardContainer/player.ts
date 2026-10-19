@@ -32,8 +32,9 @@ export interface CurrentServerInfo {
 
 // Основной интерфейс игрока для карточки и модального окна
 export interface PlayerData {
-  steamId: string;
+  steamId: string | null;
   bmId?: string;
+  bmName?: string | null;
   isOnline?: boolean;
   steam: SteamInfo | null;
   battleMetrics: BattleMetricsInfo | null;
@@ -52,3 +53,5 @@ export interface ActivityDay {
   date: string;     // ISO-дата дня, 'YYYY-MM-DD' (локальное время)
   hours: number[];  // ровно 24 значения
 }
+
+export const cardKey = (p: PlayerData) => p.steamId ?? `bm:${p.bmId}`;

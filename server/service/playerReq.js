@@ -3,8 +3,9 @@ const path = require('path');
 
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
-const { getBySteamId, upsertVerified } = require('./verifiedPlayers.js');
+const { getBySteamId, getByBmId, upsertVerified } = require('./verifiedPlayers.js');
 const { scheduleRequest } = require('../rateLimiter.js');
+
 
 const BROWSER_USER_AGENTS = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -35,6 +36,7 @@ const NoMatchReason = {
   REDIS_KEY_EMPTY: 'redis_key_empty',
   NAME_NOT_MATCHED: 'name_not_matched',
   BM_REQUEST_FAILED: 'bm_request_failed',
+  BM_PLAYER_NOT_FOUND: 'bm_player_not_found',
 };
 
 /**
@@ -198,6 +200,7 @@ async function getFullPlayerStatus(bmId, redisClient = null) {
 
   const result = {
     bmId: String(player.id),
+    name: player.attributes?.name || null,
     isOnline: isOnlineNow,
     currentServer,
     battleMetrics: {
@@ -299,7 +302,59 @@ async function resolvePlayerOnServer(steamId, serverId, redisClient) {
   };
 }
 
+
+async function resolvePlayerByBmId(bmId, redisClient) {
+  let bmData;
+  try {
+    bmData = await getFullPlayerStatus(bmId, redisClient);
+  } catch (err) {
+    if ([400, 404].includes(err.response?.status)) return notFound(NoMatchReason.BM_PLAYER_NOT_FOUND);
+    return notFound(NoMatchReason.BM_REQUEST_FAILED, {error: err.message});
+  }
+
+  let steamId = null;
+  try {
+    const verified = await getByBmId(bmData.bmId);
+    if(verified?.steamId) steamId = String(verified.steamId);
+  } catch (err) {
+    console.error('❌ [verifiedPlayers] Чтение связки по bmId не удалось:', err.message);
+  }
+
+  let steam = null;
+   const steamApiKey = process.env.steamApiKey || process.env.STEAM_API_KEY;
+  if (steamId && steamApiKey) {
+    try {
+      const steamUser = await fetchSteamProfile(steamId, steamApiKey);
+      if (steamUser) {
+        steam = {
+          personaname: steamUser.personaname,
+          avatarfull: steamUser.avatarfull,
+          profileurl: steamUser.profileurl,
+          personastate: steamUser.personastate,
+        };
+      }
+    } catch (err) {
+      // Steam недоступен — карточка всё равно будет, просто без аватара
+      console.warn('⚠️ [playerReq] Steam недоступен при поиске по bmId:', err.message);
+    }
+  }
+    return {
+    matched: true,
+    steamId,              // null, если игрока ещё ни разу не искали по Steam
+    bmId: bmData.bmId,
+    bmName: bmData.name,
+    isOnline: bmData.isOnline,
+    currentServer: bmData.currentServer,
+    steam,
+    battleMetrics: bmData.battleMetrics,
+    servers: bmData.servers,
+    nicknames: bmData.nicknames,
+  };
+
+}
+
 module.exports = {
   resolvePlayerOnServer,
+  resolvePlayerByBmId,
   NoMatchReason,
 };

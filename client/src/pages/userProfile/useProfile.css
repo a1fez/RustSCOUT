@@ -45,11 +45,6 @@
   object-fit: cover;
 }
 
-.identityAvatarFallback {
-  font-size: 30px;
-  color: #52525b;
-}
-
 .identitySteamBadge {
   position: absolute;
   bottom: -2px;

@@ -4,6 +4,7 @@ import { IoChevronDown } from 'react-icons/io5';
 import { ERROR_MESSAGE } from '../../error';
 import { SearchModes, type SearchMode } from './searchModes';
 import { LiveStats } from './liveStats';
+import { useNickSuggest, NICK_MIN_LENGTH, type NickCandidate } from './useNickSuggest';
 import './search.css';
 
 // Подсказки в полях для каждого режима поиска
@@ -12,7 +13,26 @@ const QUERY_PLACEHOLDER: Record<SearchMode, string> = {
   steam: 'Введите SteamID...',
   nick: 'Никнейм игрока...',
 };
+// Подсвечиваем в нике ту часть, что совпала с запросом
+const highlightMatch = (name: string, query: string) => {
+  const pos = name.toLowerCase().indexOf(query.trim().toLowerCase());
+  if (pos === -1 || !query.trim()) return name;
+  const end = pos + query.trim().length;
+  return (
+    <>
+      {name.slice(0, pos)}
+      <mark className="nickMatch">{name.slice(pos, end)}</mark>
+      {name.slice(end)}
+    </>
+  );
+};
 
+const parseBmId = (input: string): string | null => {
+  const value = input.trim();
+  if (/^\d{1,18}$/.test(value)) return value;
+  const match = value.match(/battlemetrics\.com\/players\/(\d{1,18})/i);
+  return match ? match[1] : null;
+};
 
 
 interface ServerItem {
@@ -26,11 +46,13 @@ interface ServerItem {
 
 interface SearchProps {
   onSearch: (steamId: string, serverIdOrName: string) => void;
+  onSearchBm: (bmId: string) => void;
   initialServers?: ServerItem[];
   errorReason?: string | null;
+  isSearching?: boolean;
 }
 
-const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchProps) => {
+const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null, isSearching = false}: SearchProps) => {
   const [text, setText] = useState('');
   const [server, setServer] = useState('');
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
@@ -47,6 +69,12 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
   const [modeNotice, setModeNotice] = useState<string | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Подсказки по нику: список кандидатов под основным инпутом
+  const [suggestOpen, setSuggestOpen] = useState(false);
+  const [highlight, setHighlight] = useState(0);
+  const queryRowRef = useRef<HTMLDivElement>(null);
+  const nick = useNickSuggest(text, mode === 'nick');
 
   // Загрузка серверов из базы данных
   useEffect(() => {
@@ -80,6 +108,9 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
+      if (queryRowRef.current && !queryRowRef.current.contains(event.target as Node)) {
+        setSuggestOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -90,11 +121,36 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
     setText('');
     setShowError(false);
     setModeNotice(null);
+    setSuggestOpen(false);
+  };
+
+  // Клик по кандидату = точный поиск по его BM ID
+  const pickCandidate = (candidate: NickCandidate) => {
+    if (isSearching) return;
+    setText(candidate.name);
+    setSuggestOpen(false);
+    onSearchBm(candidate.bmId);
   };
 
   const handleSubmit = () => {
-    if (mode !== 'steam') {
-      setModeNotice(mode === 'bm' ? 'Поиск по BattleMetrics скоро появится' : 'Поиск по никнейму скоро появится');
+    if(isSearching) return;
+    if (mode === 'bm') {
+      const bmId = parseBmId(text);
+      if (!bmId) {
+        setModeNotice('Введите BM ID или ссылку на игрока BattleMetrics');
+        return;
+      }
+      onSearchBm(bmId);
+      return;
+    }
+    if (mode === 'nick') {
+      if (text.trim().length < NICK_MIN_LENGTH) {
+        setModeNotice(`Введите минимум ${NICK_MIN_LENGTH} символа ника`);
+        return;
+      }
+      const candidate = nick.results[highlight] ?? nick.results[0];
+      if (candidate) pickCandidate(candidate);
+      else setSuggestOpen(true);
       return;
     }
 
@@ -137,7 +193,8 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
     ? ERROR_MESSAGE[errorReason] || 'Не удалось найти игрока. Попробуйте ещё раз.'
     : null;
 
-  const hasServerField = mode !== 'bm';
+  const hasServerField = mode === 'steam';
+  const showSuggest = mode === 'nick' && suggestOpen && nick.status !== 'idle';
   const errorMessage = showError ? 'Заполните SteamID и сервер' : modeNotice ?? serverErrorText;
 
   const errorBlock = errorMessage && (
@@ -159,7 +216,7 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
 
       <div className="searchFormCard">
         {/* Основной инпут: SteamID / BM ID / никнейм — зависит от режима */}
-        <div className={`inputRow ${showError && isSteamEmpty ? 'inputError' : ''}`}>
+        <div className={`inputRow ${showError && isSteamEmpty ? 'inputError' : ''}`} ref={queryRowRef}>
           <input
             value={text}
             onChange={(e) => {
@@ -167,14 +224,68 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
               setText(mode === 'steam' ? e.target.value.replace(/\D/g, '') : e.target.value);
               if (showError) setShowError(false);
               if (modeNotice) setModeNotice(null);
+              setSuggestOpen(true);
+              setHighlight(0);
             }}
+            onFocus={() => setSuggestOpen(true)}
             type="text"
             className="searchInput"
             placeholder={QUERY_PLACEHOLDER[mode]}
+            role={mode === 'nick' ? 'combobox' : undefined}
+            aria-expanded={mode === 'nick' ? showSuggest : undefined}
             onKeyDown={(e) => {
+              if (showSuggest && nick.results.length > 0) {
+                if (e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  setHighlight((i) => (i + 1) % nick.results.length);
+                  return;
+                }
+                if (e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  setHighlight((i) => (i - 1 + nick.results.length) % nick.results.length);
+                  return;
+                }
+              }
+              if (e.key === 'Escape') setSuggestOpen(false);
               if (e.key === 'Enter') handleSubmit();
             }}
           />
+
+          {showSuggest && (
+            <div className="dropdownMenu nickSuggest" role="listbox">
+              {nick.status === 'error' ? (
+                <div className="dropdownNoResults">
+                  {ERROR_MESSAGE[nick.errorReason ?? ''] || 'Поиск по нику сейчас недоступен'}
+                </div>
+              ) : nick.results.length === 0 ? (
+                <div className="dropdownNoResults">
+                  {nick.status === 'loading' ? 'Ищем…' : 'Никого онлайн с таким ником'}
+                </div>
+              ) : (
+                nick.results.map((c, i) => (
+                  <div
+                    key={c.bmId}
+                    role="option"
+                    aria-selected={i === highlight}
+                    className={`dropdownItem nickItem ${i === highlight ? 'selected' : ''}`}
+                    onMouseEnter={() => setHighlight(i)}
+                    // mousedown, а не click: иначе инпут теряет фокус раньше клика
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      pickCandidate(c);
+                    }}
+                  >
+                    <span
+                      className={`nickDot ${c.isOnline ? 'isOnline' : ''}`}
+                      title={c.isOnline ? 'Онлайн' : 'Был онлайн недавно'}
+                    />
+                    <span className="nickName">{highlightMatch(c.name, text)}</span>
+                    <span className="nickServer">{c.serverName ?? `сервер #${c.serverId}`}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
         {/* Инпут Сервера (в режиме BM не нужен) */}
@@ -187,13 +298,7 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
             <input
               type="text"
               className="searchInput"
-              placeholder={
-                isLoadingServers
-                  ? 'Загрузка серверов...'
-                  : mode === 'nick'
-                  ? 'Сервер (необязательно)...'
-                  : 'Выберите или введите сервер...'
-              }
+              placeholder={isLoadingServers ? 'Загрузка серверов...' : 'Выберите или введите сервер...'}
               value={server}
               onFocus={() => setIsOpen(true)}
               onChange={(e) => {
@@ -243,10 +348,14 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
         </div>
         )}
 
-        {/* В режиме BM вместо сервера — плашка той же высоты, чтобы форма не прыгала */}
+        {/* В режимах BM и ника вместо сервера — плашка той же высоты, чтобы форма не прыгала */}
         {!hasServerField && (
           <div className="inputRow">
-            <div className="searchInput searchInputGhost">Сервер не нужен — ищем напрямую по BattleMetrics</div>
+            <div className="searchInput searchInputGhost">
+              {mode === 'bm'
+                ? 'Сервер не нужен — ищем напрямую по BattleMetrics'
+                : 'Сервер не нужен — ищем среди онлайна всех отслеживаемых серверов'}
+            </div>
             {errorBlock}
           </div>
         )}
@@ -256,6 +365,7 @@ const Search = ({ onSearch, initialServers = [], errorReason = null }: SearchPro
           type="button"
           className="searchSubmitButton"
           onClick={handleSubmit}
+          disabled={isSearching}
         >
           <HiArrowNarrowRight className="searchIcon" style={{ color: '#929292' }} />
         </button>

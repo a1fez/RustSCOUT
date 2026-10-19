@@ -133,6 +133,11 @@ async function scrapeTier(tier) {
     const totalPlayersCount = counts.reduce((acc, c) => acc + c, 0);
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
     console.log(`✅ [${tier.name}] Завершено за ${duration}с. Найдено и записано игроков: ${totalPlayersCount}`);
+    await redisClient.set(
+      `stats:tier:${tier.key}`,
+      JSON.stringify({ servers: servers.length, players: totalPlayersCount, updatedAt: Date.now()}),
+      { EX: (tier.intervalMs / 1000) * 3 }
+    );
   } catch (error) {
     console.error(`❌ [${tier.name}] Критическая ошибка:`, error.message);
   } finally {
