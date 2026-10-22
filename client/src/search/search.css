@@ -307,14 +307,47 @@
     }
 }
 /* --- Подсказки по никнейму --- */
+/* Ширина списка постоянная, сколько бы игроков ни нашлось — при наборе ника
+   меняется только высота, без прыжков в ширину и числе колонок.
+   Список шире поля и стоит по его центру; не больше экрана минус отступы.
+   translate — отдельное свойство, не конфликтует с transform в анимации fadeIn */
 .dropdownMenu.nickSuggest {
-    max-height: 320px;
+    left: 50%;
+    translate: -50% 0;
+    width: min(calc(100% + 120px), calc(100vw - 32px));
+    max-height: 380px;
+    padding: 8px;
 }
 
+.nickGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(var(--nick-rows, 5), auto);
+    grid-auto-flow: column; /* заполняем по колонкам: 1-5 слева, 6-10 справа */
+    gap: 6px;
+}
+
+.nickGrid.isSingle .nickItem {
+    grid-column: 1 / -1;
+}
+
+/* Каждый игрок — отдельная плашка, а не сплошной список */
 .dropdownItem.nickItem {
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
+    padding: 8px 12px;
+    background: #161618;
+    border: 1px solid #232326;
+    border-radius: 8px;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.dropdownItem.nickItem:hover,
+.dropdownItem.nickItem.selected {
+    background: #222225;
+    border-color: #3a3a3f;
 }
 
 .nickDot {
@@ -330,26 +363,113 @@
     box-shadow: 0 0 6px #22c55e;
 }
 
-.nickName {
-    flex-shrink: 0;
-    max-width: 55%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #e4e4e7;
+/* Ник сверху, сервер под ним */
+.nickText {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 1px;
 }
 
+.nickName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #a1a1aa; /* приглушённая часть ника — чтобы совпадение читалось */
+}
+
+/* Совпавшая с запросом часть ника — зелёным, как точки онлайна */
 .nickMatch {
     background: none;
-    color: #fff;
+    color: #4ade80;
     font-weight: 700;
 }
 
+/* Сервер — отдельная серая метка с иконкой */
 .nickServer {
-    flex: 1;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 100%;
+    margin-top: 3px;
+    padding: 2px 7px;
+    background: #27272a;
+    border: 1px solid #323236;
+    border-radius: 5px;
+    font-size: 11px;
+    color: #c4c4cc;
+    box-sizing: border-box;
+}
+
+.nickServerIcon {
+    flex-shrink: 0;
+    width: 11px;
+    height: 11px;
+    color: #71717a;
+}
+
+.nickServerName {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-align: right;
-    font-size: 12px;
-    color: #71717a;
+    white-space: nowrap;
+}
+
+.nickItem.selected .nickServer,
+.nickItem:hover .nickServer {
+    background: #303034;
+    border-color: #3f3f46;
+}
+
+/* --- Фокус-режим поиска по нику: размытие всего вокруг --- */
+.searchFocusOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    /* Скрыто: прозрачно и не ловит клики. visibility выключается в конце,
+       после того как прозрачность доехала до нуля — так исчезновение плавное */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+}
+
+.searchFocusOverlay.isVisible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.25s ease, visibility 0s;
+}
+
+/* Форма поиска остаётся поверх размытия */
+.searchFormCard.isFocused {
+    z-index: 501;
+}
+
+/* Без анимаций — почти мгновенно, но transition остаётся, чтобы сработал onTransitionEnd */
+@media (prefers-reduced-motion: reduce) {
+    .searchFocusOverlay,
+    .searchFocusOverlay.isVisible {
+        transition-duration: 0.01s;
+    }
+}
+
+/* Телефон: одна колонка, список по ширине поля */
+@media (max-width: 600px) {
+    .dropdownMenu.nickSuggest {
+        left: 0;
+        translate: none;
+        width: 100%;
+    }
+
+    .nickGrid {
+        gap: 4px;
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+        grid-auto-flow: row;
+    }
 }

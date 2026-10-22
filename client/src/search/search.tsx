@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { HiArrowNarrowRight } from 'react-icons/hi';
 import { IoChevronDown } from 'react-icons/io5';
+import { LuServer } from 'react-icons/lu';
 import { ERROR_MESSAGE } from '../../error';
 import { SearchModes, type SearchMode } from './searchModes';
 import { LiveStats } from './liveStats';
@@ -45,8 +46,8 @@ interface ServerItem {
 }
 
 interface SearchProps {
-  onSearch: (steamId: string, serverIdOrName: string) => void;
-  onSearchBm: (bmId: string) => void;
+  onSearch: (steamId: string, serverIdOrName: string, serverName?: string) => void;
+  onSearchBm: (bmId: string, nick?: string) => void;
   initialServers?: ServerItem[];
   errorReason?: string | null;
   isSearching?: boolean;
@@ -65,7 +66,7 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
   // Режим поиска и раскрытие блоков с описанием режимов
   const [mode, setMode] = useState<SearchMode>('steam');
   const [modesInfoOpen, setModesInfoOpen] = useState(false);
-  // ВРЕМЕННО: пока бэкенд умеет только Steam + сервер — для других режимов показываем заглушку
+  // Подсказка под формой: неверный BM ID, слишком короткий ник и т.п.
   const [modeNotice, setModeNotice] = useState<string | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -122,6 +123,7 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
     setShowError(false);
     setModeNotice(null);
     setSuggestOpen(false);
+    setFormRaised(false);
   };
 
   // Клик по кандидату = точный поиск по его BM ID
@@ -129,7 +131,7 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
     if (isSearching) return;
     setText(candidate.name);
     setSuggestOpen(false);
-    onSearchBm(candidate.bmId);
+    onSearchBm(candidate.bmId, candidate.name);
   };
 
   const handleSubmit = () => {
@@ -175,7 +177,7 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
     }
 
     // Передаем точный числовой ID (или в крайнем случае имя)
-    onSearch(cleanSteam, targetServerId || cleanServer);
+    onSearch(cleanSteam, targetServerId || cleanServer, cleanServer);
   };
 
   const handleSelectServer = (srv: ServerItem) => {
@@ -195,6 +197,16 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
 
   const hasServerField = mode === 'steam';
   const showSuggest = mode === 'nick' && suggestOpen && nick.status !== 'idle';
+
+  // Пока размытие плавно гаснет, форма должна оставаться поверх него — иначе она
+  // на 0.25с окажется под размытием. Поднимаем форму сразу при открытии,
+  // а опускаем, только когда закончилась анимация исчезновения (onTransitionEnd).
+  const [formRaised, setFormRaised] = useState(false);
+  const [prevShowSuggest, setPrevShowSuggest] = useState(showSuggest);
+  if (showSuggest !== prevShowSuggest) {
+    setPrevShowSuggest(showSuggest);
+    if (showSuggest) setFormRaised(true);
+  }
   const errorMessage = showError ? 'Заполните SteamID и сервер' : modeNotice ?? serverErrorText;
 
   const errorBlock = errorMessage && (
@@ -214,7 +226,18 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
         onToggleInfo={() => setModesInfoOpen((open) => !open)}
       />
 
-      <div className="searchFormCard">
+      {/* Фокус-режим: пока открыты подсказки по нику, всё вокруг размыто и затемнено */}
+      {mode === 'nick' && (
+        <div
+          className={`searchFocusOverlay ${showSuggest ? 'isVisible' : ''}`}
+          aria-hidden="true"
+          onTransitionEnd={(e) => {
+            if (e.propertyName === 'opacity' && !showSuggest) setFormRaised(false);
+          }}
+        />
+      )}
+
+      <div className={`searchFormCard ${showSuggest || formRaised ? 'isFocused' : ''}`}>
         {/* Основной инпут: SteamID / BM ID / никнейм — зависит от режима */}
         <div className={`inputRow ${showError && isSteamEmpty ? 'inputError' : ''}`} ref={queryRowRef}>
           <input
@@ -262,7 +285,13 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
                   {nick.status === 'loading' ? 'Ищем…' : 'Никого онлайн с таким ником'}
                 </div>
               ) : (
-                nick.results.map((c, i) => (
+                // Две колонки: лучшие совпадения идут сверху вниз по левой, потом по правой.
+                // Один игрок — растягиваем на всю ширину, чтобы не висел половинкой
+                <div
+                  className={`nickGrid ${nick.results.length === 1 ? 'isSingle' : ''}`}
+                  style={{ '--nick-rows': Math.ceil(nick.results.length / 2) } as React.CSSProperties}
+                >
+                {nick.results.map((c, i) => (
                   <div
                     key={c.bmId}
                     role="option"
@@ -279,10 +308,16 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
                       className={`nickDot ${c.isOnline ? 'isOnline' : ''}`}
                       title={c.isOnline ? 'Онлайн' : 'Был онлайн недавно'}
                     />
-                    <span className="nickName">{highlightMatch(c.name, text)}</span>
-                    <span className="nickServer">{c.serverName ?? `сервер #${c.serverId}`}</span>
+                    <span className="nickText">
+                      <span className="nickName">{highlightMatch(c.name, text)}</span>
+                      <span className="nickServer">
+                        <LuServer className="nickServerIcon" aria-hidden="true" />
+                        <span className="nickServerName">{c.serverName ?? `сервер #${c.serverId}`}</span>
+                      </span>
+                    </span>
                   </div>
-                ))
+                ))}
+                </div>
               )}
             </div>
           )}

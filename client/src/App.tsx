@@ -12,7 +12,8 @@ import type { NotifEvent, NotifInput } from "./notifications/notification";
 import { makeNotifId, SOUND_TYPES } from "./notifications/notification";
 import { primeAudio, playAlert } from "./sound/alert";
 import { ContactsSection } from "./contacts/contactsSection";
-import { SearchHistory } from "./searchHistory/searchHistory";
+import { SearchHistory, type SearchHistoryItem } from "./searchHistory/searchHistory";
+import { addToHistory, loadHistory, saveHistory } from "./searchHistory/historyStorage";
 import { getClientId } from "./clientId";
 import type { SteamUser } from "./pages/userProfile/userProfile";
 import type { SearchData } from './cardContainer/cardContainer';
@@ -22,6 +23,8 @@ const API = '';
 const TRACK_SECONDS = 6000;      // окно отслеживания (совпадает с TTL на бэке через durationMs)
 const STATUS_POLL_MS = 10000;    // бэк отслеживает игроков каждые 10с
 const MAX_EVENTS = 100;
+const HISTORY_SHOWN_GUEST = 5;  // сколько записей истории видит гость
+const HISTORY_SHOWN_USER = 10;  // и залогиненный пользователь
 
 // Последний известный статус игрока — чтобы ловить переходы между опросами.
 interface StatusSnapshot {
@@ -59,6 +62,9 @@ const App = () => {
   const [trackingMap, setTrackingMap] = useState<Record<string, number>>({});
 
   const [searchQuery, setSearchQuery] = useState<SearchData | null>(null);
+  // История поиска: читаем из localStorage один раз при старте, сохраняем при каждом изменении
+  const [history, setHistory] = useState<SearchHistoryItem[]>(loadHistory);
+  useEffect(() => saveHistory(history), [history]);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<string>('search');
 
@@ -358,19 +364,51 @@ const App = () => {
     requestUntrack(steamId);
   }, []);
   
-  const handleSearch = (steamId: string, serverIdOrName: string) => {
+  const handleSearch = (steamId: string, serverIdOrName: string, serverName?: string) => {
     if (!steamId) return;
     setSearchError(null);
     setSearchQuery({
       steamId: steamId.trim(),
       serverId: serverIdOrName ? serverIdOrName.trim() : '',
+      mode: 'steam',
+      query: steamId.trim(),
+      serverName: serverName || null,
       timestamp: Date.now(),
     });
   };
 
-  const handleSearchBm = (bmId: string) => {
+  // nick передаётся, когда игрока выбрали из подсказок по нику: ищем по bmId, а в историю пишем ник
+  const handleSearchBm = (bmId: string, nick?: string) => {
     setSearchError(null);
-    setSearchQuery({ bmId, timestamp: Date.now() });
+    setSearchQuery({ bmId, mode: nick ? 'nick' : 'bm', query: nick ?? bmId, timestamp: Date.now() });
+  };
+
+  const handleSearchDone = (search: SearchData, player: PlayerData | null) => {
+    const item: SearchHistoryItem = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      mode: search.mode ?? (search.bmId ? 'bm' : 'steam'),
+      query: search.query ?? search.steamId ?? search.bmId ?? '',
+      bmId: player?.bmId ?? search.bmId ?? null,
+      serverId: search.serverId || null,
+      serverName: player?.currentServer?.name ?? search.serverName ?? null,
+      found: Boolean(player),
+      playerName: player ? player.steam?.personaname || player.bmName || null : null,
+      avatar: player?.steam?.avatarfull || null,
+      searchedAt: Date.now(),
+    };
+    setHistory((prev) => addToHistory(prev, item));
+  };
+
+  const repeatSearch = (item: SearchHistoryItem) => {
+    if (isAddingCard) return;
+    if (item.mode === 'steam') {
+      handleSearch(item.query, item.serverId ?? item.serverName ?? '', item.serverName ?? undefined);
+    } else if (item.mode === 'nick' && item.bmId) {
+      handleSearchBm(item.bmId, item.query);
+    } else if (item.mode === 'bm') {
+      handleSearchBm(item.query);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -401,8 +439,15 @@ const App = () => {
             onClearTrackEvents={clearTrackEvents}
             isAddingCard={isAddingCard}
             setIsAddingCard={setIsAddingCard}
+            onSearchDone={handleSearchDone}
           />
-          <SearchHistory isLoggedIn={!!user} />
+          <SearchHistory
+            isLoggedIn={!!user}
+            items={history.slice(0, user ? HISTORY_SHOWN_USER : HISTORY_SHOWN_GUEST)}
+            onRepeat={repeatSearch}
+            onRemove={(id) => setHistory((prev) => prev.filter((h) => h.id !== id))}
+            onClear={() => setHistory([])}
+          />
           <ContactsSection />
         </>
       )}

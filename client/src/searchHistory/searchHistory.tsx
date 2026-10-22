@@ -7,20 +7,14 @@ export interface SearchHistoryItem {
   id: string;
   mode: SearchMode;
   query: string;              // что вводили: SteamID, BM ID или ник
+  bmId?: string | null;       // для повтора поиска по нику — ищем сразу по BM ID
+  serverId?: string | null;   // для повтора Steam-поиска — сервер, который выбирали
   serverName: string | null;
   found: boolean;
   playerName: string | null;  // имя найденного игрока
   avatar: string | null;
   searchedAt: number;         // ms
 }
-
-// ВРЕМЕННО: заглушки для визуала. Дальше — реальная история (локально / в БД у пользователя).
-const MOCK_HISTORY: SearchHistoryItem[] = [
-  { id: '1', mode: 'steam', query: '76561198000000001', serverName: 'Rusty Moose |US Main|', found: true, playerName: 'Mock Raider', avatar: null, searchedAt: Date.now() - 4 * 60_000 },
-  { id: '2', mode: 'nick', query: 'xX_Raid_Xx', serverName: 'Rustafied.com - EU Medium', found: true, playerName: 'xX_Raid_Xx', avatar: null, searchedAt: Date.now() - 38 * 60_000 },
-  { id: '3', mode: 'bm', query: '987654321', serverName: null, found: true, playerName: 'Sleeper', avatar: null, searchedAt: Date.now() - 3 * 3600_000 },
-  { id: '4', mode: 'steam', query: '76561198000000099', serverName: 'Atlas - EU 3x', found: false, playerName: null, avatar: null, searchedAt: Date.now() - 26 * 3600_000 },
-];
 
 const MODE_LABEL: Record<SearchMode, string> = { bm: 'BM', steam: 'STEAM', nick: 'НИК' };
 
@@ -35,10 +29,13 @@ const timeAgo = (ms: number) => {
 
 interface SearchHistoryProps {
   isLoggedIn?: boolean;
-  items?: SearchHistoryItem[];
+  items: SearchHistoryItem[];
+  onRepeat: (item: SearchHistoryItem) => void;
+  onRemove: (id: string) => void;
+  onClear: () => void;
 }
 
-export const SearchHistory = ({ isLoggedIn = false, items = MOCK_HISTORY }: SearchHistoryProps) => (
+export const SearchHistory = ({ isLoggedIn = false, items, onRepeat, onRemove, onClear }: SearchHistoryProps) => (
   <section className="historyWrapper">
     <div className="history">
       <header className="historyHeader">
@@ -46,7 +43,7 @@ export const SearchHistory = ({ isLoggedIn = false, items = MOCK_HISTORY }: Sear
           <LuHistory /> ИСТОРИЯ ПОИСКА
           <span className="historyCount">{items.length}</span>
         </span>
-        <button type="button" className="historyClearBtn" disabled={items.length === 0}>
+        <button type="button" className="historyClearBtn" disabled={items.length === 0} onClick={onClear}>
           Очистить
         </button>
       </header>
@@ -82,10 +79,10 @@ export const SearchHistory = ({ isLoggedIn = false, items = MOCK_HISTORY }: Sear
               <span className="historyTime">{timeAgo(item.searchedAt)}</span>
 
               <div className="historyActions">
-                <button type="button" className="historyIconBtn" title="Искать снова">
+                <button type="button" className="historyIconBtn" title="Искать снова" onClick={() => onRepeat(item)}>
                   <LuRotateCw />
                 </button>
-                <button type="button" className="historyIconBtn danger" title="Убрать из истории">
+                <button type="button" className="historyIconBtn danger" title="Убрать из истории" onClick={() => onRemove(item.id)}>
                   <LuX />
                 </button>
               </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { cardKey, type PlayerData } from './player';
 import { PlayerModal } from './playerModal';
 import { PlayerAvatar } from '../playerAvatar/playerAvatar';
+import type { SearchMode } from '../search/searchModes';
 import { TrackJournal } from '../tracking/trackJournal';
 import type { NotifEvent } from '../notifications/notification';
 import './cardContainer.css';
@@ -14,6 +15,10 @@ export interface SearchData {
   steamId?: string;
   bmId?: string;
   serverId?: string;
+  // Для истории поиска: каким режимом и что вводили (для ника — сам ник, хотя ищем по bmId)
+  mode?: SearchMode;
+  query?: string;
+  serverName?: string | null;
   timestamp: number;
 }
 
@@ -30,6 +35,7 @@ interface CardContainerProps {
   onClearTrackEvents: () => void;
   isAddingCard: boolean;
   setIsAddingCard: React.Dispatch<React.SetStateAction<boolean>>;
+  onSearchDone: (search: SearchData, player: PlayerData | null) => void; // запись в историю
 }
 
 const CardContainer = ({
@@ -44,7 +50,8 @@ const CardContainer = ({
   trackEvents,
   onClearTrackEvents,
   isAddingCard,
-  setIsAddingCard
+  setIsAddingCard,
+  onSearchDone
 }: CardContainerProps) => {
 
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerData | null>(null);
@@ -64,6 +71,7 @@ const CardContainer = ({
     // Уже есть такая карточка? По Steam сверяем steamId, по BM — bmId
     const existingPlayer = cards.find((card) => steamId ? card.steamId === steamId : card.bmId === bmId);
     if (existingPlayer) {
+      onSearchDone(searchQuery, existingPlayer);
       setSelectedPlayer(existingPlayer);
       setSearchQuery(null);
       return;
@@ -102,12 +110,15 @@ const CardContainer = ({
           initialServerId: searchedId || playerData.currentServer?.id || null,
         };
         setCards((prevCards) => [enriched, ...prevCards]);
+        onSearchDone(searchQuery, enriched);
         setIsAddingCard(false);
         setSearchQuery(null);
       })
       .catch((err: Error) => {
         console.error('Ошибка добавления карточки:', err.message);
         setSearchError(err.message);
+        // Упёрлись в лимит — это не результат поиска, в историю не пишем
+        if (err.message !== 'rate_limited') onSearchDone(searchQuery, null);
         setIsAddingCard(false);
         setSearchQuery(null);
       });
