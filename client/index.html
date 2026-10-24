@@ -2,31 +2,28 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" sizes="32x32" href="./src/resource/rustScoutIconBrowser.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap"
-      rel="stylesheet"
-    />
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" sizes="32x32" href="./src/resource/rustScoutIconBrowser.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- SEO Основное -->
-    <meta name="description" content="RustScout (Раст Скаут) — трекер игроков и серверов Rust. Real-time Rust player tracking, server stats, and battle metrics." />
+    <title>RustScout — Rust Server Analytics & Player Tracker</title>
 
-<!-- Ключевые слова: добавляем кириллические варианты -->
-    <meta name="keywords" content="RustScout, раст скаут, раст трекер, трекер раст, поиск игроков раст, rust player tracker, rust servers, battlemetrics" />
+    <!-- Иконка вкладки -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/rustScoutIconBrowser.png" />
     <link rel="canonical" href="https://rustscout.app/" />
 
-    <!-- Open Graph (для красивого превью ссылки в Discord, TG, Steam) -->
+    <!-- SEO Основное -->
+    <meta name="description" content="RustScout (Раст Скаут) — трекер игроков и серверов Rust. Real-time Rust player tracking, server stats, and battle metrics." />
+    <meta name="keywords" content="RustScout, раст скаут, раст трекер, трекер раст, поиск игроков раст, rust player tracker, rust servers, battlemetrics" />
+
+    <!-- Open Graph (для превью в Discord, TG, Steam) -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://rustscout.app/" />
     <meta property="og:title" content="RustScout — Rust Server & Player Tracker" />
     <meta property="og:description" content="Track Rust players, servers, and real-time game statistics with RustScout." />
-    <meta property="og:image" content="https://rustscout.app/src/resource/rustScoutLogo.png" />
+    <meta property="og:image" content="https://rustscout.app/rustScoutImgLink.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <!-- Twitter Card (Discord часто рендерит превью именно по этому тегу) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://rustscout.app/rustScoutImgLink.png" />
 
     <!-- Шрифты -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -35,10 +32,26 @@
       href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap"
       rel="stylesheet"
     />
-    <title>RustScout</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <noscript>
+        <p>Real-time Rust server statistics, player tracking, game monitoring and Rust+ features. Visit https://rustscout.app for full functionality.</p>
+      </noscript>
+    </div>
+
     <script type="module" src="/src/main.tsx"></script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "RustScout",
+      "url": "https://rustscout.app/",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "description": "Real-time web analytics, server monitoring, and player tracking platform for the game Rust."
+    }
+    </script>
   </body>
 </html>

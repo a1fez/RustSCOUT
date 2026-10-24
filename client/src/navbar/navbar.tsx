@@ -7,7 +7,7 @@ import { SiSteam } from 'react-icons/si';
 import type { NotifEvent } from '../notifications/notification';
 import { NOTIF_META, formatRelativeTime } from '../notifications/notification';
 import type { SteamUser } from "../pages/userProfile/userProfile";
-
+import { PlayerAvatar } from '../playerAvatar/playerAvatar';
 
 const MENU_ITEMS = ['main', 'search', 'documentation', 'session'];
 
@@ -19,6 +19,7 @@ interface NavbarProps {
   notifications?: NotifEvent[];
   onClearNotifications?: () => void;
   onMarkAllRead?: () => void;
+  authLoading?: boolean;
 }
 
 const Navbar = ({
@@ -29,6 +30,7 @@ const Navbar = ({
   notifications = [],
   onClearNotifications,
   onMarkAllRead,
+  authLoading,
 }: NavbarProps) => {
   const [activeTab, setActiveTab] = useState('search');
   const [isNotifOpen, setNotifOpen] = useState(false);
@@ -222,10 +224,20 @@ const Navbar = ({
             )}
           </div>
           <GoGear className="icon" />
-          <button className="signUpButton" onClick={() => (user ? onOpenProfile?.() : (window.location.href = '/api/auth/steam'))} type="button">
-            Login
-            <SiSteam className="iconSi"/> 
-          </button>
+          {authLoading ? (
+            <span className="navAvatarSkeleton"/>
+          ) : user ? (
+            <button className="navAvatarButton" onClick={onOpenProfile} title={user.name} type="button">
+                <PlayerAvatar src={user.avatarfull} alt={user.name}/>
+            </button>
+          ) : (
+            <button className="signUpButton" onClick={() => window.location.href = '/api/auth/steam'} type="button">
+               Login
+              <SiSteam className="iconSi" />
+            </button>
+          )} 
+        
+          
         </div>
       </div>
     </div>

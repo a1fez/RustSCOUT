@@ -421,6 +421,7 @@ const App = () => {
         notifications={systemNotifications}
         onClearNotifications={clearSystemNotifications}
         onMarkAllRead={markSystemRead}
+        authLoading={authLoading}
       />
 
       {currentPage === 'search' && (
