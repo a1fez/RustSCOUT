@@ -455,7 +455,7 @@ const App = () => {
       )}
 
       {currentPage === 'roadmap' && (
-        <Roadmap onBack={() => setCurrentPage('search')} />
+        <Roadmap />
       )}
 
       {currentPage === 'profile' && (

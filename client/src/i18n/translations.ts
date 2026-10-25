@@ -271,12 +271,13 @@ export const translations = {
       infoText: 'Здесь будет отображаться информация о проекте.',
     },
     roadmap: {
-      backBtn: '← НАЗАД В ДАШБОРД',
       title: 'ПЛАН РАЗРАБОТКИ',
       desc: 'Текущая разработка RustScout и архитектурный роадмап',
       statusDone: 'ГОТОВО',
       statusWip: 'В ПРОЦЕССЕ',
       statusPlanned: 'В ПЛАНАХ',
+      journalTitle: 'ЛЕНТА ИЗМЕНЕНИЙ',
+      journalEmpty: 'Записей пока нет — как только что-то задеплою, появится здесь.',
       steps: {
         '1': {
           title: 'Создание основы',
@@ -615,12 +616,13 @@ export const translations = {
       infoText: 'Project information will be shown here.',
     },
     roadmap: {
-      backBtn: '← BACK TO DASHBOARD',
       title: 'ROADMAP',
       desc: "RustScout's current development and architectural roadmap",
       statusDone: 'DONE',
       statusWip: 'IN PROGRESS',
       statusPlanned: 'PLANNED',
+      journalTitle: 'CHANGELOG',
+      journalEmpty: "No entries yet — they'll show up here as soon as something ships.",
       steps: {
         '1': {
           title: 'Building the foundation',

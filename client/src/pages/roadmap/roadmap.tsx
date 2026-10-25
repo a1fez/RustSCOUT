@@ -8,6 +8,25 @@ interface Step {
   status: 'done' | 'wip' | 'planned';
 }
 
+// Лента изменений — каждую запись пишете вручную, на обоих языках сразу
+// (сайт двуязычный, значит и журнал должен быть). date — 'YYYY-MM-DD',
+// форматируется под язык при показе. Новые записи добавлять в НАЧАЛО массива
+// (самая свежая — сверху).
+interface NewsEntry {
+  date: string;
+  ru: string;
+  en: string;
+}
+
+const NEWS_FEED: NewsEntry[] = [
+  // { date: '2026-10-25', ru: 'Добавил мультиязычность сайта.', en: 'Added multi-language support to the site.' },
+
+  { date: '2026-10-25', ru: 'Исправление некоторых UI багов, улучшение мобильной версии сайта, добавлена смена языка.', en: 'Fixed some UI bugs, improved mobile version of the website, added a language change'},
+  { date: '2026-10-22', ru: 'Запустил отслеживание активности игроков и сбор данных по часам.', en: 'Launched player activity tracking and hourly data collection.' },
+  { date: '2026-10-18', ru: 'Добавил систему пользователей. Вход через Steam, личный кабинет и сессии.', en: 'Added the user system. Steam login, personal profile, and sessions.' },
+  { date: '2026-09-06', ru: 'Запустил сайт. Поиск и отслеживание игроков по открытым данным.', en: 'Launched the site — player search and tracking based on public data.' },
+];
+
 // title/desc теперь переводятся через t(`roadmap.steps.${id}.*`) — тут остаётся
 // только то, что не зависит от языка (номер этапа и статус). См. translations.ts.
 const ROADMAP_STEPS: Step[] = [
@@ -18,22 +37,21 @@ const ROADMAP_STEPS: Step[] = [
   { id: 5, stage: 'STAGE | 05', status: 'planned' },
 ];
 
-interface RoadmapProps {
-  onBack?: () => void;
-}
+export const Roadmap: React.FC = () => {
+  const { t, lang } = useLang();
 
-export const Roadmap: React.FC<RoadmapProps> = ({ onBack }) => {
-  const { t } = useLang();
+  const formatEntryDate = (iso: string) => {
+    const [y, m, d] = iso.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString(lang === 'ru' ? 'ru-RU' : 'en-US', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  };
 
   return (
     <div className="roadmapView">
       <header className="roadmapHeader">
-        {onBack && (
-          <button className="roadmapBackBtn" onClick={onBack} type="button">
-            {t('roadmap.backBtn')}
-          </button>
-        )}
-        <div className="roadmapBadge">SYSTEM PIPELINE // LIVE STATUS</div>
         <h1 className="roadmapTitle">{t('roadmap.title')}</h1>
         <p className="roadmapDesc">
           {t('roadmap.desc')}
@@ -74,6 +92,22 @@ export const Roadmap: React.FC<RoadmapProps> = ({ onBack }) => {
             </div>
           ))}
         </div>
+      </section>
+      <section className="journalSection">
+        <h2 className="journalHeading">{t('roadmap.journalTitle')}</h2>
+
+        {NEWS_FEED.length === 0 ? (
+          <p className="journalEmptyText">{t('roadmap.journalEmpty')}</p>
+        ) : (
+          <ul className="journalFeed">
+            {NEWS_FEED.map((entry) => (
+              <li className="journalFeedRow" key={entry.date + entry.ru}>
+                <span className="journalFeedDate">{formatEntryDate(entry.date)}</span>
+                <span className="journalFeedMsg">{lang === 'ru' ? entry.ru : entry.en}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );
