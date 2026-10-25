@@ -2,101 +2,59 @@ import React from 'react';
 import './mainPage.css';
 
 import { ContactsSection } from '../../contacts/contactsSection';
+import { useLang } from '../../i18n/LanguageContext';
 
 interface MainPageProps {
   onNavigateSearch?: () => void;
-  onOpenRoadmap?: () => void;
 }
 
-const FAQ_ITEMS = [
-  {
-    q: 'Это законно?',
-    a: 'Да. Сервис ничего не взламывает и не обходит защиту серверов — он читает те же публичные данные, которые и так видит любой игрок через консоль сервера.',
-  },
-  {
-    q: 'Сколько это стоит?',
-    a: 'Ничего. Основной поиск и мониторинг останутся бесплатными. Но хостинг и API-токены стоят реальных денег каждый месяц, так что часть продвинутых фич в будущем может стать платной или ограниченной — честно предупреждаю заранее.',
-  },
-  {
-    q: 'Насколько свежие данные?',
-    a: 'Топ 1–100 серверов синхронизируется не реже раза в 60 секунд, топ 101–200 — раз в 120 секунд. Старых снимков не показываем.',
-  },
-  {
-    q: 'Зачем вход через Steam?',
-    a: 'Нужен для системы пользователей и авторизации, а в будущем — для интеграции с Rust+ и возможности подключать друзей. Из Steam мы забираем только публичный профиль: ни паролей, ни платёжных данных сервис не видит.',
-  },
-  {
-    q: 'Проект не забросят?',
-    a: 'План разработки открыт — можно посмотреть, что уже сделано, а что в работе. Я веду его сам и обновляю по мере реальных изменений, а не для галочки.',
-  },
-  {
-    q: 'Какие сервера отслеживаются?',
-    a: 'Топ-300 серверов Rust — от самых популярных ванильных до крупных модифицированных, с приоритетом по реальной активности игроков. Нужного сервера нет в списке — напишите, добавляю по запросам.',
-  },
-  {
-    q: 'Нужно ли что-то устанавливать?',
-    a: 'Нет, и стараюсь обходиться без расширений и прочей ерунды. Разве что в будущем появится своё мобильное приложение с открытым исходным кодом — в первую очередь ради уведомлений, чтобы упростить структуру проекта.',
-  },
-  {
-    q: 'Кого вообще можно найти?',
-    a: 'Любого игрока, который хотя бы раз заходил на один из отслеживаемых серверов, — по нику или SteamID.',
-  },
-  {
-    q: 'Что в планах дальше?',
-    a: 'Графики активности по времени суток, определение часового пояса кланов и поиск связей между игроками по истории серверов — всё это уже в работе, прогресс виден в плане разработки.',
-  },
-  {
-    q: 'Как сообщить о проблеме?',
-    a: 'Пишите в Telegram, Discord или на почту внизу страницы — отвечаю лично, обычно в течение дня.',
-  },
-];
+// q/a текста здесь больше нет — переводятся через t(`mainPage.faq.<id>.q`) при рендере,
+// тут остаётся только порядок и id. См. src/i18n/translations.ts.
+const FAQ_IDS = [
+  'legal',
+  'cost',
+  'freshness',
+  'steamLogin',
+  'abandoned',
+  'trackedServers',
+  'install',
+  'whoCanBeFound',
+  'future',
+  'reportIssue',
+] as const;
 
+// index — язык-независимый (римские цифры), title/text — через t(`mainPage.features.<id>.*`).
 const FEATURES = [
-  {
-    index: 'I',
-    title: 'Сбор данных',
-    text: 'Фоновый сбор через распределённые очереди: система опрашивает топ-300 серверов по своей тир-системе и в первую очередь — самые популярные из них.',
-  },
-  {
-    index: 'II',
-    title: 'Отслеживание активности',
-    text: 'Видно, на каких серверах и когда именно активен игрок. Дальше это превратится в графики активности — чтобы было проще угадывать подходящий момент.',
-  },
-  {
-    index: 'III',
-    title: 'История серверов',
-    text: 'История переходов между серверами уже строит граф связей. В планах — находить по нему скрытые связи между игроками и кланами.',
-  },
-];
+  { id: 'collection', index: 'I' },
+  { id: 'activityTracking', index: 'II' },
+  { id: 'serverHistory', index: 'III' },
+] as const;
 
-export const MainPage: React.FC<MainPageProps> = ({ onNavigateSearch, onOpenRoadmap }) => {
+export const MainPage: React.FC<MainPageProps> = ({ onNavigateSearch }) => {
+  const { t } = useLang();
+
   return (
     <div className="mainJournal">
       {/* ШАПКА */}
       <header className="masthead reveal" style={{ '--reveal-order': 0 } as React.CSSProperties}>
         <div className="mastheadKicker">
-          <span>ГЛАВНАЯ</span>
-          <span>СОЛО-РАЗРАБОТКА · В ПРОЦЕССЕ</span>
+          <span>{t('mainPage.kickerHome')}</span>
+          <span>{t('mainPage.kickerSolo')}</span>
         </div>
 
         <div className="mastheadGrid">
           <h1 className="mastheadTitle">
-            Точно и без лишнего — <em>RustSCOUT</em>
+            {t('mainPage.titlePrefix')} <em>RustSCOUT</em>
           </h1>
 
           <div className="mastheadLead">
             <p>
-              RustScout фиксирует, кто сейчас в сети на серверах Rust, — по тем же
-              открытым данным, которые и так показывает сам сервер. Без ручного обхода
-              вкладок и без гаданий, зашёл человек или нет.
+              {t('mainPage.leadText')}
             </p>
 
             <div className="mastheadActions">
               <button className="actionLink actionLink--primary" onClick={onNavigateSearch} type="button">
-                Перейти к поиску <span className="actionArrow">→</span>
-              </button>
-              <button className="actionLink" onClick={onOpenRoadmap} type="button">
-                План разработки
+                {t('mainPage.ctaSearch')} <span className="actionArrow">→</span>
               </button>
             </div>
           </div>
@@ -105,41 +63,38 @@ export const MainPage: React.FC<MainPageProps> = ({ onNavigateSearch, onOpenRoad
 
       {/* ЛИЧНОЕ ПИСЬМО АВТОРА */}
       <section className="letterSection reveal" style={{ '--reveal-order': 1 } as React.CSSProperties}>
-        <span className="letterMark">Сообщение для пользователей</span>
+        <span className="letterMark">{t('mainPage.letterMark')}</span>
 
         <blockquote className="letterBody">
           <p>
-            Всем привет. Здесь нет магии или скрытых механизмов: сервис собирает только открытые публичные данные серверов и моментально показывает статус игроков в удобном интерфейсе.
-
-            Я развиваю проект в одиночку и отвечаю за репутацию своим именем. Если у вас возникнут вопросы по работе алгоритмов или безопасности данных — ниже есть честный FAQ и документация про работу сервиса(скоро).
+            {t('mainPage.letterP1')}
           </p>
           <p>
-            Информация которую использует сам сервис, является общедоступной, сервис предоставляет ее в удобном виде с учетом ее автоматизации вместо долгого и ручного поиска.
+            {t('mainPage.letterP2')}
           </p>
-          <footer className="letterSign">— Единственный разраб RustScout</footer>
+          <footer className="letterSign">{t('mainPage.letterSign')}</footer>
         </blockquote>
       </section>
 
       {/* FAQ */}
       <section className="faqSection reveal" style={{ '--reveal-order': 2 } as React.CSSProperties}>
         <div className="faqKicker">
-          <span>FAQ</span>
-          <span>ЧАСТЫЕ ВОПРОСЫ</span>
+          <span>{t('mainPage.faqKickerTag')}</span>
+          <span>{t('mainPage.faqKickerLabel')}</span>
         </div>
-        <h2 className="sectionHead">Прежде чем начать</h2>
+        <h2 className="sectionHead">{t('mainPage.faqSectionHead')}</h2>
 
         <p className="faqIntro">
-          Я изучал, на что игроки жалуются в похожих сервисах, и учёл это с самого начала: не собираю лишнего, не прячу условия мелким шрифтом и не обещаю того, чего сервис не умеет. 
-          Ниже — прямые ответы, в том числе на неудобные вопросы.
+          {t('mainPage.faqIntro')}
         </p>
 
         <dl className="faqList">
-          {FAQ_ITEMS.map((item, i) => (
-            <div className="faqRow" key={item.q}>
+          {FAQ_IDS.map((id, i) => (
+            <div className="faqRow" key={id}>
               <span className="faqNum">{String(i + 1).padStart(2, '0')}</span>
               <div className="faqBody">
-                <dt className="faqQ">{item.q}</dt>
-                <dd className="faqA">{item.a}</dd>
+                <dt className="faqQ">{t(`mainPage.faq.${id}.q`)}</dt>
+                <dd className="faqA">{t(`mainPage.faq.${id}.a`)}</dd>
               </div>
             </div>
           ))}
@@ -148,16 +103,16 @@ export const MainPage: React.FC<MainPageProps> = ({ onNavigateSearch, onOpenRoad
 
       {/* КАК ЭТО УСТРОЕНО */}
       <section className="featuresSection reveal" style={{ '--reveal-order': 3 } as React.CSSProperties}>
-        <div className="sectionKicker">Функционал</div>
-        <h2 className="sectionHead">Как это устроено</h2>
+        <div className="sectionKicker">{t('mainPage.featuresKicker')}</div>
+        <h2 className="sectionHead">{t('mainPage.featuresSectionHead')}</h2>
 
         <ol className="featureList">
           {FEATURES.map((f) => (
-            <li className="featureItem" key={f.index}>
+            <li className="featureItem" key={f.id}>
               <span className="featureIndex">{f.index}</span>
               <div className="featureBody">
-                <h3 className="featureTitle">{f.title}</h3>
-                <p className="featureText">{f.text}</p>
+                <h3 className="featureTitle">{t(`mainPage.features.${f.id}.title`)}</h3>
+                <p className="featureText">{t(`mainPage.features.${f.id}.text`)}</p>
               </div>
             </li>
           ))}

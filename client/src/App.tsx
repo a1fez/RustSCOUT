@@ -17,6 +17,7 @@ import { addToHistory, loadHistory, saveHistory } from "./searchHistory/historyS
 import { getClientId } from "./clientId";
 import type { SteamUser } from "./pages/userProfile/userProfile";
 import type { SearchData } from './cardContainer/cardContainer';
+import { useLang } from './i18n/LanguageContext';
 
 
 const API = '';
@@ -33,20 +34,8 @@ interface StatusSnapshot {
   online: boolean;
 }
 
-// Системные оповещения / обновления (отдельно от журнала отслеживания).
-const SYSTEM_NOTIFICATIONS: NotifEvent[] = [
-  {
-    id: 'sys-journal-panel',
-    type: 'update',
-    steamId: '',
-    player: 'RustScout',
-    message: 'Журнал отслеживания теперь на странице поиска — правая колонка.',
-    serverFrom: null,
-    serverTo: null,
-    timestamp: Date.parse('2026-09-06T00:00:00'),
-    read: false,
-  },
-];
+// Системное оповещение теперь собирается внутри компонента (нужен t() из useLang()),
+// см. начальное значение systemNotifications ниже.
 
 function requestUntrack(steamId: string) {
   fetch(`${API}/api/untrack`, {
@@ -57,6 +46,7 @@ function requestUntrack(steamId: string) {
 }
 
 const App = () => {
+  const { t } = useLang();
 
   const [cards, setCards] = useState<PlayerData[]>([]);
   const [trackingMap, setTrackingMap] = useState<Record<string, number>>({});
@@ -73,7 +63,19 @@ const App = () => {
   // Журнал отслеживания (правая колонка)
   const [trackEvents, setTrackEvents] = useState<NotifEvent[]>([]);
   // Системные оповещения (иконка в навбаре)
-  const [systemNotifications, setSystemNotifications] = useState<NotifEvent[]>(SYSTEM_NOTIFICATIONS);
+  const [systemNotifications, setSystemNotifications] = useState<NotifEvent[]>(() => [
+    {
+      id: 'sys-journal-panel',
+      type: 'update',
+      steamId: '',
+      player: 'RustScout',
+      message: t('app.systemNotifJournalPanel'),
+      serverFrom: null,
+      serverTo: null,
+      timestamp: Date.parse('2026-09-06T00:00:00'),
+      read: false,
+    },
+  ]);
 
   const [user, setUser] = useState<SteamUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -112,9 +114,9 @@ const App = () => {
 
 
   const serverName = useCallback((id: string | null | undefined): string => {
-    if (!id) return 'неизвестный сервер';
-    return serverNamesRef.current[String(id)] || `сервер ${id}`;
-  }, []);
+    if (!id) return t('app.unknownServer');
+    return serverNamesRef.current[String(id)] || t('app.serverFallback', { id });
+  }, [t]);
 
   const addTrackEvent = useCallback((input: NotifInput) => {
     setTrackEvents((prev) =>
@@ -215,19 +217,19 @@ const App = () => {
                   ? {
                       type: 'returned', steamId: key, player: who,
                       serverFrom: fromName, serverTo: toName,
-                      message: `вернулся на исходный сервер — ${toName}`,
+                      message: t('app.eventReturned', { server: toName }),
                     }
                   : {
                       type: 'switched', steamId: key, player: who,
                       serverFrom: fromName, serverTo: toName,
-                      message: `сменил сервер: ${fromName} → ${toName}`,
+                      message: t('app.eventSwitched', { from: fromName, to: toName }),
                     }
               );
             } else if (prev.serverId && !nowServer) {
               events.push({
                 type: 'left', steamId: key, player: who,
                 serverFrom: fromName, serverTo: null,
-                message: `покинул ${fromName}`,
+                message: t('app.eventLeft', { server: fromName }),
               });
             } else if (!prev.online && nowOnline && nowServer) {
               const initialName = s.initialServerName || serverName(initialServer);
@@ -236,7 +238,7 @@ const App = () => {
                   ? {
                       type: 'returned', steamId: key, player: who,
                       serverFrom: null, serverTo: toName,
-                      message: `вернулся на исходный сервер — ${toName}`,
+                      message: t('app.eventReturned', { server: toName }),
                     }
                   : initialServer
                   ? {
@@ -244,12 +246,12 @@ const App = () => {
                       // смена сервера, так пользователю понятнее, чем «снова в игре».
                       type: 'switched', steamId: key, player: who,
                       serverFrom: initialName, serverTo: toName,
-                      message: `снова в игре, сменил сервер: ${initialName} → ${toName}`,
+                      message: t('app.eventOnlineSwitched', { from: initialName, to: toName }),
                     }
                   : {
                       type: 'online', steamId: key, player: who,
                       serverFrom: null, serverTo: toName,
-                      message: `снова в игре — ${toName}`,
+                      message: t('app.eventOnline', { server: toName }),
                     }
               );
             }
@@ -303,7 +305,7 @@ const App = () => {
     poll();
     const id = window.setInterval(poll, STATUS_POLL_MS);
     return () => { cancelled = true; clearInterval(id); };
-  }, [trackedKey, serverName, addTrackEvent]);
+  }, [trackedKey, serverName, addTrackEvent, t]);
 
   const toggleTracking = useCallback(async (player: PlayerData) => {
     const steamId = cardKey(player);
@@ -415,7 +417,6 @@ const App = () => {
     <>
       <Navbar
         user={user}
-        onOpenRoadmap={() => setCurrentPage('roadmap')}
         onOpenProfile={() => setCurrentPage('profile')}
         onSelectTab={(tab) => setCurrentPage(tab.toLocaleLowerCase())}
         notifications={systemNotifications}
@@ -458,20 +459,23 @@ const App = () => {
       )}
 
       {currentPage === 'profile' && (
-        <UserProfile user={user} loading={authLoading} onLogout={handleLogout} />
+        <UserProfile
+          user={user}
+          loading={authLoading}
+          onLogout={handleLogout}
+        />
       )}
 
       {currentPage === 'info' && (
         <div className="infoContainer">
-          <h1>ИНФОРМАЦИЯ</h1>
-          <p>Здесь будет отображаться информация о проекте.</p>
+          <h1>{t('app.infoTitle')}</h1>
+          <p>{t('app.infoText')}</p>
         </div>
       )}
 
       {currentPage === 'main' && (
         <MainPage
         onNavigateSearch={() => setCurrentPage('search')}
-        onOpenRoadmap={() => setCurrentPage('roadmap')}
         />
 
       )}

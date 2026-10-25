@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { NotifEvent } from '../notifications/notification';
 import { NOTIF_META, formatRelativeTime } from '../notifications/notification';
+import { useLang } from '../i18n/LanguageContext';
 import './trackJournal.css';
 
 interface TrackJournalProps {
@@ -15,10 +16,12 @@ interface TrackJournalProps {
 }
 
 function EventBody({ e }: { e: NotifEvent }) {
+  const { t } = useLang();
+
   if (e.type === 'switched' && e.serverFrom && e.serverTo) {
     return (
       <div className="journalSwitch">
-        <span className="journalAction">сменил сервер</span>
+        <span className="journalAction">{t('trackJournal.actionSwitched')}</span>
         <span className="journalServer from">{e.serverFrom}</span>
         <span className="journalArrow">↓</span>
         <span className="journalServer to">{e.serverTo}</span>
@@ -29,7 +32,7 @@ function EventBody({ e }: { e: NotifEvent }) {
   if (e.type === 'returned' && e.serverTo) {
     return (
       <div className="journalSwitch">
-        <span className="journalAction">вернулся на исходный сервер</span>
+        <span className="journalAction">{t('trackJournal.actionReturned')}</span>
         <span className="journalServer home">{e.serverTo}</span>
       </div>
     );
@@ -38,7 +41,7 @@ function EventBody({ e }: { e: NotifEvent }) {
   if (e.type === 'left' && e.serverFrom) {
     return (
       <div className="journalSwitch">
-        <span className="journalAction">покинул сервер</span>
+        <span className="journalAction">{t('trackJournal.actionLeft')}</span>
         <span className="journalServer from">{e.serverFrom}</span>
       </div>
     );
@@ -47,7 +50,7 @@ function EventBody({ e }: { e: NotifEvent }) {
   if (e.type === 'online' && e.serverTo) {
     return (
       <div className="journalSwitch">
-        <span className="journalAction">снова в игре</span>
+        <span className="journalAction">{t('trackJournal.actionOnline')}</span>
         <span className="journalServer to">{e.serverTo}</span>
       </div>
     );
@@ -59,28 +62,32 @@ function EventBody({ e }: { e: NotifEvent }) {
 export const TrackJournal = ({
   events,
   onClear,
-  title = 'ИСТОРИЯ ОТСЛЕЖИВАНИЯ',
+  title,
   className,
-  emptyHint = 'Поставьте игрока на отслеживание - уход и смена сервера появятся здесь',
+  emptyHint,
 }: TrackJournalProps) => {
+  const { t } = useLang();
+  const resolvedTitle = title ?? t('trackJournal.defaultTitle');
+  const resolvedEmptyHint = emptyHint ?? t('trackJournal.defaultEmptyHint');
+
   // Раз в 15с перерисовываем, чтобы «X мин назад» не застывало
   const [, forceTick] = useState(0);
   useEffect(() => {
-    const id = window.setInterval(() => forceTick((t) => t + 1), 15000);
+    const id = window.setInterval(() => forceTick((n) => n + 1), 15000);
     return () => clearInterval(id);
   }, []);
 
   return (
     <div className={className ? `journal ${className}` : 'journal'}>
       <header className="journalHeader">
-        <span className="journalTitle">{title}</span>
+        <span className="journalTitle">{resolvedTitle}</span>
         {onClear && (
           <button
             className="journalClearBtn"
             onClick={onClear}
             disabled={events.length === 0}
           >
-            Очистить
+            {t('trackJournal.clear')}
           </button>
         )}
       </header>
@@ -89,8 +96,8 @@ export const TrackJournal = ({
         {events.length === 0 ? (
           <div className="journalEmpty">
             <span className="journalEmptyGlyph">◎</span>
-            <p>Пока пусто</p>
-            <span className="journalEmptyHint">{emptyHint}</span>
+            <p>{t('trackJournal.empty')}</p>
+            <span className="journalEmptyHint">{resolvedEmptyHint}</span>
           </div>
         ) : (
           events.map((e) => {
@@ -104,9 +111,9 @@ export const TrackJournal = ({
                 <div className="journalBody">
                   <div className="journalTopline">
                     <span className="journalTag" style={{ color: meta.color }}>
-                      {meta.glyph} {meta.label}
+                      {meta.glyph} {t(`notifTypes.${e.type}`)}
                     </span>
-                    <span className="journalTime">{formatRelativeTime(e.timestamp)}</span>
+                    <span className="journalTime">{formatRelativeTime(e.timestamp, t)}</span>
                   </div>
                   <div className="journalPlayer" title={e.player}>{e.player}</div>
                   <EventBody e={e} />

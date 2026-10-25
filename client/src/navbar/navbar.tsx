@@ -3,17 +3,29 @@ import logo from '../resource/rustScoutLogo.png';
 import './navbar.css';
 import { BiArchive } from 'react-icons/bi';
 import { GoGear } from 'react-icons/go';
-import { SiSteam } from 'react-icons/si'; 
+import { SiSteam } from 'react-icons/si';
+import { IoLanguage } from "react-icons/io5";
+import { LuHouse, LuSearch, LuBookOpen, LuRadio, LuSignpost } from 'react-icons/lu';
 import type { NotifEvent } from '../notifications/notification';
 import { NOTIF_META, formatRelativeTime } from '../notifications/notification';
 import type { SteamUser } from "../pages/userProfile/userProfile";
 import { PlayerAvatar } from '../playerAvatar/playerAvatar';
+import { useLang } from '../i18n/LanguageContext';
 
-const MENU_ITEMS = ['main', 'search', 'documentation', 'session'];
+const MENU_ITEMS = ['main', 'search', 'documentation', 'session', 'roadmap'];
+
+// Иконки для нижней мобильной навигации — те же пункты меню, что и в desktop-шапке,
+// просто на телефоне показываем кружок с иконкой вместо текста.
+const MENU_ICONS: Record<string, React.ReactNode> = {
+  main: <LuHouse />,
+  search: <LuSearch />,
+  documentation: <LuBookOpen />,
+  session: <LuRadio />,
+  roadmap: <LuSignpost />,
+};
 
 interface NavbarProps {
   user?: SteamUser | null;
-  onOpenRoadmap?: () => void;
   onOpenProfile?: () => void;
   onSelectTab?: (tab: string) => void;
   notifications?: NotifEvent[];
@@ -24,7 +36,6 @@ interface NavbarProps {
 
 const Navbar = ({
   user,
-  onOpenRoadmap,
   onOpenProfile,
   onSelectTab,
   notifications = [],
@@ -32,6 +43,7 @@ const Navbar = ({
   onMarkAllRead,
   authLoading,
 }: NavbarProps) => {
+  const { t, lang, setLang } = useLang();
   const [activeTab, setActiveTab] = useState('search');
   const [isNotifOpen, setNotifOpen] = useState(false);
   const [, forceTick] = useState(0);
@@ -103,6 +115,7 @@ const Navbar = ({
   };
 
   return (
+    <>
     <div className="navbar">
       {/* Логотип */}
       <div className="logo">
@@ -136,21 +149,25 @@ const Navbar = ({
         )}
       </ul>
 
-      {/* Правая часть: кнопка-знак + иконки */}
+      {/* Правая часть: иконки (кнопка «План разработки» переехала на главную и в профиль) */}
       <div className="rightSection">
-        <button className="roadMapButton" onClick={onOpenRoadmap} type="button">
-          <span className="roadMapBeacon beaconLeft" />
-          <span className="roadMapText">ПЛАН РАЗРАБОТКИ</span>
-          <span className="roadMapBeacon beaconRight" />
-        </button>
-
         <div className="settings">
+          <button
+            type="button"
+            className="langSwitch"
+            onClick={() => setLang(lang === 'ru' ? 'en' : 'ru')}
+            aria-label="Switch language"
+            title={lang === 'en' ? 'Switch to English' : 'Переключить на русский'}
+          >
+            {lang === 'ru' ? 'RU' : 'EN'}
+            <IoLanguage/>
+          </button>
           <div className="notification" ref={notifRef}>
             <button
               type="button"
               className={`notifTrigger ${isNotifOpen ? 'active' : ''}`}
               onClick={toggleNotif}
-              aria-label="Системные оповещения"
+              aria-label={t('navbar.notifAriaLabel')}
             >
               <BiArchive className="iconBi"/>
               {unreadCount > 0 && (
@@ -159,17 +176,17 @@ const Navbar = ({
                 </span>
               )}
             </button>
-
+            
             {isNotifOpen && (
               <div className="notificationDropdown">
                 <header className="notifHeader">
-                  <span className="notifTitle">СИСТЕМА · ОБНОВЛЕНИЯ</span>
+                  <span className="notifTitle">{t('navbar.notifTitle')}</span>
                   <button
                     className="notifClearBtn"
                     onClick={onClearNotifications}
                     disabled={notifications.length === 0}
                   >
-                    Очистить
+                    {t('navbar.clear')}
                   </button>
                 </header>
 
@@ -177,10 +194,9 @@ const Navbar = ({
                   {notifications.length === 0 ? (
                     <div className="notifEmpty">
                       <span className="notifEmptyGlyph">◎</span>
-                      <p>Оповещений нет</p>
+                      <p>{t('navbar.notifEmptyTitle')}</p>
                       <span className="notifEmptyHint">
-                        Здесь появляются системные оповещения и новости об
-                        обновлениях
+                        {t('navbar.notifEmptyHint')}
                       </span>
                     </div>
                   ) : (
@@ -202,7 +218,7 @@ const Navbar = ({
                             <div className="notifMeta">
                               <span className="notifPlayer">{n.player}</span>
                               <span className="notifTime">
-                                {formatRelativeTime(n.timestamp)}
+                                {formatRelativeTime(n.timestamp, t)}
                               </span>
                             </div>
                             <p className="notifMsg">
@@ -210,7 +226,7 @@ const Navbar = ({
                                 className="notifTag"
                                 style={{ color: meta.color }}
                               >
-                                {meta.glyph} {meta.label}
+                                {meta.glyph} {t(`notifTypes.${n.type}`)}
                               </span>{' '}
                               {n.message}
                             </p>
@@ -223,6 +239,7 @@ const Navbar = ({
               </div>
             )}
           </div>
+          
           <GoGear className="icon" />
           {authLoading ? (
             <span className="navAvatarSkeleton"/>
@@ -241,6 +258,26 @@ const Navbar = ({
         </div>
       </div>
     </div>
+
+    {/* Нижняя навигация — видна только на мобильных (см. navbar.css),
+        те же пункты и тот же activeTab/onSelectTab, что у меню наверху. */}
+    <nav className="mobileBottomNav">
+      {MENU_ITEMS.map((item) => {
+        const isSelected = activeTab === item;
+        return (
+          <button
+            key={item}
+            type="button"
+            className={`mobileNavBtn ${isSelected ? 'active' : ''}`}
+            onClick={() => { setActiveTab(item); onSelectTab?.(item); }}
+            aria-label={item}
+          >
+            {MENU_ICONS[item]}
+          </button>
+        );
+      })}
+    </nav>
+    </>
   );
 };
 

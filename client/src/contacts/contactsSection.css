@@ -63,7 +63,28 @@
   font-size: 1rem;
 }
 
+.siteFooter {
+  max-width: 1178px;
+  margin: 0 auto 32px;
+  padding: 0 28px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.siteFooterText {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.6;
+  color: #52525b;
+  margin: 0;
+}
+
 @media (max-width: 720px) {
+  .siteFooter {
+    margin: 0 12px 24px;
+    padding: 0;
+  }
+
   .contactsSection {
     flex-direction: column;
     align-items: flex-start;

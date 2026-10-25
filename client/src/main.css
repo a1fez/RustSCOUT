@@ -25,6 +25,14 @@ body {
   background: #030303;
 }
 
+/* Место под фиксированную нижнюю навигацию на мобильных (см. .mobileBottomNav
+   в navbar.css) — иначе последние элементы страницы оказываются под ней. */
+@media (max-width: 720px) {
+  body {
+    padding-bottom: 100px;
+  }
+}
+
 input,
 button,
 textarea,

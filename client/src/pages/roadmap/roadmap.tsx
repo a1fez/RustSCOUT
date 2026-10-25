@@ -1,50 +1,21 @@
 import React from 'react';
 import './Roadmap.css';
+import { useLang } from '../../i18n/LanguageContext';
 
 interface Step {
   id: number;
   stage: string;
-  title: string;
-  desc: string;
   status: 'done' | 'wip' | 'planned';
 }
 
+// title/desc теперь переводятся через t(`roadmap.steps.${id}.*`) — тут остаётся
+// только то, что не зависит от языка (номер этапа и статус). См. translations.ts.
 const ROADMAP_STEPS: Step[] = [
-  {
-    id: 1,
-    stage: 'STAGE | 01',
-    title: 'Создание основы',
-    desc: 'Подключение сервисов, анализ, архитектура, базовая логика и UI для поиска игроков и их отслеживания.',
-    status: 'done',
-  },
-  {
-    id: 2,
-    stage: 'STAGE | 02',
-    title: 'Система пользователей',
-    desc: 'Система пользователей, сохранение истории поиска, добавление групп отслеживания игроков.',
-    status: 'wip',
-  },
-  {
-    id: 3,
-    stage: 'STAGE | 03',
-    title: 'Система RUST+',
-    desc: 'Связка пользователей RUST+ и управление через наш сайт:  уведомления, отслеживание ресурсов и прочее',
-    status: 'planned',
-  },
-  {
-    id: 4,
-    stage: 'STAGE | 04',
-    title: 'Граф связей',
-    desc: 'Анализ игроков, графики онлайна, поиск скрытых смурфов, общий пул серверов и активность клана.',
-    status: 'planned',
-  },
-  {
-    id: 5,
-    stage: 'STAGE | 05',
-    title: 'Новые идеи и фичи',
-    desc: 'Улучшение функционала, новые идеи и фичи, которые появятся в процессе разработки.',
-    status: 'planned',
-  },
+  { id: 1, stage: 'STAGE | 01', status: 'done' },
+  { id: 2, stage: 'STAGE | 02', status: 'wip' },
+  { id: 3, stage: 'STAGE | 03', status: 'planned' },
+  { id: 4, stage: 'STAGE | 04', status: 'planned' },
+  { id: 5, stage: 'STAGE | 05', status: 'planned' },
 ];
 
 interface RoadmapProps {
@@ -52,18 +23,20 @@ interface RoadmapProps {
 }
 
 export const Roadmap: React.FC<RoadmapProps> = ({ onBack }) => {
+  const { t } = useLang();
+
   return (
     <div className="roadmapView">
       <header className="roadmapHeader">
         {onBack && (
           <button className="roadmapBackBtn" onClick={onBack} type="button">
-            ← НАЗАД В ДАШБОРД
+            {t('roadmap.backBtn')}
           </button>
         )}
         <div className="roadmapBadge">SYSTEM PIPELINE // LIVE STATUS</div>
-        <h1 className="roadmapTitle">ПЛАН РАЗРАБОТКИ</h1>
+        <h1 className="roadmapTitle">{t('roadmap.title')}</h1>
         <p className="roadmapDesc">
-          Текущая разработка RustScout и архитектурный роадмап
+          {t('roadmap.desc')}
         </p>
       </header>
 
@@ -90,12 +63,12 @@ export const Roadmap: React.FC<RoadmapProps> = ({ onBack }) => {
 
               <div className="nodeCard">
                 <span className="nodeStage">{step.stage}</span>
-                <h3 className="nodeTitle">{step.title}</h3>
-                <p className="nodeBody">{step.desc}</p>
+                <h3 className="nodeTitle">{t(`roadmap.steps.${step.id}.title`)}</h3>
+                <p className="nodeBody">{t(`roadmap.steps.${step.id}.desc`)}</p>
                 <div className="nodeStatus">
-                  {step.status === 'done' && 'ГОТОВО'}
-                  {step.status === 'wip' && 'В ПРОЦЕССЕ'}
-                  {step.status === 'planned' && 'В ПЛАНАХ'}
+                  {step.status === 'done' && t('roadmap.statusDone')}
+                  {step.status === 'wip' && t('roadmap.statusWip')}
+                  {step.status === 'planned' && t('roadmap.statusPlanned')}
                 </div>
               </div>
             </div>

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import type { ActivityDay } from "./player";
+import { useLang } from "../i18n/LanguageContext";
 import "./activityHeatmap.css";
 
 interface ActivityHeatmapProps {
     days: ActivityDay[];
 }
 
-const WEEKDAYS = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 const HOUR_LABELS = [0, 6, 12, 18, 23];
 // Сверху вниз: 23 → 0, поздние часы наверху
 const HOURS_TOP_DOWN = Array.from({ length: 24 }, (_, i) => 23 - i);
@@ -29,6 +29,8 @@ const level = (minutes: number) => {
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 
 export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ days }) => {
+    const { t } = useLang();
+    const WEEKDAYS = [0, 1, 2, 3, 4, 5, 6].map((d) => t(`activityHeatmap.weekday${d}`));
     const [hovered, setHovered] = useState<{ day: number; hour: number } | null>(null);
 
     const totalMinutes = days.reduce((sum, d) => sum + d.hours.reduce((a, b) => a + b, 0), 0);
@@ -46,11 +48,11 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ days }) => {
         <div className="activityHeatmap">
             <div className="activityStats">
                 <div className="activityStat">
-                    <span className="activityStatLabel">За 7 дней</span>
-                    <span className="activityStatValue">{(totalMinutes / 60).toFixed(1)} ч.</span>
+                    <span className="activityStatLabel">{t('activityHeatmap.last7Days')}</span>
+                    <span className="activityStatValue">{t('playerModal.hoursShort', { n: (totalMinutes / 60).toFixed(1) })}</span>
                 </div>
                 <div className="activityStat">
-                    <span className="activityStatLabel">Пик</span>
+                    <span className="activityStatLabel">{t('activityHeatmap.peak')}</span>
                     <span className="activityStatValue">
                         {peakHour !== null ? `${pad(peakHour)}:00–${pad((peakHour + 1) % 24)}:00` : '-'}
                     </span>
@@ -98,16 +100,16 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ days }) => {
                 <p className="activityReadout">
                     {hovered && hoveredDay
                         ? `${WEEKDAYS[parseDay(hoveredDay.date).getDay()]}, ${pad(hovered.hour)}:00 — ${
-                              hoveredMinutes > 0 ? `${hoveredMinutes} мин в игре` : 'не в сети'
+                              hoveredMinutes > 0 ? t('activityHeatmap.minutesInGame', { n: hoveredMinutes }) : t('activityHeatmap.offlineAtHour')
                           }`
-                        : 'Наведите на черточку, чтобы увидеть час'}
+                        : t('activityHeatmap.hoverHint')}
                 </p>
                 <div className="activityLegend">
-                    <span>меньше</span>
+                    <span>{t('activityHeatmap.less')}</span>
                     {[0, 1, 2, 3, 4].map((l) => (
                         <span key={l} className={`activityLegendTick lvl${l}`} />
                     ))}
-                    <span>больше</span>
+                    <span>{t('activityHeatmap.more')}</span>
                 </div>
             </div>
         </div>

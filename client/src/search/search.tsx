@@ -2,18 +2,12 @@ import { useState, useRef, useEffect } from 'react';
 import { HiArrowNarrowRight } from 'react-icons/hi';
 import { IoChevronDown } from 'react-icons/io5';
 import { LuServer } from 'react-icons/lu';
-import { ERROR_MESSAGE } from '../../error';
 import { SearchModes, type SearchMode } from './searchModes';
 import { LiveStats } from './liveStats';
 import { useNickSuggest, NICK_MIN_LENGTH, type NickCandidate } from './useNickSuggest';
+import { useLang } from '../i18n/LanguageContext';
 import './search.css';
 
-// Подсказки в полях для каждого режима поиска
-const QUERY_PLACEHOLDER: Record<SearchMode, string> = {
-  bm: 'BattleMetrics ID или ссылка на игрока...',
-  steam: 'Введите SteamID...',
-  nick: 'Никнейм игрока...',
-};
 // Подсвечиваем в нике ту часть, что совпала с запросом
 const highlightMatch = (name: string, query: string) => {
   const pos = name.toLowerCase().indexOf(query.trim().toLowerCase());
@@ -54,6 +48,7 @@ interface SearchProps {
 }
 
 const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null, isSearching = false}: SearchProps) => {
+  const { t, tf } = useLang();
   const [text, setText] = useState('');
   const [server, setServer] = useState('');
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
@@ -139,7 +134,7 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
     if (mode === 'bm') {
       const bmId = parseBmId(text);
       if (!bmId) {
-        setModeNotice('Введите BM ID или ссылку на игрока BattleMetrics');
+        setModeNotice(t('search.noticeBmRequired'));
         return;
       }
       onSearchBm(bmId);
@@ -147,7 +142,7 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
     }
     if (mode === 'nick') {
       if (text.trim().length < NICK_MIN_LENGTH) {
-        setModeNotice(`Введите минимум ${NICK_MIN_LENGTH} символа ника`);
+        setModeNotice(t('search.noticeNickMinLength', { count: NICK_MIN_LENGTH }));
         return;
       }
       const candidate = nick.results[highlight] ?? nick.results[0];
@@ -192,7 +187,7 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
 
   // Текст ошибки с бэкенда (matched:false) — приоритетнее локальной валидации полей
   const serverErrorText = errorReason
-    ? ERROR_MESSAGE[errorReason] || 'Не удалось найти игрока. Попробуйте ещё раз.'
+    ? tf(`errors.${errorReason}`, t('errors.generic'))
     : null;
 
   const hasServerField = mode === 'steam';
@@ -207,7 +202,7 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
     setPrevShowSuggest(showSuggest);
     if (showSuggest) setFormRaised(true);
   }
-  const errorMessage = showError ? 'Заполните SteamID и сервер' : modeNotice ?? serverErrorText;
+  const errorMessage = showError ? t('search.fillFields') : modeNotice ?? serverErrorText;
 
   const errorBlock = errorMessage && (
     <div className="errorText" style={{ color: 'red', marginTop: '10px' }}>
@@ -253,7 +248,7 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
             onFocus={() => setSuggestOpen(true)}
             type="text"
             className="searchInput"
-            placeholder={QUERY_PLACEHOLDER[mode]}
+            placeholder={t(`search.placeholder.${mode}`)}
             role={mode === 'nick' ? 'combobox' : undefined}
             aria-expanded={mode === 'nick' ? showSuggest : undefined}
             onKeyDown={(e) => {
@@ -278,11 +273,11 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
             <div className="dropdownMenu nickSuggest" role="listbox">
               {nick.status === 'error' ? (
                 <div className="dropdownNoResults">
-                  {ERROR_MESSAGE[nick.errorReason ?? ''] || 'Поиск по нику сейчас недоступен'}
+                  {tf(`errors.${nick.errorReason ?? ''}`, t('search.nickSearchUnavailable'))}
                 </div>
               ) : nick.results.length === 0 ? (
                 <div className="dropdownNoResults">
-                  {nick.status === 'loading' ? 'Ищем…' : 'Никого онлайн с таким ником'}
+                  {nick.status === 'loading' ? t('search.searching') : t('search.noOnlineWithNick')}
                 </div>
               ) : (
                 // Две колонки: лучшие совпадения идут сверху вниз по левой, потом по правой.
@@ -306,13 +301,13 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
                   >
                     <span
                       className={`nickDot ${c.isOnline ? 'isOnline' : ''}`}
-                      title={c.isOnline ? 'Онлайн' : 'Был онлайн недавно'}
+                      title={c.isOnline ? t('search.online') : t('search.onlineRecently')}
                     />
                     <span className="nickText">
                       <span className="nickName">{highlightMatch(c.name, text)}</span>
                       <span className="nickServer">
                         <LuServer className="nickServerIcon" aria-hidden="true" />
-                        <span className="nickServerName">{c.serverName ?? `сервер #${c.serverId}`}</span>
+                        <span className="nickServerName">{c.serverName ?? t('search.unknownServer', { id: c.serverId ?? '?' })}</span>
                       </span>
                     </span>
                   </div>
@@ -333,7 +328,7 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
             <input
               type="text"
               className="searchInput"
-              placeholder={isLoadingServers ? 'Загрузка серверов...' : 'Выберите или введите сервер...'}
+              placeholder={isLoadingServers ? t('search.serverPlaceholderLoading') : t('search.serverPlaceholderDefault')}
               value={server}
               onFocus={() => setIsOpen(true)}
               onChange={(e) => {
@@ -357,7 +352,7 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
           {isOpen && (
             <div className="dropdownMenu">
               {isLoadingServers ? (
-                <div className="dropdownNoResults">Загрузка данных из БД...</div>
+                <div className="dropdownNoResults">{t('search.loadingDbData')}</div>
               ) : filteredServers.length > 0 ? (
                 filteredServers.map((srv) => (
                   <div
@@ -375,7 +370,7 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
                 ))
               ) : (
                 <div className="dropdownNoResults">
-                  Сервер не найден (можно продолжить ввод)
+                  {t('search.serverNotFound')}
                 </div>
               )}
             </div>
@@ -388,8 +383,8 @@ const Search = ({ onSearch, onSearchBm, initialServers = [], errorReason = null,
           <div className="inputRow">
             <div className="searchInput searchInputGhost">
               {mode === 'bm'
-                ? 'Сервер не нужен — ищем напрямую по BattleMetrics'
-                : 'Сервер не нужен — ищем среди онлайна всех отслеживаемых серверов'}
+                ? t('search.noServerNeededBm')
+                : t('search.noServerNeededNick')}
             </div>
             {errorBlock}
           </div>

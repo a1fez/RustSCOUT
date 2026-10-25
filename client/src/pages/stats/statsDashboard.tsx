@@ -24,7 +24,7 @@ type LoadState =
   | { phase: 'error'; message: string }
   | { phase: 'ok'; data: StatsData };
 
-const fmt = (n: number) => n.toLocaleString('ru-RU');
+const fmt = (n: number) => n.toLocaleString('en-US');
 
 export const StatsDashboard = () => {
   const [token, setToken] = useState<string>(() => localStorage.getItem(TOKEN_KEY) || '');
@@ -42,21 +42,21 @@ export const StatsDashboard = () => {
       if (res.status === 401) {
         localStorage.removeItem(TOKEN_KEY);
         setToken('');
-        setState({ phase: 'error', message: 'Неверный токен' });
+        setState({ phase: 'error', message: 'Invalid token' });
         return;
       }
       if (!res.ok) {
-        setState({ phase: 'error', message: `Ошибка сервера (${res.status})` });
+        setState({ phase: 'error', message: `Server error (${res.status})` });
         return;
       }
       const json = await res.json();
       if (!json?.success) {
-        setState({ phase: 'error', message: json?.error || 'Некорректный ответ' });
+        setState({ phase: 'error', message: json?.error || 'Invalid response' });
         return;
       }
       setState({ phase: 'ok', data: json.data as StatsData });
     } catch {
-      setState({ phase: 'error', message: 'Сеть недоступна' });
+      setState({ phase: 'error', message: 'Network unavailable' });
     }
   }, []);
 
@@ -87,19 +87,19 @@ export const StatsDashboard = () => {
     return (
       <div className="statsGate">
         <form className="statsGateBox" onSubmit={submitToken}>
-          <h1 className="statsGateTitle">RUSTSCOUT · МЕТРИКИ</h1>
-          <p className="statsGateHint">Доступ по токену. Введите STATS_TOKEN.</p>
+          <h1 className="statsGateTitle">RUSTSCOUT · METRICS</h1>
+          <p className="statsGateHint">Token-gated access. Enter the STATS_TOKEN.</p>
           <input
             className="statsGateInput"
             type="password"
-            placeholder="токен"
+            placeholder="token"
             value={input}
             autoFocus
             onChange={(e) => setInput(e.target.value)}
           />
           {state.phase === 'error' && <p className="statsGateError">{state.message}</p>}
           <button className="statsGateBtn" type="submit">
-            Открыть
+            Open
           </button>
         </form>
       </div>
@@ -113,59 +113,59 @@ export const StatsDashboard = () => {
   return (
     <div className="statsWrap">
       <header className="statsHeader">
-        <span className="statsBrand">RUSTSCOUT · МЕТРИКИ</span>
+        <span className="statsBrand">RUSTSCOUT · METRICS</span>
         <div className="statsHeaderRight">
           {state.phase === 'ok' && (
             <span className="statsUpdated">
-              обновлено {new Date(state.data.generatedAt).toLocaleTimeString('ru-RU')}
+              updated {new Date(state.data.generatedAt).toLocaleTimeString('en-US')}
             </span>
           )}
           <button className="statsLogout" onClick={logout}>
-            Выйти
+            Log out
           </button>
         </div>
       </header>
 
-      {state.phase === 'loading' && <p className="statsMsg">Загрузка…</p>}
+      {state.phase === 'loading' && <p className="statsMsg">Loading…</p>}
       {state.phase === 'error' && <p className="statsMsg statsMsgErr">{state.message}</p>}
 
       {state.phase === 'ok' && (
         <>
           <div className="statsCards">
             <div className="statsCard accent">
-              <span className="statsCardLabel">Активны сейчас</span>
+              <span className="statsCardLabel">Active now</span>
               <span className="statsCardValue">{fmt(state.data.active)}</span>
               <span className="statsCardSub">
-                за последние {state.data.activeWindowMinutes} мин
+                over the last {state.data.activeWindowMinutes} min
               </span>
             </div>
             <div className="statsCard">
-              <span className="statsCardLabel">Посетителей сегодня</span>
+              <span className="statsCardLabel">Visitors today</span>
               <span className="statsCardValue">{fmt(state.data.today.uniqueVisitors)}</span>
-              <span className="statsCardSub">уникальных (прибл.)</span>
+              <span className="statsCardSub">unique (approx.)</span>
             </div>
             <div className="statsCard">
-              <span className="statsCardLabel">Запросов игрока сегодня</span>
+              <span className="statsCardLabel">Player lookups today</span>
               <span className="statsCardValue">{fmt(state.data.today.playerLookups)}</span>
-              <span className="statsCardSub">поиск по SteamID</span>
+              <span className="statsCardSub">search by SteamID</span>
             </div>
           </div>
 
           <div className="statsTableWrap">
-            <div className="statsTableTitle">Последние 7 дней</div>
+            <div className="statsTableTitle">Last 7 days</div>
             <table className="statsTable">
               <thead>
                 <tr>
-                  <th>Дата</th>
-                  <th>Посетители</th>
-                  <th>Запросы игрока</th>
+                  <th>Date</th>
+                  <th>Visitors</th>
+                  <th>Player lookups</th>
                   <th className="statsBarCol" />
                 </tr>
               </thead>
               <tbody>
                 {state.data.last7days.map((d, i) => (
                   <tr key={d.date} className={i === 0 ? 'statsRowToday' : ''}>
-                    <td>{d.date}{i === 0 ? ' · сегодня' : ''}</td>
+                    <td>{d.date}{i === 0 ? ' · today' : ''}</td>
                     <td>{fmt(d.uniqueVisitors)}</td>
                     <td>{fmt(d.playerLookups)}</td>
                     <td className="statsBarCol">
@@ -181,8 +181,8 @@ export const StatsDashboard = () => {
           </div>
 
           <p className="statsFootnote">
-            Посетитель считается по хэшу IP + User-Agent: за одним роутером люди
-            склеиваются, при смене сети — раздваиваются. Цифры ориентировочные.
+            A visitor is counted by a hash of IP + User-Agent: people behind the same
+            router get merged, switching networks can split them into two. Numbers are approximate.
           </p>
         </>
       )}

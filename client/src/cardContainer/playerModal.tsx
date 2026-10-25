@@ -7,6 +7,7 @@ import { PlayerAvatar } from "../playerAvatar/playerAvatar";
 import { CustomTooltip } from "./customToolTip";
 import { ActivityHeatmap } from "./activityHeatmap";
 import { fetchActivity } from "./activityApi";
+import { useLang } from "../i18n/LanguageContext";
 import "./modalMenuInfo.css";
 
 
@@ -34,6 +35,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
     onToggleTracking,
     trackEvents = [],
 }) => {
+    const { t } = useLang();
     const [activeTab, setActiveTab] = useState<'main' | 'activity' | 'servers' | 'names'>('main');
     const [copied, setCopied] = useState<boolean>(false);
     const [nameSearch, setNameSearch] = useState<string>('');
@@ -46,8 +48,9 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
     const ringOffset = isTracking
         ? RING_CIRCUMFERENCE * (1 - trackRatio)
         : RING_CIRCUMFERENCE;
-    const trackWindowLabel =
-        totalSec % 60 === 0 ? `${totalSec / 60} мин` : `${Math.round(totalSec / 60)} мин`;
+    const trackWindowLabel = t('playerModal.trackWindowMin', {
+        n: totalSec % 60 === 0 ? totalSec / 60 : Math.round(totalSec / 60),
+    });
 
     useEffect(() => {
         if (activeTab !== 'activity' || activity || !player.bmId) return;
@@ -101,7 +104,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
           </div>
           <div className="playerDetails">
             <p className="playerName">
-              {player.steam?.personaname || player.bmName || 'Профиль не найден'}
+              {player.steam?.personaname || player.bmName || t('playerModal.profileNotFound')}
             </p>
             <div className="statusContainer">
               <span
@@ -116,19 +119,19 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
               ></span>
               <span className="statusLabel">
                 {player.isOnline
-                  ? 'В ИГРЕ (RUST)'
+                  ? t('playerModal.statusInGame')
                   : player.steam?.personastate === 1
-                  ? 'В СЕТИ (STEAM)'
-                  : 'НЕ В СЕТИ'}
+                  ? t('playerModal.statusOnlineSteam')
+                  : t('playerModal.statusOffline')}
               </span>
             </div>
             <div className="playerSteamId">
-              <code>{player.steamId ?? 'Не привязан'}</code>
+              <code>{player.steamId ?? t('playerModal.notLinked')}</code>
               {player.steamId && (
                 <button
                   className="copyBtn"
                   onClick={handleCopySteamId}
-                  title="Копировать SteamID"
+                  title={t('playerModal.copySteamIdTitle')}
                 >
                   {copied ? (
                     <svg
@@ -163,7 +166,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
         {/* Баннер активного сервера */}
         {player.currentServer && (
           <div className="currentServerBanner">
-            <p className="bannerLabel">ИГРАЕТ СЕЙЧАС</p>
+            <p className="bannerLabel">{t('playerModal.playingNow')}</p>
             <p className="bannerServerName">{player.currentServer.name}</p>
             {player.currentServer.ip && (
               <p className="bannerServerIp">{player.currentServer.ip}</p>
@@ -177,25 +180,25 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
             className={`tabBtn ${activeTab === 'main' ? 'active' : ''}`}
             onClick={() => setActiveTab('main')}
           >
-            ОБЗОР
+            {t('playerModal.tabs.overview')}
           </button>
           <button
             className={`tabBtn ${activeTab === 'activity' ? 'active' : ''}`}
             onClick={() => setActiveTab('activity')}
           >
-            АКТИВНОСТЬ
+            {t('playerModal.tabs.activity')}
           </button>
           <button
             className={`tabBtn ${activeTab === 'servers' ? 'active' : ''}`}
             onClick={() => setActiveTab('servers')}
           >
-            СЕРВЕРА ({player.servers?.length || 0})
+            {t('playerModal.tabs.servers')} ({player.servers?.length || 0})
           </button>
           <button
             className={`tabBtn ${activeTab === 'names' ? 'active' : ''}`}
             onClick={() => setActiveTab('names')}
           >
-            НИКНЕЙМЫ ({player.nicknames?.length || 0})
+            {t('playerModal.tabs.names')} ({player.nicknames?.length || 0})
           </button>
         </div>
 
@@ -213,21 +216,21 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
               <div className="statGridTwo">
                 <div className="statTile">
                   <p className="label">
-                    Наиграно
-                    
+                    {t('playerModal.playtimeLabel')}
+
                     <span className="infoWrapper">
                       <LuInfo size={14} />
-                      <CustomTooltip text="Не учитывает сервера Facepunch, китайские и малопопулярные" />
+                      <CustomTooltip text={t('playerModal.playtimeTooltip')} />
                     </span>
                   </p>
                   <p className="value">
                     {player.battleMetrics?.playtime
-                      ? `${player.battleMetrics.playtime} ч.`
+                      ? t('playerModal.hoursShort', { n: player.battleMetrics.playtime })
                       : '-'}
                   </p>
                 </div>
                 <div className="statTile">
-                  <p className="label">Первый визит</p>
+                  <p className="label">{t('playerModal.firstSeenLabel')}</p>
                   <p className="value">{player.battleMetrics?.firstSeen ?? '-'}</p>
                 </div>
               </div>
@@ -241,8 +244,8 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                   <span className={`trackDot ${isTracking ? 'dotActive' : ''}`}></span>
                   <span className="trackText">
                     {isTracking
-                      ? `Отслеживание: ${formatTimer(trackingTimer)}`
-                      : `Отслеживать игрока (${trackWindowLabel})`}
+                      ? t('playerModal.trackingLabel', { time: formatTimer(trackingTimer) })
+                      : t('playerModal.trackPlayerLabel', { window: trackWindowLabel })}
                   </span>
 
                   <div className="circularTimer">
@@ -270,10 +273,10 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 {isTracking && (
                   <p className="trackHint">
                     {player.hasLeftInitialServer
-                      ? '⚠️ Игрок покинул исходный сервер'
+                      ? t('playerModal.leftInitialServer')
                       : player.isOnline
-                      ? '● На отслеживаемом сервере'
-                      : '○ Сейчас не в сети'}
+                      ? t('playerModal.onTrackedServer')
+                      : t('playerModal.notOnlineNow')}
                   </p>
                 )}
               </div>
@@ -290,7 +293,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Профиль Steam
+                    {t('playerModal.steamProfileBtn')}
                   </a>
                 )}
                 <a
@@ -314,7 +317,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                     onClose();
                   }}
                 >
-                  Удалить карточку
+                  {t('playerModal.deleteCard')}
                 </button>
               </div>
             </div>
@@ -324,13 +327,13 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
           {activeTab === 'activity' && (
             <div className="tabPane activityPane">
               {activityStatus === 'loading' ? (
-                <p className="emptyText">Загрузка…</p>
+                <p className="emptyText">{t('playerModal.activityLoading')}</p>
               ) : activityStatus === 'error' ? (
-                <p className="emptyText">Не удалось загрузить активность</p>
+                <p className="emptyText">{t('playerModal.activityError')}</p>
               ) : activity && activity.length > 0 ? (
                 <ActivityHeatmap days={activity} />
               ) : (
-                <p className="emptyText">Нет данных об активности</p>
+                <p className="emptyText">{t('playerModal.activityEmpty')}</p>
               )}
             </div>
           )}
@@ -338,7 +341,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
           {/* Вкладка 2: Сервера */}
           {activeTab === 'servers' && (
             <div className="tabPane serversPane">
-              <p className="serversTabHeading">Топ серверов по часам</p>
+              <p className="serversTabHeading">{t('playerModal.serversTabHeading')}</p>
               <div className="tabContentList">
                 {player.servers && player.servers.length > 0 ? (
                   player.servers.slice(0, 10).map((srv, idx) => (
@@ -347,12 +350,15 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                         {srv.name}
                       </span>
                       <span className="listItemSub">
-                        {Math.round(srv.timePlayedSeconds / 3600)} ч. • {srv.lastSeen}
+                        {t('playerModal.hoursAndLastSeen', {
+                          n: Math.round(srv.timePlayedSeconds / 3600),
+                          lastSeen: srv.lastSeen,
+                        })}
                       </span>
                     </div>
                   ))
                 ) : (
-                  <p className="emptyText">Нет данных о серверах</p>
+                  <p className="emptyText">{t('playerModal.noServerData')}</p>
                 )}
               </div>
             </div>
@@ -364,7 +370,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
               <input
                 type="text"
                 className="nameSearchInput"
-                placeholder="Поиск по никнеймам..."
+                placeholder={t('playerModal.nicknameSearchPlaceholder')}
                 value={nameSearch}
                 onChange={(e) => setNameSearch(e.target.value)}
               />
@@ -376,7 +382,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                     </div>
                   ))
                 ) : (
-                  <p className="emptyText">Никнеймы не найдены</p>
+                  <p className="emptyText">{t('playerModal.noNicknamesFound')}</p>
                 )}
               </div>
             </div>
@@ -401,25 +407,27 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 }}
               />
               <span className="modalTrackStatusLabel">
-                {isTracking ? `Отслеживание · ${formatTimer(trackingTimer)}` : 'Не отслеживается'}
+                {isTracking
+                  ? t('playerModal.trackingStatus', { time: formatTimer(trackingTimer) })
+                  : t('playerModal.notTracking')}
               </span>
             </div>
             <p className="modalTrackStatusHint">
               {!isTracking
-                ? 'Включите отслеживание во вкладке ОБЗОР — смена сервера и уход этого игрока появятся здесь.'
+                ? t('playerModal.trackHintEnable')
                 : player.hasLeftInitialServer
-                ? '⚠️ Игрок покинул исходный сервер'
+                ? t('playerModal.leftInitialServer')
                 : player.isOnline
-                ? '● На отслеживаемом сервере'
-                : '○ Сейчас не в сети'}
+                ? t('playerModal.onTrackedServer')
+                : t('playerModal.notOnlineNow')}
             </p>
           </div>
 
           <TrackJournal
             events={trackEvents}
             className="inModal"
-            title="СОБЫТИЯ ИГРОКА"
-            emptyHint="Здесь появятся смена сервера, уход и возвращение этого игрока."
+            title={t('playerModal.journalTitle')}
+            emptyHint={t('playerModal.journalEmptyHint')}
           />
         </aside>
       </div>

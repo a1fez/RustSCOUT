@@ -2,6 +2,7 @@ import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import { StatsDashboard } from './pages/stats/statsDashboard.tsx'
+import { LanguageProvider } from './i18n/LanguageContext.tsx'
 
 // Приватный дашборд метрик. Открывается ТОЛЬКО по этому секретному хэшу и нигде
 // не линкуется. Смени строку на свою и никому не показывай.
@@ -29,6 +30,8 @@ const page = isStatsRoute
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {page}
+    <LanguageProvider>
+      {page}
+    </LanguageProvider>
   </StrictMode>,
 )

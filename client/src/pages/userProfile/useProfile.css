@@ -20,7 +20,7 @@
   gap: 20px;
   max-width: 1100px;
   margin: 0 auto 24px auto;
-  background: #0d0d11;
+  background: #1a1a1a28;
   border: 1px solid #1f1f24;
   border-radius: 10px;
   padding: 20px 24px;
@@ -161,7 +161,7 @@
 .profileNav {
   display: flex;
   flex-direction: column;
-  background: #0d0d11;
+  background: #1a1a1a28;
   border: 1px solid #1f1f24;
   border-radius: 10px;
   padding: 6px;
@@ -232,7 +232,7 @@
 
 /* ── Контент раздела ───────────────────────────────────── */
 .profileContent {
-  background: #0d0d11;
+  background: #1a1a1a28;
   border: 1px solid #1f1f24;
   border-radius: 10px;
   padding: 28px 32px;

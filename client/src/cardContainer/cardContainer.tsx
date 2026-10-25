@@ -5,6 +5,7 @@ import { PlayerAvatar } from '../playerAvatar/playerAvatar';
 import type { SearchMode } from '../search/searchModes';
 import { TrackJournal } from '../tracking/trackJournal';
 import type { NotifEvent } from '../notifications/notification';
+import { useLang } from '../i18n/LanguageContext';
 import './cardContainer.css';
 
 const API = '';
@@ -53,6 +54,7 @@ const CardContainer = ({
   setIsAddingCard,
   onSearchDone
 }: CardContainerProps) => {
+  const { t } = useLang();
 
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerData | null>(null);
 
@@ -140,7 +142,7 @@ const CardContainer = ({
             <div className="cardContainer">
           <span
             className={`cardCount ${cardCount >= MAX_CARDS ? 'full' : ''}`}
-            title="Карточек добавлено"
+            title={t('cardContainer.cardsAddedTitle')}
           >
             {cardCount}/{MAX_CARDS}
           </span>
@@ -177,10 +179,10 @@ const CardContainer = ({
                   className="cardStatusCorner"
                   title={
                     !player.isOnline
-                      ? 'Оффлайн'
+                      ? t('cardContainer.offline')
                       : player.hasLeftInitialServer
-                      ? 'Сменил сервер'
-                      : 'На сервере'
+                      ? t('cardContainer.switchedServer')
+                      : t('cardContainer.onServer')
                   }
                   style={{ background: statusColor, boxShadow: `0 0 6px ${statusColor}` }}
                 />
@@ -191,7 +193,7 @@ const CardContainer = ({
 
                 <div className="cardInfo">
                   <p className="cardPlayerName">
-                    { player.steam?.personaname || player.bmName || `BM: ${player.bmId}`}
+                    { player.steam?.personaname || player.bmName || t('cardContainer.bmFallback', { id: player.bmId ?? '' })}
                   </p>
 
                   <div className="cardStatusRow">
@@ -207,16 +209,16 @@ const CardContainer = ({
                     ></span>
                     <span className="cardStatusLabel">
                       {player.isOnline
-                        ? 'В ИГРЕ (RUST)'
+                        ? t('playerModal.statusInGame')
                         : player.steam?.personastate === 1
-                        ? 'В СЕТИ (STEAM)'
-                        : 'НЕ В СЕТИ'}
+                        ? t('playerModal.statusOnlineSteam')
+                        : t('playerModal.statusOffline')}
                     </span>
                   </div>
                 </div>
 
                 {isTracked && (
-                  <div className="cardCircularTimer" title={`Отслеживание: ${formatTimer(playerTimer)}`}>
+                  <div className="cardCircularTimer" title={t('playerModal.trackingLabel', { time: formatTimer(playerTimer) })}>
                     <svg className="cardTimerSvg" viewBox="0 0 36 36">
                       <circle className="cardCircleBg" cx="18" cy="18" r="15" />
                       <circle
@@ -238,7 +240,7 @@ const CardContainer = ({
           })}
 
           {!isAddingCard && cards.length === 0 && (
-            <p className="cardEmpty">Найдите игрока через поиск выше — карточка появится здесь.</p>
+            <p className="cardEmpty">{t('cardContainer.emptyHint')}</p>
           )}
             </div>
           </div>

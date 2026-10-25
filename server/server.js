@@ -111,6 +111,16 @@ app.get('/api/auth/steam/return', passport.authenticate('steam', { failureRedire
   res.redirect(process.env.APP_CLIENT_URL + '/');
 });
 
+// Определение страны посетителя по IP — для автовыбора языка на фронте.
+// Cloudflare сам подставляет этот заголовок на каждый запрос, долетающий
+// до нас (трафик rustscout.app идёт именно через него) — своей базы
+// IP->страна не нужно. Локально (без Cloudflare) заголовка не будет,
+// тогда отдаём null — фронт в этом случае просто не переключает язык.
+app.get('/api/geo', (req, res) => {
+  const country = req.headers['cf-ipcountry'] || null;
+  res.json({ country });
+});
+
 app.get('/api/me', (req, res) => {
   if (!req.user) {
     return res.status(401).json({error: 'Не авторизован'})

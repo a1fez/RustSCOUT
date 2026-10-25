@@ -17,13 +17,16 @@ export interface NotifEvent {
 // То, что передаётся в addNotification (id/timestamp/read проставляются в App).
 export type NotifInput = Omit<NotifEvent, 'id' | 'timestamp' | 'read'>;
 
-export const NOTIF_META: Record<NotifType, { label: string; color: string; glyph: string }> = {
-  left:     { label: 'ПОКИНУЛ',     color: '#ef4444', glyph: '⏻' },
-  switched: { label: 'СМЕНА',       color: '#f59e0b', glyph: '⇄' },
-  returned: { label: 'ВОЗВРАЩЕНИЕ', color: '#22c55e', glyph: '⟲' },
-  online:   { label: 'ОНЛАЙН',      color: '#22c55e', glyph: '▲' },
-  offline:  { label: 'ОФЛАЙН',      color: '#71717a', glyph: '▼' },
-  update:   { label: 'ОБНОВЛЕНИЕ',  color: '#8b5cf6', glyph: '✦' },
+// label раньше лежал тут захардкоженным по-русски — теперь переводится через
+// t(`notifTypes.${type}`) в месте использования (navbar.tsx, trackJournal.tsx,
+// userProfile.tsx), а здесь остаётся только то, что не зависит от языка.
+export const NOTIF_META: Record<NotifType, { color: string; glyph: string }> = {
+  left:     { color: '#ef4444', glyph: '⏻' },
+  switched: { color: '#f59e0b', glyph: '⇄' },
+  returned: { color: '#22c55e', glyph: '⟲' },
+  online:   { color: '#22c55e', glyph: '▲' },
+  offline:  { color: '#71717a', glyph: '▼' },
+  update:   { color: '#8b5cf6', glyph: '✦' },
 };
 
 // События, которые сопровождаются звуком.
@@ -31,15 +34,21 @@ export const SOUND_TYPES: ReadonlySet<NotifType> = new Set<NotifType>([
   'left', 'switched', 'returned', 'online', 'offline',
 ]);
 
-export function formatRelativeTime(ts: number, now: number = Date.now()): string {
+// t передаётся снаружи (из useLang() в компоненте) — этот модуль сам не React-хук,
+// и напрямую вызывать useLang() тут нельзя.
+export function formatRelativeTime(
+  ts: number,
+  t: (path: string, params?: Record<string, string | number>) => string,
+  now: number = Date.now(),
+): string {
   const sec = Math.max(0, Math.floor((now - ts) / 1000));
-  if (sec < 10) return 'только что';
-  if (sec < 60) return `${sec} сек назад`;
+  if (sec < 10) return t('time.justNow');
+  if (sec < 60) return t('time.secAgo', { n: sec });
   const min = Math.floor(sec / 60);
-  if (min < 60) return `${min} мин назад`;
+  if (min < 60) return t('time.minAgo', { n: min });
   const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} ч назад`;
-  return `${Math.floor(hr / 24)} дн назад`;
+  if (hr < 24) return t('time.hourAgo', { n: hr });
+  return t('time.dayAgo', { n: Math.floor(hr / 24) });
 }
 
 export function makeNotifId(): string {

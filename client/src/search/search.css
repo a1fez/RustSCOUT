@@ -472,4 +472,12 @@
         grid-template-rows: none;
         grid-auto-flow: row;
     }
+
+    /* Поля поиска/сервера на мобильном — чуть компактнее по шрифту и высоте. */
+    .searchInput,
+    .customSelect {
+        height: 36px;
+        font-size: 12px;
+        padding: 0 12px;
+    }
 }
